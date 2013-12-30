@@ -95,7 +95,7 @@ public class TexturePack {
 		this.compatible = compatible.split(",");
 		this.info = info;
 		this.resolution = resolution;
-		File tempDir = new File(installPath, "Ressourcepack" + sep + name);
+		File tempDir = new File(installPath, "Ressourcepacks" + sep + name);
 		File verFile = new File(tempDir, "version");
 		URL url_;
 		if(!upToDate(verFile)) {
