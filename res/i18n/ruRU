@@ -1,0 +1,47 @@
+LOCALE_NAME = Русский (Russian)
+LOCALE_LOADED = Загружен файл Русского языка!
+
+# Footer #
+DONATE_BUTTON = Пожертвовать
+
+# Main Tab
+EDIT_BUTTON = Изменить
+LAUNCH_BUTTON = Старт
+PROFILE_CREATE = Создать профиль
+PROFILE_SELECT = Выбрать профиль
+DOWNLOAD_SERVER_PACK = Загрузить серверные файлы
+
+# Map Tab
+INSTALL_MAP = Установить карту
+DOWNLOAD_MAP_SERVER = Загрузить карту для сервера
+
+# TexturePack Tab
+INSTALL_TEXTUREPACK = Установить дополнительные текстуры
+
+# Options pane
+INSTALL_FOLDER = Путь для установки...
+FORCE_UPDATE = Принудительное обновление?
+RAM_MAX = Максимум ОЗУ (Мб)
+LANGUAGE = Язык
+
+# Shared strings
+FILTER_SETTINGS = Фильтр
+
+# Modpacks pane
+MODS_EDIT_PACK = Редактировать набор модов
+MODS_WAIT_WHILE_LOADING = Моды загружаются, пожалуйста подождите...
+
+# EditModPackDialog
+MODS_EDIT_ENABLED_LABEL = Включенные моды
+MODS_EDIT_DISABLED_LABEL = Выключенные моды
+MODS_EDIT_OPEN_FOLDER = Открыть папку
+MODS_EDIT_ADD_MOD = Добавить мод
+MODS_EDIT_ENABLE_MOD = << Включить
+MODS_EDIT_DISABLE_MOD = Выключить >>
+MODS_EDIT_TITLE = Редактор набора модов
+
+# Maps pane
+MAPS_WAIT_WHILE_LOADING = Карты загружаются, пожалуйста подождите....
+
+# TexturePack pane
+TEXTURE_WAIT_WHILE_LOADING = Текстуры загружаются, пожалуйста подождите....

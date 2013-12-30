@@ -1,0 +1,8 @@
+*~
+bin/
+.metadata/
+*.jardesc
+ftblaunch.cfg
+target/
+*.iml
+.idea/
