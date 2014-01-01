@@ -3,7 +3,7 @@
 
   <groupId>net.ftb</groupId>
   <artifactId>TNT_Launcher</artifactId>
-  <version>1.1.1</version>
+  <version>1.1.2</version>
 
   <name>FTB Launcher</name>
   <description>Launcher for the TeamNT Based on the Feed the Beast Launcher</description>

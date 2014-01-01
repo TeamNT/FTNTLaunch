@@ -25,7 +25,7 @@ public class Md5linkUtils {
 		try {
 			return AppUtils.downloadString(new URL("http://ftnt.rd-h.fr/TNT.md5"));
 		} catch(IOException e) {
-			ErrorUtils.tossError("");
+			ErrorUtils.tossError("Unable to find Md5 at URL:" + TNTMd5());
 			return "";
 		}
 	}
