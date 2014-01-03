@@ -262,7 +262,7 @@ public class TexturepackPane extends JPanel implements ILauncherPane, TexturePac
 				texturePackPanels.get(i).setBackground(UIManager.getColor("control").darker().darker());
 				texturePackPanels.get(i).setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 				LaunchFrame.updateTpInstallLocs(TexturePack.getTexturePack(getIndex()).getCompatible());
-				File tempDir = new File(OSUtils.getDynamicStorageLocation(), "ressourcepacks" + File.separator + TexturePack.getTexturePack(getIndex()).getName());
+				File tempDir = new File(OSUtils.getDynamicStorageLocation(), "resourcepacks" + File.separator + TexturePack.getTexturePack(getIndex()).getName());
 				textureInfo.setText("<html><img src='file:///" + tempDir.getPath() + File.separator + TexturePack.getTexturePack(getIndex()).getImageName() +"' width=400 height=200></img> <br>" + TexturePack.getTexturePack(getIndex()).getInfo() + packs);
 				textureInfo.setCaretPosition(0);
 			} else {

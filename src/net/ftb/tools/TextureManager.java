@@ -80,7 +80,7 @@ public class TextureManager extends JDialog {
 			String packVer = (Settings.getSettings().getPackVer(compDir).equalsIgnoreCase("Recommended Version") ? compPack.getVersion() : Settings.getSettings().getPackVer(compDir)).replace(".", "_");
 			if(DownloadUtils.fileExists("texturepacks/" + texturePack.getName().replace(" ", "_") + "/" + compDir + "/" + packVer + "/" + texturePack.getUrl())) {
 				populateInstalledTextures(compPack);
-				File oldFile = new File(installPath, texturePack.getSelectedCompatible() + sep + "minecraft" + sep + "ressourcepacks" + sep + texturePack.getUrl());
+				File oldFile = new File(installPath, texturePack.getSelectedCompatible() + sep + "minecraft" + sep + "resourcepacks" + sep + texturePack.getUrl());
 				if(oldFile.exists()) {
 					oldFile.delete();
 				}
@@ -143,10 +143,10 @@ public class TextureManager extends JDialog {
 		protected boolean downloadTexturePack(String texturePackName, String dir, String compDir, String packVer) throws IOException, NoSuchAlgorithmException {
 			Logger.logInfo("Downloading Texture Pack");
 			String installPath = Settings.getSettings().getInstallPath();
-			new File(installPath, compDir + sep + "minecraft" + sep + "ressourcepacks" + sep).mkdirs();
-			new File(installPath, compDir + sep + "minecraft" + sep + "ressourcepacks" + sep + texturePackName).createNewFile();
-			if(downloadUrl(installPath + sep + compDir + sep + "minecraft" + sep + "ressourcepacks" + sep + texturePackName, DownloadUtils.getCreeperhostLink("texturepacks/" + dir.replace(" ", "_") + "/" + compDir + "/" + packVer + "/" + texturePackName))) {
-				File versionFile = new File(installPath, compDir + sep + "minecraft" + sep + "ressourcepacks" + sep + "textureVersions");
+			new File(installPath, compDir + sep + "minecraft" + sep + "resourcepacks" + sep).mkdirs();
+			new File(installPath, compDir + sep + "minecraft" + sep + "resourcepacks" + sep + texturePackName).createNewFile();
+			if(downloadUrl(installPath + sep + compDir + sep + "minecraft" + sep + "resourcepacks" + sep + texturePackName, DownloadUtils.getCreeperhostLink("texturepacks/" + dir.replace(" ", "_") + "/" + compDir + "/" + packVer + "/" + texturePackName))) {
+				File versionFile = new File(installPath, compDir + sep + "minecraft" + sep + "resourcepacks" + sep + "textureVersions");
 				installedTextures.put(dir.toLowerCase(), packVer);
 				BufferedWriter out = new BufferedWriter(new FileWriter(versionFile));
 				for(int i = 0; i < installedTextures.size(); i++) {
@@ -206,13 +206,13 @@ public class TextureManager extends JDialog {
 		boolean removed = false;
 		ModPack pack = ModPack.getSelectedPack();
 		String installDir = Settings.getSettings().getInstallPath();
-		File textureVersionFile = new File(installDir, pack.getDir() + sep + "minecraft" + sep + "ressourcepacks" + sep + "textureVersions");
+		File textureVersionFile = new File(installDir, pack.getDir() + sep + "minecraft" + sep + "resourcepacks" + sep + "textureVersions");
 		if(textureVersionFile.exists()) {
 			populateInstalledTextures(pack);
 			if(installedTextures.size() > 0) {
 				for(TexturePack tp : TexturePack.getTexturePackArray()) {
 					if(installedTextures.containsKey(tp.getName().toLowerCase()) && tp.isCompatible(pack.getDir())) {
-						File texturePackFile = new File(installDir, pack.getDir() + sep + "minecraft" + sep + "ressourcepacks" + sep + tp.getUrl());
+						File texturePackFile = new File(installDir, pack.getDir() + sep + "minecraft" + sep + "resourcepacks" + sep + tp.getUrl());
 						if(texturePackFile.exists()) {
 							String version = (Settings.getSettings().getPackVer().equalsIgnoreCase("Recommended Version") ? pack.getVersion() : Settings.getSettings().getPackVer()).replace(".", "_");
 							if(!installedTextures.get(tp.getName().toLowerCase()).equalsIgnoreCase(version)) {
@@ -244,7 +244,7 @@ public class TextureManager extends JDialog {
 	}
 
 	private static void populateInstalledTextures(ModPack pack) {
-		File textureVersionFile = new File(Settings.getSettings().getInstallPath(), pack.getDir() + sep + "minecraft" + sep + "ressourcepacks" + sep + "textureVersions");
+		File textureVersionFile = new File(Settings.getSettings().getInstallPath(), pack.getDir() + sep + "minecraft" + sep + "resourcepacks" + sep + "textureVersions");
 		if(installedTextures != null) {
 			installedTextures.clear();
 		} else {
