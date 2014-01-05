@@ -333,7 +333,7 @@ public class LaunchFrame extends JFrame {
 		footerLogo.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent event) {
-				OSUtils.browse("http://www.feed-the-beast.com");
+				OSUtils.browse("http://ftnt.rd-h.fr/");
 			}
 		});
 
