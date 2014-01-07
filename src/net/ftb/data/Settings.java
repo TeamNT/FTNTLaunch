@@ -47,7 +47,7 @@ public class Settings extends Properties {
 
 	static {
 		try {
-			settings = new Settings(new File(OSUtils.getDynamicStorageLocation(), "ftblaunch.cfg"));
+			settings = new Settings(new File(OSUtils.getDynamicStorageLocation(), "ftntlaunch.cfg"));
 		} catch (IOException e) {
 			Logger.logError("Failed to load settings", e);
 		}
