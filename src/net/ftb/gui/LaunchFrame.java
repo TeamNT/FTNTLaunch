@@ -138,7 +138,7 @@ public class LaunchFrame extends JFrame {
 	private static String[] dropdown_ = {"Select Profile", "Create Profile"};
 	private static JComboBox users, tpInstallLocation, mapInstallLocation;
 	private static LaunchFrame instance = null;
-	private static String version = "1.1.3";
+	private static String version = "1.1.4";
 
 	public final JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);	
 
@@ -149,7 +149,7 @@ public class LaunchFrame extends JFrame {
 	public TexturepackPane tpPane;
 	public OptionsPane optionsPane;
 
-	public static int buildNumber = 113;
+	public static int buildNumber = 114;
 	public static boolean noConfig = false;
 	public static LauncherConsole con;
 	public static String tempPass = "";
@@ -240,19 +240,17 @@ public class LaunchFrame extends JFrame {
 						FileOutputStream fos = new FileOutputStream(credits);
 						OutputStreamWriter osw = new OutputStreamWriter(fos);
 						
-						osw.write("FTB Launcher and Modpack Credits " + System.getProperty("line.separator"));
+						osw.write("TeamNT Launcher and Modpack Credits " + System.getProperty("line.separator"));
 						osw.write("-------------------------------" + System.getProperty("line.separator"));
 						osw.write("Launcher Developers:" + System.getProperty("line.separator"));
-						osw.write("jjw123" + System.getProperty("line.separator"));
-						osw.write("unv_annihilator" + System.getProperty("line.separator"));
-						osw.write("Vbitz" + System.getProperty("line.separator") + System.getProperty("line.separator"));
+						osw.write("Iclario" + System.getProperty("line.separator") + System.getProperty("line.separator"));
 						osw.write("Web Developers:" + System.getProperty("line.separator"));
-						osw.write("captainnana" + System.getProperty("line.separator"));
-						osw.write("Rob" + System.getProperty("line.separator") + System.getProperty("line.separator"));
+						osw.write("Iclario" + System.getProperty("line.separator") + System.getProperty("line.separator"));
 						osw.write("Modpack Team:" + System.getProperty("line.separator"));
-						osw.write("CWW256" + System.getProperty("line.separator"));
-						osw.write("Lathanael" + System.getProperty("line.separator"));
-						osw.write("Watchful11" + System.getProperty("line.separator"));
+						osw.write("Iclario" + System.getProperty("line.separator"));
+						osw.write("Cormex" + System.getProperty("line.separator") + System.getProperty("line.separator"));
+						osw.write("Thanks to:" + System.getProperty("line.separator"));
+						osw.write("Vince_44 for his account");
 						
 						osw.flush();
 						
