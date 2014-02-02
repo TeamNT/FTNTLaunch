@@ -3,7 +3,7 @@
 
   <groupId>net.ftb</groupId>
   <artifactId>TNT_Launcher</artifactId>
-  <version>1.1.4
+  <version>1.1.5
   </version>
 
   <name>FTB Launcher</name>
@@ -32,7 +32,7 @@
 
   <issueManagement>
     <system>GitHub</system>
-    <url>https://github.com/fares76/TNT-Launcher/issues</url>
+    <url>https://github.com/TeamNT/FTNTLaunch/issues</url>
   </issueManagement>
 
   <properties>

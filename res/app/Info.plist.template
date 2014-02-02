@@ -9,7 +9,7 @@
     <key>CFBundleVersion</key>
     <string>${version}</string>
     <key>CFBundleGetInfoString</key>
-    <string>${bundleName} (c) 2012-2013 FTB Developers</string>
+    <string>${bundleName} (c) 2013-2014 FTB Developers</string>
     <key>CFBundleAllowMixedLocalizations</key>
     <string>true</string>
     <key>CFBundleExecutable</key>

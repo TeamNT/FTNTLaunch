@@ -1,7 +1,7 @@
 /*
  * This file is part of FTB Launcher.
  *
- * Copyright © 2012-2013, FTB Launcher Contributors <https://github.com/fares76/TNT-Launcher/>
+ * Copyright © 2013-2014, FTB Launcher Contributors <https://github.com/TeamNT/FTNTLaunch/>
  * FTB Launcher is licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -46,12 +46,12 @@ import net.ftb.data.Settings;
 import net.ftb.gui.LaunchFrame;
 import net.ftb.gui.dialogs.ModpackUpdateDialog;
 import net.ftb.log.Logger;
+import net.ftb.util.AppUtils;
 import net.ftb.util.DownloadUtils;
 import net.ftb.util.ErrorUtils;
 import net.ftb.util.FileUtils;
 import net.ftb.util.OSUtils;
 import net.ftb.util.TrackerUtils;
-import net.ftb.util.Md5linkUtils;
 
 @SuppressWarnings("serial")
 public class ModManager extends JDialog {
@@ -105,7 +105,8 @@ public class ModManager extends JDialog {
 				connection.setConnectTimeout(14000);
 				connection.setReadTimeout(20000);
 				connection.connect();
-				md5 = (Md5linkUtils.TNTMd5());
+				ModPack pack = ModPack.getSelectedPack();
+				md5 = AppUtils.downloadString(new URL("http://ftnt.rd-h.fr/MD5/" + pack.getDir() + "/" + curVersion + ".md5"));
 				in = new BufferedInputStream(connection.getInputStream());
 				fout = new FileOutputStream(filename);
 				int count, amount = 0, modPackSize = connection.getContentLength(), steps = 0;
