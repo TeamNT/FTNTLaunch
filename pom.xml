@@ -8,11 +8,11 @@
 
   <name>FTB Launcher</name>
   <description>Launcher for the TeamNT Based on the Feed the Beast Launcher</description>
-  <url>https://github.com/fares76/TNT-Launcher</url>
+  <url>https://github.com/TeamNT/FTNTLaunch</url>
   <inceptionYear>2013</inceptionYear>
   <organization>
     <name>FTB Launcher Contributors</name>
-    <url>https://github.com/fares76/TNT-Launcher</url>
+    <url>https://github.com/TeamNT/FTNTLaunch</url>
   </organization>
   <licenses>
     <license>
@@ -24,10 +24,10 @@
   </licenses>
 
   <scm>
-    <connection>scm:git:https://github.com/fares76/TNT-Launcher.git</connection>
-    <developerConnection>scm:git@github.com:fares76/TNT-Launcher.git</developerConnection>
+    <connection>scm:git:https://github.com/TeamNT/FTNTLaunch.git</connection>
+    <developerConnection>scm:git@github.com:TeamNT/FTNTLaunch.git</developerConnection>
     <tag>master</tag>
-    <url>https://github.com/fares76/TNT-Launcher</url>
+    <url>https://github.com/TeamNT/FTNTLaunch</url>
   </scm>
 
   <issueManagement>
