@@ -1,7 +1,7 @@
 /*
  * This file is part of FTB Launcher.
  *
- * Copyright © 2013-2014, FTB Launcher Contributors <https://github.com/TeamNT/FTNTLaunch/>
+ * Copyright © 2012-2013, FTB Launcher Contributors <https://github.com/Slowpoke101/FTBLaunch/>
  * FTB Launcher is licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -35,317 +35,342 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
+import net.feed_the_beast.launcher.json.versions.OS;
 import net.ftb.gui.LaunchFrame;
 import net.ftb.log.Logger;
 import net.ftb.util.OSUtils;
+import net.ftb.util.winreg.JavaFinder;
 
 @SuppressWarnings("serial")
 public class Settings extends Properties {
-	private static Settings settings;
-	private File configFile;
-	private boolean forceUpdate = false;
+    private static Settings settings;
+    private File configFile;
+    private boolean forceUpdate = false;
 
-	static {
-		try {
-			settings = new Settings(new File(OSUtils.getDynamicStorageLocation(), "ftntlaunch.cfg"));
-		} catch (IOException e) {
-			Logger.logError("Failed to load settings", e);
-		}
-	}
+    static {
+        try {
+            settings = new Settings(new File(OSUtils.getDynamicStorageLocation(), "ftntlaunch.cfg"));
+        } catch (IOException e) {
+            Logger.logError("Failed to load settings", e);
+        }
+    }
 
-	public static Settings getSettings() {
-		return settings;
-	}
+    public static Settings getSettings () {
+        return settings;
+    }
 
-	public Settings(File file) throws IOException {
-		configFile = file;
-		if(file.exists()) {
-			load(new FileInputStream(file));
-		} else {
-			LaunchFrame.noConfig = true;
-		}
-	}
+    public Settings(File file) throws IOException {
+        configFile = file;
+        if (file.exists()) {
+            load(new FileInputStream(file));
+        } else {
+            LaunchFrame.noConfig = true;
+        }
+    }
 
-	public void save() {
-		try {
-			store(new FileOutputStream(configFile), "FTBLaunch Config File");
-		} catch (IOException e) {
-			Logger.logError("Failed to save settings", e);
-		}
-	}
+    public void save () {
+        try {
+            store(new FileOutputStream(configFile), "FTBLaunch Config File");
+        } catch (IOException e) {
+            Logger.logError("Failed to save settings", e);
+        }
+    }
 
-	public String getRamMax() {
-		return getProperty("ramMax", Integer.toString(1024));
-	}
+    public String getRamMax () {
+        return getProperty("ramMax", Integer.toString(1024));
+    }
 
-	public void setRamMax(String max) {
-		setProperty("ramMax", max);
-	}
+    public void setRamMax (String max) {
+        setProperty("ramMax", max);
+    }
 
-	public String getLastUser()	{
-		return getProperty("lastUser", null);
-	}
+    public String getLastUser () {
+        return getProperty("lastUser", null);
+    }
 
-	public void setLastUser(String user) {
-		setProperty("lastUser", user);
-	}
+    public void setLastUser (String user) {
+        setProperty("lastUser", user);
+    }
 
-	public String getInstallPath() {
-		return getProperty("installPath", OSUtils.getDefInstallPath());
-	}
+    public String getInstallPath () {
+        return getProperty("installPath", OSUtils.getDefInstallPath());
+    }
 
-	public void setInstallPath(String path) {
-		setProperty("installPath", path);
-	}
+    public void setInstallPath (String path) {
+        setProperty("installPath", path);
+    }
 
-	public String getStyle() {
-		return getProperty("style", "defaultStyle.cfg");
-	}
+    public String getJavaPath () {
+        return getProperty("javaPath", getDefaultJavaPath());
+    }
 
-	public void setStyle(String path) {
-		setProperty("style", path);
-	}
+    private String getDefaultJavaPath() {
+        String separator = System.getProperty("file.separator");
+        String defaultPath = null;
+        if (OS.CURRENT == OS.WINDOWS && JavaFinder.parseWinJavaVersion().path != null)
+            defaultPath = JavaFinder.parseWinJavaVersion().path.replace(".exe", "w.exe");
+        else
+            defaultPath = System.getProperty("java.home") + ("/bin/java" + (OS.CURRENT == OS.WINDOWS ? "w" : "")).replace("/", separator);
+        return defaultPath;
+    }
 
-	public boolean getForceUpdate() {
-		return forceUpdate;
-	}
+    public void setJavaPath (String path) {
+        if( getDefaultJavaPath().equals(path) ) {
+            remove("javaPath");
+        } else {
+            setProperty("javaPath", path);
+        }
+    }
 
-	public void setForceUpdate(boolean force) {
-		forceUpdate = force;
-	}
 
-	public void setConfigFile(File path) {
-		configFile = path;
-	}
+    public String getStyle () {
+        return getProperty("style", "defaultStyle.cfg");
+    }
 
-	public String getLocale() {
-		return getProperty("locale", "enUS");
-	}
+    public void setStyle (String path) {
+        setProperty("style", path);
+    }
 
-	public void setLocale(String locale) {
-		setProperty("locale", locale);
-	}
+    public boolean getForceUpdate () {
+        return forceUpdate;
+    }
 
-	public File getConfigFile() {
-		return configFile;
-	}
+    public void setForceUpdate (boolean force) {
+        forceUpdate = force;
+    }
 
-	public void setLastPack(String name) {
-		setProperty("lastPack", name);
-	}
+    public void setConfigFile (File path) {
+        configFile = path;
+    }
 
-	public String getLastPack() {
-		return getProperty("lastPack", ModPack.getPack(0).getDir());
-	}
+    public String getLocale () {
+        return getProperty("locale", "enUS");
+    }
 
-	public void setDownloadServer(String server) {
-		setProperty("downloadServer", server);
-	}
+    public void setLocale (String locale) {
+        setProperty("locale", locale);
+    }
 
-	public String getDownloadServer() {
-		return getProperty("downloadServer", "Automatic");
-	}
+    public File getConfigFile () {
+        return configFile;
+    }
 
-	public void setConsoleActive(boolean console) {
-		setProperty("consoleActive", String.valueOf(console));
-	}
+    public void setLastPack (String name) {
+        setProperty("lastPack", name);
+    }
 
-	public boolean getConsoleActive() {
-		return Boolean.valueOf(getProperty("consoleActive", "true"));
-	}
+    public String getLastPack () {
+        return getProperty("lastPack", ModPack.getPack(0).getDir());
+    }
 
-	public void setPackVer(String string) {
-		setProperty(ModPack.getSelectedPack().getDir(), string);
-	}
+    public void setDownloadServer (String server) {
+        setProperty("downloadServer", server);
+    }
 
-	public String getPackVer() {
-		return getProperty(ModPack.getSelectedPack().getDir(), "Recommended Version");
-	}
+    public String getDownloadServer () {
+        return getProperty("downloadServer", "Automatic");
+    }
 
-	public String getPackVer(String packDir) {
-		return getProperty(packDir, "Recommended Version");
-	}
+    public void setConsoleActive (boolean console) {
+        setProperty("consoleActive", String.valueOf(console));
+    }
 
-	public String getLastAddPath() {
-		return getProperty("lastAddPath", "");
-	}
+    public boolean getConsoleActive () {
+        return Boolean.valueOf(getProperty("consoleActive", "true"));
+    }
 
-	public void setLastAddPath(String string) {
-		setProperty("lastAddPath", string);
-	}
+    public void setPackVer (String string) {
+        setProperty(ModPack.getSelectedPack().getDir(), string);
+    }
 
-	public void addPrivatePack(String code) {
-		if(code == null || code.isEmpty()) {
-			return;
-		}
-		if(getProperty("privatePacks") != null) {
-			ArrayList<String> packList = getPrivatePacks();
-			if(!packList.contains(code)) {
-				packList.add(code);
-				setPrivatePacks(packList);
-			}
-		} else {
-			setProperty("privatePacks", code);
-		}
-	}
+    public String getPackVer () {
+        return getProperty(ModPack.getSelectedPack().getDir(), "Recommended Version");
+    }
 
-	public void removePrivatePack(String code) {
-		ArrayList<String> codes = getPrivatePacks();
-		if(codes.contains(code)) {
-			codes.remove(code);
-		}
-		setPrivatePacks(codes);
-	}
+    public String getPackVer (String packDir) {
+        return getProperty(packDir, "Recommended Version");
+    }
 
-	public void setPrivatePacks(List<String> codes) {
-		String out = "";
-		String sep = "";
-		for(String s : codes) {
-			out += sep + s;
-			sep = ",";
-		}
-		setProperty("privatePacks", out);
-	}
+    public String getLastAddPath () {
+        return getProperty("lastAddPath", "");
+    }
 
-	public ArrayList<String> getPrivatePacks() {
-		String[] temp = getProperty("privatePacks", "").split(",");
-		if(temp.length > 0) {
-			ArrayList<String> packs = new ArrayList<String>();
-			Collections.addAll(packs, temp);
-			return packs;
-		}
-		return null;
-	}
+    public void setLastAddPath (String string) {
+        setProperty("lastAddPath", string);
+    }
 
-	public void setNewsDate() {
-		setProperty("newsDate", Long.toString(Calendar.getInstance().getTime().getTime()));
-	}
+    public void addPrivatePack (String code) {
+        if (code == null || code.isEmpty()) {
+            return;
+        }
+        if (getProperty("privatePacks") != null) {
+            ArrayList<String> packList = getPrivatePacks();
+            if (!packList.contains(code)) {
+                packList.add(code);
+                setPrivatePacks(packList);
+            }
+        } else {
+            setProperty("privatePacks", code);
+        }
+    }
 
-	public String getNewsDate() {
-		return getProperty("newsDate", Long.toString(new Date(0).getTime()));
-	}
+    public void removePrivatePack (String code) {
+        ArrayList<String> codes = getPrivatePacks();
+        if (codes.contains(code)) {
+            codes.remove(code);
+        }
+        setPrivatePacks(codes);
+    }
 
-	public void setLastExtendedState(int lastExtendedState) {
-		setProperty("lastExtendedState", String.valueOf(lastExtendedState));
-	}
+    public void setPrivatePacks (List<String> codes) {
+        String out = "";
+        String sep = "";
+        for (String s : codes) {
+            out += sep + s;
+            sep = ",";
+        }
+        setProperty("privatePacks", out);
+    }
 
-	public int getLastExtendedState() {
-		return Integer.valueOf(getProperty("lastExtendedState", String.valueOf(Frame.MAXIMIZED_BOTH)));
-	}
+    public ArrayList<String> getPrivatePacks () {
+        String[] temp = getProperty("privatePacks", "").split(",");
+        if (temp.length > 0) {
+            ArrayList<String> packs = new ArrayList<String>();
+            Collections.addAll(packs, temp);
+            return packs;
+        }
+        return null;
+    }
 
-	public void setKeepLauncherOpen(boolean state) {
-		setProperty("keepLauncherOpen", String.valueOf(state));
-	}
+    public void setNewsDate () {
+        setProperty("newsDate", Long.toString(Calendar.getInstance().getTime().getTime()));
+    }
 
-	public boolean getKeepLauncherOpen() {
-		return Boolean.parseBoolean(getProperty("keepLauncherOpen", "false"));
-	}
+    public String getNewsDate () {
+        return getProperty("newsDate", Long.toString(new Date(0).getTime()));
+    }
 
-	public void setSnooper(boolean state) {
-		setProperty("snooperDisable", String.valueOf(state));
-	}
+    public void setLastExtendedState (int lastExtendedState) {
+        setProperty("lastExtendedState", String.valueOf(lastExtendedState));
+    }
 
-	public boolean getSnooper() {
-		return Boolean.parseBoolean(getProperty("snooperDisable", "false"));
-	}
-	
-	public void setDebugLauncher(boolean state) {
-		setProperty("debugLauncher", String.valueOf(state));
-	}
+    public int getLastExtendedState () {
+        return Integer.valueOf(getProperty("lastExtendedState", String.valueOf(Frame.MAXIMIZED_BOTH)));
+    }
 
-	public boolean getDebugLauncher() {
-		return Boolean.parseBoolean(getProperty("debugLauncher", "false"));
-	}
+    public void setKeepLauncherOpen (boolean state) {
+        setProperty("keepLauncherOpen", String.valueOf(state));
+    }
 
-	public void setLoaded(boolean state) {
-		setProperty("loaded", String.valueOf(state));
-	}
+    public boolean getKeepLauncherOpen () {
+        return Boolean.parseBoolean(getProperty("keepLauncherOpen", "false"));
+    }
 
-	public boolean getLoaded() {
-		return Boolean.parseBoolean(getProperty("loaded", "false"));
-	}
+    public void setSnooper (boolean state) {
+        setProperty("snooperDisable", String.valueOf(state));
+    }
 
-	public String getAdditionalJavaOptions() {
-		return getProperty("additionalJavaOptions", "");
-	}
+    public boolean getSnooper () {
+        return Boolean.parseBoolean(getProperty("snooperDisable", "false"));
+    }
 
-	public void setAdditionalJavaOptions(String opts) {
-		setProperty("additionalJavaOptions", opts);
-	}
+    public void setDebugLauncher (boolean state) {
+        setProperty("debugLauncher", String.valueOf(state));
+    }
 
-	public void setLastPosition(Point lastPosition) {
-		int x = lastPosition.x;
-		int y = lastPosition.y;
-		if(x < 0) {
-			x = 0;
-		}
-		if(y < 0) {
-			y = 0;
-		}
-		Point p = new Point(x, y);
-		setObjectProperty("lastPosition", p);
-	}
+    public boolean getDebugLauncher () {
+        return Boolean.parseBoolean(getProperty("debugLauncher", "false"));
+    }
 
-	public Point getLastPosition() {
-		Point lastPosition = (Point) getObjectProperty("lastPosition");
-		if (lastPosition == null) {
-			lastPosition = new Point(300, 300);
-		}
-		return lastPosition;
-	}
+    public void setLoaded (boolean state) {
+        setProperty("loaded", String.valueOf(state));
+    }
 
-	public void setLastDimension(Dimension lastDimension) {
-		setObjectProperty("lastDimension", lastDimension);
-	}
+    public boolean getLoaded () {
+        return Boolean.parseBoolean(getProperty("loaded", "false"));
+    }
 
-	public Dimension getLastDimension() {
-		Dimension lastDimension = (Dimension) getObjectProperty("lastDimension");
-		if (lastDimension == null) {
-			lastDimension = new Dimension(854, 480);
-		}
-		return lastDimension;
-	}
+    public String getAdditionalJavaOptions () {
+        return getProperty("additionalJavaOptions", "");
+    }
 
-	public void setObjectProperty(String propertyName, Serializable value) {
-		setProperty(propertyName, objectToString(value));
-	}
+    public void setAdditionalJavaOptions (String opts) {
+        setProperty("additionalJavaOptions", opts);
+    }
 
-	public Object getObjectProperty(String propertyName) {
-		return objectFromString(getProperty(propertyName, ""));
-	}
+    public void setLastPosition (Point lastPosition) {
+        int x = lastPosition.x;
+        int y = lastPosition.y;
+        if (x < 0) {
+            x = 0;
+        }
+        if (y < 0) {
+            y = 0;
+        }
+        Point p = new Point(x, y);
+        setObjectProperty("lastPosition", p);
+    }
 
-	public static Object objectFromString(String s) {
-		if (s == null || s.isEmpty()) {
-			return null;
-		}
-		byte[] data = javax.xml.bind.DatatypeConverter.parseBase64Binary(s);
-		try {
-			ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(data));
-			try {
-				return ois.readObject();
-			} finally {
-				ois.close();
-			}
-		} catch (Exception e) {
-			Logger.logError("Failed to read object from string: " + s, e);
-			return null;
-		}
-	}
+    public Point getLastPosition () {
+        Point lastPosition = (Point) getObjectProperty("lastPosition");
+        if (lastPosition == null) {
+            lastPosition = new Point(300, 300);
+        }
+        return lastPosition;
+    }
 
-	private static String objectToString(Serializable o) {
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		try {
-			ObjectOutputStream oos = new ObjectOutputStream(baos);
-			try {
-				oos.writeObject(o);
-				return javax.xml.bind.DatatypeConverter.printBase64Binary(baos.toByteArray());
-			} finally {
-				baos.close();
-				oos.close();
-			}
-		} catch (Exception e) {
-			Logger.logError("Failed to write object to string" + o, e);
-			return null;
-		}
-	}
+    public void setLastDimension (Dimension lastDimension) {
+        setObjectProperty("lastDimension", lastDimension);
+    }
+
+    public Dimension getLastDimension () {
+        Dimension lastDimension = (Dimension) getObjectProperty("lastDimension");
+        if (lastDimension == null) {
+            lastDimension = new Dimension(854, 480);
+        }
+        return lastDimension;
+    }
+
+    public void setObjectProperty (String propertyName, Serializable value) {
+        setProperty(propertyName, objectToString(value));
+    }
+
+    public Object getObjectProperty (String propertyName) {
+        return objectFromString(getProperty(propertyName, ""));
+    }
+
+    public static Object objectFromString (String s) {
+        if (s == null || s.isEmpty()) {
+            return null;
+        }
+        byte[] data = javax.xml.bind.DatatypeConverter.parseBase64Binary(s);
+        try {
+            ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(data));
+            try {
+                return ois.readObject();
+            } finally {
+                ois.close();
+            }
+        } catch (Exception e) {
+            Logger.logError("Failed to read object from string: " + s, e);
+            return null;
+        }
+    }
+
+    private static String objectToString (Serializable o) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try {
+            ObjectOutputStream oos = new ObjectOutputStream(baos);
+            try {
+                oos.writeObject(o);
+                return javax.xml.bind.DatatypeConverter.printBase64Binary(baos.toByteArray());
+            } finally {
+                baos.close();
+                oos.close();
+            }
+        } catch (Exception e) {
+            Logger.logError("Failed to write object to string" + o, e);
+            return null;
+        }
+    }
 }

@@ -1,7 +1,7 @@
 /*
  * This file is part of FTB Launcher.
  *
- * Copyright © 2013-2014, FTB Launcher Contributors <https://github.com/TeamNT/FTNTLaunch/>
+ * Copyright © 2012-2013, FTB Launcher Contributors <https://github.com/Slowpoke101/FTBLaunch/>
  * FTB Launcher is licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -23,23 +23,23 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 
 public class LogWriter implements ILogListener {
-	private final BufferedWriter logWriter;
-	private final LogSource source;
+    private final BufferedWriter logWriter;
+    private final LogSource source;
 
-	public LogWriter(File logFile, LogSource source) throws IOException {
-		this.source = source;
-		this.logWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(logFile), "UTF-8"));
-	}
+    public LogWriter(File logFile, LogSource source) throws IOException {
+        this.source = source;
+        this.logWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(logFile), "UTF-8"));
+    }
 
-	@Override
-	public void onLogEvent(LogEntry entry) {
-		if (entry.source == source) {
-			try {
-				logWriter.write(entry.toString(LogType.EXTENDED) + System.getProperty("line.separator"));
-				logWriter.flush();
-			} catch (IOException e) {
-				Logger.logError(e.getMessage(), e);
-			}
-		}
-	}
+    @Override
+    public void onLogEvent (LogEntry entry) {
+        if (entry.source == source) {
+            try {
+                logWriter.write(entry.toString(LogType.EXTENDED) + System.getProperty("line.separator"));
+                logWriter.flush();
+            } catch (IOException e) {
+                Logger.logError(e.getMessage(), e);
+            }
+        }
+    }
 }

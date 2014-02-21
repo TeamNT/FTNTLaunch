@@ -1,0 +1,145 @@
+buildscript {
+    repositories {
+		maven {
+            name 'Shadow'
+            url 'http://dl.bintray.com/content/johnrengelman/gradle-plugins'
+        }
+        maven {
+            name = 'ForgeFS'
+            url = 'http://files.minecraftforge.net/maven'
+        }
+		maven {
+            name = "sonatype"
+            url = "https://oss.sonatype.org/content/repositories/snapshots/"
+        }
+		maven {
+            name = "jcenter"
+            url = "http://jcenter.bintray.com"
+        }
+        mavenCentral()
+        mavenLocal()
+    }
+
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:0.8'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:1.1-SNAPSHOT'
+		classpath 'edu.sc.seis.gradle:macappbundle:1.0.9'
+
+    }
+
+}
+
+apply plugin: 'maven'
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+apply plugin: 'shadow'
+apply plugin: 'launch4j'
+
+project.ext {
+    mainClass = 'net.ftb.gui.LaunchFrame'
+    currentYear = '2014'
+}
+
+group = 'net.ftb'
+version = '1.1.6'
+description = "FTB Launcher"
+sourceCompatibility = 1.6
+targetCompatibility = 1.6
+shadow {
+    exclude 'META-INF/*.DSA'
+    exclude 'META-INF/*.RSA'
+	//classifier = "${System.getenv().BUILD_NUMBER}"
+	destinationDir = "${buildDir}/libs/"
+	artifactSet {
+        include 'com.google.code.gson'
+		include 'org.apache.logging.log4j'
+		include 'commons-io'
+		include 'org.apache.commons'
+
+    }
+}
+task deleteOrig(type: Delete) {
+    delete "${project.tasks.jar.getArchivePath().getPath()}"
+}
+
+task fixJars(type: Copy) {
+
+    from("${buildDir}/libs/")
+	destinationDir = file("${buildDir}/libs/")
+        rename { String fileName ->
+            fileName.replace('-shadow', '')
+        }
+		rename(/(.+)-shadow(.+)/, '$1$2')
+}
+task deleteShadow(type: Delete) {
+    delete "${project.tasks.jar.getArchivePath().getPath().replace('.jar', '-shadow.jar')}"
+
+	}
+task zipApp(type: Zip) {
+    from "${project.buildDir}/macApp/"
+    destinationDir = file("${project.buildDir}/libs")
+    classifier = 'app'	
+}
+apply plugin: 'macAppBundle'
+
+assemble.dependsOn.remove(createDmg)
+build.dependsOn.remove(createDmg)
+build.dependsOn(zipApp)
+zipApp.dependsOn(createApp)
+createApp.dependsOn(deleteShadow)
+deleteShadow.dependsOn(fixJars)
+fixJars.dependsOn(deleteOrig)
+deleteOrig.dependsOn(shadowJar)
+
+afterEvaluate {
+	launch4j {
+		icon = file("res/exe/icon.ico").getCanonicalPath()
+		jreMinVersion = '1.6.0'
+		jar = project.tasks.jar.getArchivePath().getPath()
+		outfile = project.tasks.jar.getArchivePath().getPath().replace(".jar", ".exe")
+		mainClassName = project.mainClass
+	}
+}
+
+macAppBundle {
+    appName = "Feed The Beast"
+    mainClassName = project.mainClass
+    icon = "res/app/icon.icns"
+}
+
+//}
+jar {
+    manifest {
+        attributes 'Main-Class': project.mainClass
+    }
+}
+
+
+repositories {
+	mavenCentral()
+	maven {
+			name = 'Mojang libs'
+			url = 'https://libraries.minecraft.net/'
+		}
+}
+dependencies {
+    compile 'org.swinglabs.swingx:swingx-all:1.6.4'
+	compile 'com.google.code.gson:gson:2.2.4'
+	compile 'com.mojang:authlib:1.4.2'
+    compile 'org.apache.logging.log4j:log4j-api:2.0-beta9'
+	compile 'org.apache.logging.log4j:log4j-core:2.0-beta9'
+	//commons lang3 via authlib
+    //commons io via authlib
+	}
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src'
+        }
+        resources {
+            srcDir 'res'
+        }
+    }
+}

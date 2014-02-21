@@ -1,7 +1,7 @@
 /*
  * This file is part of FTB Launcher.
  *
- * Copyright © 2013-2014, FTB Launcher Contributors <https://github.com/TeamNT/FTNTLaunch/>
+ * Copyright © 2012-2013, FTB Launcher Contributors <https://github.com/Slowpoke101/FTBLaunch/>
  * FTB Launcher is licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,20 +17,18 @@
 package net.ftb.log;
 
 public enum LogSource {
-	ALL,
-	LAUNCHER,
-	EXTERNAL("Minecraft");
-	private String humanReadableName;
+    ALL, LAUNCHER, EXTERNAL("Minecraft");
+    private String humanReadableName;
 
-	private LogSource() {
-		this(null);
-	}
+    private LogSource() {
+        this(null);
+    }
 
-	private LogSource(String humanReadableName) {
-		this.humanReadableName = humanReadableName;
-	}
+    private LogSource(String humanReadableName) {
+        this.humanReadableName = humanReadableName;
+    }
 
-	public String toString() {
-		return (humanReadableName == null) ? name().substring(0, 1) + name().substring(1).toLowerCase() : humanReadableName;
-	}
+    public String toString () {
+        return (humanReadableName == null) ? name().substring(0, 1) + name().substring(1).toLowerCase() : humanReadableName;
+    }
 }

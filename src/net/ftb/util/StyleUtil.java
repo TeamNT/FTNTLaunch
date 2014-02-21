@@ -1,7 +1,7 @@
 /*
  * This file is part of FTB Launcher.
  *
- * Copyright © 2013-2014, FTB Launcher Contributors <https://github.com/TeamNT/FTNTLaunch/>
+ * Copyright © 2012-2013, FTB Launcher Contributors <https://github.com/Slowpoke101/FTBLaunch/>
  * FTB Launcher is licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -21,15 +21,15 @@ import javax.swing.UIManager;
 import net.ftb.data.LauncherStyle;
 
 public class StyleUtil {
-	public static void loadUiStyles() {
-		LauncherStyle style = LauncherStyle.getCurrentStyle();
-		UIManager.put("control", style.control);
-		UIManager.put("text", style.text);
-		UIManager.put("nimbusBase", style.nimbusBase);
-		UIManager.put("nimbusFocus", style.nimbusFocus);
-		UIManager.put("nimbusBorder", style.nimbusBorder);
-		UIManager.put("nimbusLightBackground", style.nimbusLightBackground);
-		UIManager.put("info", style.info);
-		UIManager.put("nimbusSelectionBackground", style.nimbusSelectionBackground);
-	}
+    public static void loadUiStyles () {
+        LauncherStyle style = LauncherStyle.getCurrentStyle();
+        UIManager.put("control", style.control);
+        UIManager.put("text", style.text);
+        UIManager.put("nimbusBase", style.nimbusBase);
+        UIManager.put("nimbusFocus", style.nimbusFocus);
+        UIManager.put("nimbusBorder", style.nimbusBorder);
+        UIManager.put("nimbusLightBackground", style.nimbusLightBackground);
+        UIManager.put("info", style.info);
+        UIManager.put("nimbusSelectionBackground", style.nimbusSelectionBackground);
+    }
 }

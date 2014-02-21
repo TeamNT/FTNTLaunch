@@ -1,7 +1,7 @@
 /*
  * This file is part of FTB Launcher.
  *
- * Copyright © 2013-2014, FTB Launcher Contributors <https://github.com/TeamNT/FTNTLaunch/>
+ * Copyright © 2012-2013, FTB Launcher Contributors <https://github.com/Slowpoke101/FTBLaunch/>
  * FTB Launcher is licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -22,36 +22,37 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class LogThread extends Thread {
-	private BlockingQueue<LogEntry> logQueue = new LinkedBlockingQueue<LogEntry>();
-	private List<ILogListener> listeners;
+    private BlockingQueue<LogEntry> logQueue = new LinkedBlockingQueue<LogEntry>();
+    private List<ILogListener> listeners;
 
-	public LogThread(List<ILogListener> listeners) {
-		this.listeners = listeners;
-		this.setDaemon(true);
-	}
+    public LogThread(List<ILogListener> listeners) {
+        this.listeners = listeners;
+        this.setDaemon(true);
+    }
 
-	public void run() {
-		LogEntry entry;
-		try {
-			while((entry = logQueue.take()) != null) {
-				if (listeners.isEmpty()) {
-					(entry.level == LogLevel.ERROR ? System.err : System.out).println(entry.toString(LogType.EXTENDED));
-				} else {
-					List<ILogListener> tempListeners = new ArrayList<ILogListener>();
-					tempListeners.addAll(listeners);
-					for (ILogListener listener : tempListeners) {
-						listener.onLogEvent(entry);
-					}
-				}
-			}
-		} catch (InterruptedException ignored) { }
-	}
+    public void run () {
+        LogEntry entry;
+        try {
+            while ((entry = logQueue.take()) != null) {
+                if (listeners.isEmpty()) {
+                    (entry.level == LogLevel.ERROR ? System.err : System.out).println(entry.toString(LogType.EXTENDED));
+                } else {
+                    List<ILogListener> tempListeners = new ArrayList<ILogListener>();
+                    tempListeners.addAll(listeners);
+                    for (ILogListener listener : tempListeners) {
+                        listener.onLogEvent(entry);
+                    }
+                }
+            }
+        } catch (InterruptedException ignored) {
+        }
+    }
 
-	public void handleLog(LogEntry logEntry) {
-		try {
-			logQueue.put(logEntry);
-		} catch (InterruptedException ignored) {
-			Logger.logError(ignored.getMessage(), ignored);
-		}
-	}
+    public void handleLog (LogEntry logEntry) {
+        try {
+            logQueue.put(logEntry);
+        } catch (InterruptedException ignored) {
+            Logger.logError(ignored.getMessage(), ignored);
+        }
+    }
 }

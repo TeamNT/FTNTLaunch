@@ -1,7 +1,7 @@
 /*
  * This file is part of FTB Launcher.
  *
- * Copyright © 2013-2014, FTB Launcher Contributors <https://github.com/TeamNT/FTNTLaunch/>
+ * Copyright © 2012-2013, FTB Launcher Contributors <https://github.com/Slowpoke101/FTBLaunch/>
  * FTB Launcher is licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -35,47 +35,47 @@ import net.ftb.util.OSUtils.OS;
 
 @SuppressWarnings("serial")
 public class NewsPane extends JPanel implements ILauncherPane {
-	private JEditorPane news;
-	private JScrollPane newsPanel;
+    private JEditorPane news;
+    private JScrollPane newsPanel;
 
-	public NewsPane() {
-		super();
-		if(OSUtils.getCurrentOS() == OS.WINDOWS) {
-			setBorder(new EmptyBorder(-5, -25, -5, 12));
-		} else {
-			setBorder(new EmptyBorder(-4, -25, -4, -2));
-		}
-		setLayout(new BorderLayout());
+    public NewsPane() {
+        super();
+        if (OSUtils.getCurrentOS() == OS.WINDOWS) {
+            setBorder(new EmptyBorder(-5, -25, -5, 12));
+        } else {
+            setBorder(new EmptyBorder(-4, -25, -4, -2));
+        }
+        setLayout(new BorderLayout());
 
-		news = new JEditorPane();
-		news.setEditable(false);
-		news.addHyperlinkListener(new HyperlinkListener() {
-			@Override
-			public void hyperlinkUpdate(HyperlinkEvent arg0) {
-				if(arg0.getEventType() == EventType.ACTIVATED) {
-					try {
-						OSUtils.browse(arg0.getURL().toString());
-					} catch (Exception e) {
-						Logger.logError(e.getMessage(), e);
-					}
-				}
-			}
-		});
-		newsPanel = new JScrollPane(news);
-		newsPanel.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		newsPanel.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-		add(newsPanel, BorderLayout.CENTER);
-	}
+        news = new JEditorPane();
+        news.setEditable(false);
+        news.addHyperlinkListener(new HyperlinkListener() {
+            @Override
+            public void hyperlinkUpdate (HyperlinkEvent arg0) {
+                if (arg0.getEventType() == EventType.ACTIVATED) {
+                    try {
+                        OSUtils.browse(arg0.getURL().toString());
+                    } catch (Exception e) {
+                        Logger.logError(e.getMessage(), e);
+                    }
+                }
+            }
+        });
+        newsPanel = new JScrollPane(news);
+        newsPanel.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        newsPanel.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        add(newsPanel, BorderLayout.CENTER);
+    }
 
-	@Override
-	public void onVisible() {
-		try {
-			news.setPage("http://ftnt.rd-h.fr/news.html");
-			Settings.getSettings().setNewsDate();
-			Settings.getSettings().save();
-			LaunchFrame.getInstance().setNewsIcon();
-		} catch (IOException e1) {
-			Logger.logError(e1.getMessage(), e1);
-		}
-	}
+    @Override
+    public void onVisible () {
+        try {
+            news.setPage("http://ftnt.rd-h.fr/news.html");
+            Settings.getSettings().setNewsDate();
+            Settings.getSettings().save();
+            LaunchFrame.getInstance().setNewsIcon();
+        } catch (IOException e1) {
+            Logger.logError(e1.getMessage(), e1);
+        }
+    }
 }

@@ -1,7 +1,7 @@
 /*
  * This file is part of FTB Launcher.
  *
- * Copyright © 2013-2014, FTB Launcher Contributors <https://github.com/TeamNT/FTNTLaunch/>
+ * Copyright © 2012-2013, FTB Launcher Contributors <https://github.com/Slowpoke101/FTBLaunch/>
  * FTB Launcher is licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,28 +17,26 @@
 package net.ftb.log;
 
 public enum LogType {
-	DEBUG,
-	EXTENDED,
-	MINIMAL;
+    DEBUG, EXTENDED, MINIMAL;
 
-	private static Integer currentPrecedence;
-	private int precedence = currentPrecedence();
+    private static Integer currentPrecedence;
+    private int precedence = currentPrecedence();
 
-	public boolean includes(LogType other) {
-		return other.precedence >= this.precedence;
-	}
+    public boolean includes (LogType other) {
+        return other.precedence >= this.precedence;
+    }
 
-	public String toString() {
-		return name().substring(0, 1) + name().substring(1).toLowerCase();
-	}
+    public String toString () {
+        return name().substring(0, 1) + name().substring(1).toLowerCase();
+    }
 
-	/**
-	 * Workaround for limitations on usage of static variables in enum field initialisers.
-	 */
-	private int currentPrecedence() {
-		if (currentPrecedence == null) {
-			currentPrecedence = 0;
-		}
-		return currentPrecedence++;
-	}
+    /**
+     * Workaround for limitations on usage of static variables in enum field initialisers.
+     */
+    private int currentPrecedence () {
+        if (currentPrecedence == null) {
+            currentPrecedence = 0;
+        }
+        return currentPrecedence++;
+    }
 }
