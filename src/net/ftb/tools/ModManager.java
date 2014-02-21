@@ -46,6 +46,7 @@ import net.ftb.data.Settings;
 import net.ftb.gui.LaunchFrame;
 import net.ftb.gui.dialogs.ModpackUpdateDialog;
 import net.ftb.log.Logger;
+import net.ftb.util.AppUtils;
 import net.ftb.util.DownloadUtils;
 import net.ftb.util.ErrorUtils;
 import net.ftb.util.FileUtils;
@@ -131,7 +132,8 @@ public class ModManager extends JDialog {
                         connection.setRequestProperty("Range", "bytes=" + amount + "-");
                     }
                     connection.connect();
-                    md5 = connection.getHeaderField("Content-MD5");
+                    ModPack pack = ModPack.getSelectedPack();
+                    md5 = AppUtils.downloadString(new URL("http://ftnt.rd-h.fr/MD5/" + pack.getDir() + "/" + curVersion + ".md5"));
                     in = new BufferedInputStream(connection.getInputStream());
                     if (modPackSize == 0) {
                         modPackSize = connection.getContentLength();
