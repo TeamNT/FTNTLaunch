@@ -23,24 +23,31 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.InetAddress;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Scanner;
 
 import net.ftb.data.Settings;
 import net.ftb.gui.LaunchFrame;
 import net.ftb.gui.dialogs.AdvancedOptionsDialog;
+import net.ftb.gui.dialogs.LoadingDialog;
 import net.ftb.log.Logger;
 
 public class DownloadUtils extends Thread {
-    public static boolean serversLoaded = false;
+    public volatile static boolean serversLoaded = false;
     public static HashMap<String, String> downloadServers = new HashMap<String, String>();
     public static HashMap<String, String> backupServers = new HashMap<String, String>();
+    public static final String masterRepo = new String("http://ftnt.rd-h.fr");
+    public static final String masterRepoNoHTTP = new String("ftnt.rd-h.fr");
 
     /**
      * @param file - the name of the file, as saved to the repo (including extension)
@@ -48,8 +55,7 @@ public class DownloadUtils extends Thread {
      * @throws NoSuchAlgorithmException - see md5
      */
     public static String getCreeperhostLink (String file) throws NoSuchAlgorithmException {
-        String resolved = (downloadServers.containsKey(Settings.getSettings().getDownloadServer())) ? "http://" + downloadServers.get(Settings.getSettings().getDownloadServer())
-                : "http://ftnt.rd-h.fr";
+        String resolved = (downloadServers.containsKey(Settings.getSettings().getDownloadServer())) ? "http://" + downloadServers.get(Settings.getSettings().getDownloadServer()) : masterRepo;
         resolved += "/FTB2/" + file;
         HttpURLConnection connection = null;
         try {
@@ -73,8 +79,7 @@ public class DownloadUtils extends Thread {
      * @return - the direct link
      */
     public static String getStaticCreeperhostLink (String file) {
-        String resolved = (downloadServers.containsKey(Settings.getSettings().getDownloadServer())) ? "http://" + downloadServers.get(Settings.getSettings().getDownloadServer())
-                : "http://ftnt.rd-h.fr";
+        String resolved = (downloadServers.containsKey(Settings.getSettings().getDownloadServer())) ? "http://" + downloadServers.get(Settings.getSettings().getDownloadServer()) : masterRepo;
         resolved += "/FTB2/static/" + file;
         HttpURLConnection connection = null;
         try {
@@ -114,7 +119,7 @@ public class DownloadUtils extends Thread {
      */
     public static boolean fileExists (String file) {
         try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(new URL("http://ftnt.rd-h.fr/FTB2/" + file).openStream()));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(new URL(masterRepo + "/FTB2/" + file).openStream()));
             return !reader.readLine().toLowerCase().contains("not found");
         } catch (Exception e) {
             return false;
@@ -168,8 +173,7 @@ public class DownloadUtils extends Thread {
         Logger.logInfo("Issue with new md5 method, attempting to use backup method.");
         String content = null;
         Scanner scanner = null;
-        String resolved = (downloadServers.containsKey(Settings.getSettings().getDownloadServer())) ? "http://" + downloadServers.get(Settings.getSettings().getDownloadServer())
-                : "http://ftnt.rd-h.fr";
+        String resolved = (downloadServers.containsKey(Settings.getSettings().getDownloadServer())) ? "http://" + downloadServers.get(Settings.getSettings().getDownloadServer()) : masterRepo;
         resolved += "/md5/FTB2/" + url;
         HttpURLConnection connection = null;
         try {
@@ -253,11 +257,12 @@ public class DownloadUtils extends Thread {
      */
     @Override
     public void run () {
-        downloadServers.put("Automatic", "ftnt.rd-h.fr");
+        downloadServers.put("Automatic", masterRepoNoHTTP);
         BufferedReader in = null;
+        
         // New Servers
         try {
-            in = new BufferedReader(new InputStreamReader(new URL("http://ftnt.rd-h.fr/edges.json").openStream()));
+            in = new BufferedReader(new InputStreamReader(new URL(masterRepo + "/edges.json").openStream()));
             String line;
             while ((line = in.readLine()) != null) { // Hacky JSON parsing because this will all be gone soon (TM)
                 line = line.replace("{", "").replace("}", "").replace("\"", "");
@@ -270,8 +275,45 @@ public class DownloadUtils extends Thread {
                 }
             }
             in.close();
+            LoadingDialog.setProgress(80);
         } catch (IOException e) {
-            Logger.logError(e.getMessage(), e);
+            int i = 10;
+            
+            downloadServers.clear();
+
+            Logger.logInfo("Primary mirror failed, Trying alternative mirrors");
+            LoadingDialog.setProgress(i);
+            
+            //If fetching edges.json failed, assume new. is inaccessible
+
+            try {
+                in = new BufferedReader(new InputStreamReader(this.getClass().getResource("/edges.json").openStream()));
+                String line;
+                while (in.ready() && (line = in.readLine()) != null) {
+                    line = line.replace("{", "").replace("}", "").replace("\"", "");
+                    String[] splitString = line.split(",");
+                    for (String entry : splitString) {
+                        String[] splitEntry = entry.split(":");
+                        if (splitEntry.length == 2) {
+                            try {
+                                Logger.logInfo("Testing CreeperHost:" + splitEntry[0]);
+                                BufferedReader in1 = new BufferedReader(new InputStreamReader(new URL("http://" + splitEntry[1] + "/edges.json").openStream()));
+                                in1.readLine();
+                                in1.close();
+
+                                downloadServers.put(splitEntry[0], splitEntry[1]);
+                                
+                                if(i < 90) i += 10;
+                                LoadingDialog.setProgress(i);
+                            } catch (Exception ex) {
+                                Logger.logWarn("Server CreeperHost:" + splitEntry[0] + " was not accessible, ignoring. " + ex.getMessage());
+                            }
+                        }
+                    }
+                }
+            } catch (IOException e1) {
+                Logger.logError("Failed to use bundled edges.json: " + e1.getMessage());
+            }
         } finally {
             if (in != null) {
                 try {
@@ -281,30 +323,66 @@ public class DownloadUtils extends Thread {
             }
         }
 
-        // Backup md5 servers
-        try {
-            in = new BufferedReader(new InputStreamReader(new URL("http://ftnt.rd-h.fr/mirrors").openStream()));
-            String line;
-            while ((line = in.readLine()) != null) {
-                String[] splitString = line.split(",");
-                if (splitString.length == 2) {
-                    backupServers.put(splitString[0], splitString[1]);
-                }
-            }
-            in.close();
-        } catch (IOException e) {
-            Logger.logError(e.getMessage(), e);
-        } finally {
-            if (in != null) {
-                try {
-                    in.close();
-                } catch (IOException e) {
-                }
-            }
+        LoadingDialog.setProgress(90);
+        
+        if (downloadServers.size() == 0) {
+            Logger.logError("Could not find any working mirrors! If you are running a software firewall please allow the FTB Launcher permission to use the internet.");
+
+            // Fall back to new. (old system) on critical failure
+            downloadServers.put("Automatic", masterRepoNoHTTP);
+        } else if (!downloadServers.containsKey("Automatic")) {
+            // Use a random server from edges.json as the Automatic server instead
+            int index = (int) (Math.random() * downloadServers.size());
+            List<String> keys = new ArrayList<String>(downloadServers.keySet());
+            String defaultServer = downloadServers.get(keys.get(index));
+
+            downloadServers.put("Automatic", defaultServer);
+            Logger.logInfo("Selected " + keys.get(index) + " mirror for Automatic assignment");
         }
+
+        LoadingDialog.setProgress(100);
         serversLoaded = true;
-        if (LaunchFrame.getInstance() != null && LaunchFrame.getInstance().optionsPane != null) {
-            AdvancedOptionsDialog.setDownloadServers();
+        
+        LaunchFrame.downloadServersReady();
+        
+        try {
+            if (LaunchFrame.getInstance() != null && LaunchFrame.getInstance().optionsPane != null) {
+                AdvancedOptionsDialog.setDownloadServers();
+            }
+        } catch (Exception e) {
+            Logger.logError("Unknown error setting download servers: " + e.getMessage());
         }
+
+        String selectedMirror = Settings.getSettings().getDownloadServer();
+        String selectedHost = downloadServers.get(selectedMirror);
+        String resolvedIP = "UNKNOWN";
+        String resolvedHost = "UNKNOWN";
+        String resolvedMirror = "UNKNOWN";
+
+        try {
+            InetAddress ipAddress = InetAddress.getByName(selectedHost);
+            resolvedIP = ipAddress.getHostAddress();
+        } catch (UnknownHostException e) {
+            Logger.logError("Failed to resolve selected mirror: " + e.getMessage());
+        }
+
+        try {
+            for (String key : downloadServers.keySet()) {
+                if (key == "Automatic")
+                    continue;
+
+                InetAddress host = InetAddress.getByName(downloadServers.get(key));
+
+                if (resolvedIP.equalsIgnoreCase(host.getHostAddress())) {
+                    resolvedMirror = key;
+                    resolvedHost = downloadServers.get(key);
+                    break;
+                }
+            }
+        } catch (UnknownHostException e) {
+            Logger.logError("Failed to resolve mirror: " + e.getMessage());
+        }
+
+        Logger.logInfo("Using download server " + selectedMirror + ":" + resolvedMirror + " on host " + resolvedHost + " (" + resolvedIP + ")");
     }
 }

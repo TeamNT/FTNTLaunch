@@ -79,6 +79,7 @@ import net.ftb.data.TexturePack;
 import net.ftb.data.UserManager;
 import net.ftb.gui.dialogs.InstallDirectoryDialog;
 import net.ftb.gui.dialogs.LauncherUpdateDialog;
+import net.ftb.gui.dialogs.LoadingDialog;
 import net.ftb.gui.dialogs.ModPackVersionChangeDialog;
 import net.ftb.gui.dialogs.PasswordDialog;
 import net.ftb.gui.dialogs.PlayOfflineDialog;
@@ -136,19 +137,19 @@ public class LaunchFrame extends JFrame {
     private static String[] dropdown_ = { "Select Profile", "Create Profile" };
     private static JComboBox users, tpInstallLocation, mapInstallLocation;
     private static LaunchFrame instance = null;
-    private static String version = "1.1.7";
+    private static String version = "1.1.8";
     public static boolean canUseAuthlib;
 
     public final JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 
     protected static UserManager userManager;
 
-    public static ModpacksPane modPacksPane;
+    public ModpacksPane modPacksPane;
     public MapsPane mapsPane;
     public TexturepackPane tpPane;
     public OptionsPane optionsPane;
 
-    public static int buildNumber = 117;
+    public static int buildNumber = 118;
     public static boolean noConfig = false;
     public static boolean allowVersionChange = false;
     public static boolean doVersionBackup = false;
@@ -156,7 +157,8 @@ public class LaunchFrame extends JFrame {
     public static String tempPass = "";
     public static Panes currentPane = Panes.MODPACK;
     public static JGoogleAnalyticsTracker tracker = new JGoogleAnalyticsTracker(new AnalyticsConfigData("UA-37330489-2"), GoogleAnalyticsVersion.V_4_7_2);
-
+    public static LoadingDialog loader;
+    
     public static final String FORGENAME = "MinecraftForge.zip";
 
     protected enum Panes {
@@ -170,6 +172,14 @@ public class LaunchFrame extends JFrame {
     public static void main (String[] args) {
         tracker.setEnabled(true);
         TrackerUtils.sendPageView("net/ftb/gui/LaunchFrame.java", "Launcher Start v" + version);
+        if (!new File(Settings.getSettings().getInstallPath(), "FTBOSSent" + version + ".txt").exists()) {
+            TrackerUtils.sendPageView("net/ftb/gui/LaunchFrame.java", "Launcher " + version + " OS " + OSUtils.getOSString());
+            try {
+                new File(Settings.getSettings().getInstallPath(), "FTBOSSent" + version + ".txt").createNewFile();
+            } catch (IOException e) {
+                Logger.logError("Error creating os cache text file");
+            }
+        }
 
         if (new File(Settings.getSettings().getInstallPath(), "FTBLauncherLog.txt").exists()) {
             new File(Settings.getSettings().getInstallPath(), "FTBLauncherLog.txt").delete();
@@ -213,13 +223,21 @@ public class LaunchFrame extends JFrame {
                     } catch (Exception e1) {
                     }
                 }
+                
+                loader = new LoadingDialog();
+                loader.setVisible(true);
+
                 I18N.setupLocale();
                 I18N.setLocale(Settings.getSettings().getLocale());
+
+                LoadingDialog.setProgress(110);
 
                 if (noConfig) {
                     InstallDirectoryDialog installDialog = new InstallDirectoryDialog();
                     installDialog.setVisible(true);
                 }
+
+                LoadingDialog.setProgress(120);
 
                 File installDir = new File(Settings.getSettings().getInstallPath());
                 if (!installDir.exists()) {
@@ -230,11 +248,13 @@ public class LaunchFrame extends JFrame {
                     dynamicDir.mkdirs();
                 }
 
+                LoadingDialog.setProgress(130);
+
                 userManager = new UserManager(new File(OSUtils.getDynamicStorageLocation(), "logindata"));
+
+                LoadingDialog.setProgress(140);
+
                 con = new LauncherConsole();
-                if (Settings.getSettings().getConsoleActive()) {
-                    con.setVisible(true);
-                }
 
                 File credits = new File(OSUtils.getDynamicStorageLocation(), "credits.txt");
 
@@ -267,6 +287,8 @@ public class LaunchFrame extends JFrame {
                         TrackerUtils.sendPageView("net/ftb/gui/LaunchFrame.java", "Unique User (Credits)");
                     }
 
+                    LoadingDialog.setProgress(150);
+
                     if (!Settings.getSettings().getLoaded() && !Settings.getSettings().getSnooper()) {
                         TrackerUtils.sendPageView("net/ftb/gui/LaunchFrame.java", "Unique User (Settings)");
                         Settings.getSettings().setLoaded(true);
@@ -278,12 +300,15 @@ public class LaunchFrame extends JFrame {
                     Logger.logError(e1.getMessage());
                 }
 
+                LoadingDialog.setProgress(160);
+
                 LaunchFrame frame = new LaunchFrame(2);
                 instance = frame;
-                frame.setVisible(true);
 
                 AuthlibDLWorker authworker = new AuthlibDLWorker(Settings.getSettings().getInstallPath() + File.separator + "authlib" + File.separator, "1.4.2") {
                 };
+
+                LoadingDialog.setProgress(170);
 
                 Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
                     @Override
@@ -291,6 +316,19 @@ public class LaunchFrame extends JFrame {
                         Logger.logError("Unhandled exception in " + t.toString(), e);
                     }
                 });
+                
+                /*
+                 * Show the main form but hide it behind any active windows until
+                 * loading is complete to prevent display issues.
+                 * 
+                 * @TODO ModpacksPane has a display issue with packScroll if the  
+                 * main form is not visible when constructed.
+                 */
+                instance.setVisible(true);
+                instance.toBack();
+
+                con.setVisible(Settings.getSettings().getConsoleActive());
+                con.scrollToBottom();
 
                 ModPack.addListener(frame.modPacksPane);
                 ModPack.loadXml(getXmls());
@@ -307,10 +345,11 @@ public class LaunchFrame extends JFrame {
                     p.setVisible(true);
                 }
 
+                LoadingDialog.setProgress(180);
             };
         });
     }
-
+    
     /**
      * Create the frame.
      */
@@ -545,6 +584,39 @@ public class LaunchFrame extends JFrame {
             }
         });
     }
+    
+    public static void downloadServersReady() {
+        // Prevent a possible race condition with fast internet connections
+        while(loader == null) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+            }
+        }
+        
+        // Release modal from the loading screen, so the main thread can continue
+        loader.setVisible(false);
+        loader.setModal(false);
+        loader.setVisible(true);
+        loader.toFront();
+        loader.repaint();
+    }
+    
+    public static void checkDoneLoading() {
+        if(ModpacksPane.loaded) {
+            LoadingDialog.setProgress(190);
+            
+            if(MapsPane.loaded) {
+                LoadingDialog.setProgress(200);
+                
+                if(TexturepackPane.loaded) {
+                    loader.setVisible(false);
+                    instance.setVisible(true);
+                    instance.toFront();
+                }
+            }
+        }
+    }
 
     public void setNewsIcon () {
         int i = getUnreadNews();
@@ -769,7 +841,7 @@ public class LaunchFrame extends JFrame {
         if (assets.size() > 0) {
             Logger.logInfo("Gathering " + assets.size() + " assets, this may take a while...");
 
-            final ProgressMonitor prog = new ProgressMonitor(this, "Downloading Files...", "", 0, 100); //Not sure why this isnt showing...
+            final ProgressMonitor prog = new ProgressMonitor(this, "Downloading Files...", "", 0, 100);
             final AssetDownloader downloader = new AssetDownloader(prog, assets) {
                 @Override
                 public void done () {
@@ -1064,7 +1136,8 @@ public class LaunchFrame extends JFrame {
      */
     public void launchMinecraft (String workingDir, String username, String password, String maxPermSize) {
         try {
-            Process minecraftProcess = MinecraftLauncher.launchMinecraft( Settings.getSettings().getJavaPath(), workingDir, username, password, FORGENAME, Settings.getSettings().getRamMax(), maxPermSize);
+            Process minecraftProcess = MinecraftLauncher.launchMinecraft(Settings.getSettings().getJavaPath(), workingDir, username, password, FORGENAME, Settings.getSettings().getRamMax(),
+                    maxPermSize);
             StreamLogger.start(minecraftProcess.getInputStream(), new LogEntry().level(LogLevel.UNKNOWN));
             TrackerUtils.sendPageView(ModPack.getSelectedPack().getName() + " Launched", ModPack.getSelectedPack().getName());
             try {
@@ -1162,9 +1235,9 @@ public class LaunchFrame extends JFrame {
                 classpath.add(new File(libDir, lib.getPath()));
             }
 
-            Process minecraftProcess = MinecraftLauncherNew.launchMinecraft(Settings.getSettings().getJavaPath(), gameDir, assetDir, natDir, classpath, username, password, packjson.mainClass != null ? packjson.mainClass : base.mainClass,
-                    packjson.minecraftArguments != null ? packjson.minecraftArguments : base.minecraftArguments, packjson.assets != null ? packjson.assets : base.getAssets(), Settings.getSettings()
-                            .getRamMax(), maxPermSize, pack.getMcVersion(), UUID);
+            Process minecraftProcess = MinecraftLauncherNew.launchMinecraft(Settings.getSettings().getJavaPath(), gameDir, assetDir, natDir, classpath, username, password,
+                    packjson.mainClass != null ? packjson.mainClass : base.mainClass, packjson.minecraftArguments != null ? packjson.minecraftArguments : base.minecraftArguments,
+                    packjson.assets != null ? packjson.assets : base.getAssets(), Settings.getSettings().getRamMax(), maxPermSize, pack.getMcVersion(), UUID);
 
             StreamLogger.start(minecraftProcess.getInputStream(), new LogEntry().level(LogLevel.UNKNOWN));
             TrackerUtils.sendPageView(ModPack.getSelectedPack().getName() + " Launched", ModPack.getSelectedPack().getName());

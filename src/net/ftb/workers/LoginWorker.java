@@ -22,8 +22,6 @@ import java.net.URLEncoder;
 
 import javax.swing.SwingWorker;
 
-import net.ftb.gui.LaunchFrame;
-import net.ftb.log.Logger;
 import net.ftb.util.AppUtils;
 import net.ftb.util.ErrorUtils;
 

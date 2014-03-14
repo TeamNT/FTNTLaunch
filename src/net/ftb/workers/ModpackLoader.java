@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import net.ftb.data.Map;
 import net.ftb.data.ModPack;
 import net.ftb.data.TexturePack;
+import net.ftb.gui.LaunchFrame;
 import net.ftb.gui.panes.ModpacksPane;
 import net.ftb.log.Logger;
 import net.ftb.util.AppUtils;
@@ -92,7 +93,8 @@ public class ModpackLoader extends Thread {
                                 .getTextContent(), modPackAttr.getNamedItem("description").getTextContent(), modPackAttr.getNamedItem("mods") != null ? modPackAttr.getNamedItem("mods")
                                 .getTextContent() : "", modPackAttr.getNamedItem("oldVersions") != null ? modPackAttr.getNamedItem("oldVersions").getTextContent() : "", modPackAttr
                                 .getNamedItem("animation") != null ? modPackAttr.getNamedItem("animation").getTextContent() : "", modPackAttr.getNamedItem("maxPermSize") != null ? modPackAttr
-                                .getNamedItem("maxPermSize").getTextContent() : "", (ModPack.getPackArray().isEmpty() ? 0 : ModPack.getPackArray().size()), privatePack, xmlFile));
+                                .getNamedItem("maxPermSize").getTextContent() : "", (ModPack.getPackArray().isEmpty() ? 0 : ModPack.getPackArray().size()), privatePack, xmlFile, modPackAttr
+                                .getNamedItem("bundledMap") != null ? modPackAttr.getNamedItem("bundledMap").getTextContent() : "", modPackAttr.getNamedItem("customTP") != null ? true : false));
                     } catch (Exception e) {
                         Logger.logError(e.getMessage(), e);
                     }
@@ -105,6 +107,7 @@ public class ModpackLoader extends Thread {
         }
         if (!ModpacksPane.loaded) {
             ModpacksPane.loaded = true;
+            LaunchFrame.checkDoneLoading();
             Map.loadAll();
             TexturePack.loadAll();
         }
