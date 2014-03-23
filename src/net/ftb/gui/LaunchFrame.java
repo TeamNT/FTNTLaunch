@@ -137,7 +137,7 @@ public class LaunchFrame extends JFrame {
     private static String[] dropdown_ = { "Select Profile", "Create Profile" };
     private static JComboBox users, tpInstallLocation, mapInstallLocation;
     private static LaunchFrame instance = null;
-    private static String version = "1.1.8";
+    private static String version = "1.1.9";
     public static boolean canUseAuthlib;
 
     public final JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
@@ -149,14 +149,15 @@ public class LaunchFrame extends JFrame {
     public TexturepackPane tpPane;
     public OptionsPane optionsPane;
 
-    public static int buildNumber = 118;
+    public static int buildNumber = 119;
     public static boolean noConfig = false;
     public static boolean allowVersionChange = false;
     public static boolean doVersionBackup = false;
     public static LauncherConsole con;
     public static String tempPass = "";
     public static Panes currentPane = Panes.MODPACK;
-    public static JGoogleAnalyticsTracker tracker = new JGoogleAnalyticsTracker(new AnalyticsConfigData("UA-37330489-2"), GoogleAnalyticsVersion.V_4_7_2);
+    public static AnalyticsConfigData AnalyticsConfigData = new AnalyticsConfigData("UA-37330489-2");
+    public static JGoogleAnalyticsTracker tracker;
     public static LoadingDialog loader;
     
     public static final String FORGENAME = "MinecraftForge.zip";
@@ -170,6 +171,8 @@ public class LaunchFrame extends JFrame {
      * @param args - CLI arguments
      */
     public static void main (String[] args) {
+        AnalyticsConfigData.setUserAgent("Java/" + System.getProperty("java.version") + " (" + System.getProperty("os.name") + "; " + System.getProperty("os.arch") + ")");
+        tracker = new JGoogleAnalyticsTracker(AnalyticsConfigData, GoogleAnalyticsVersion.V_4_7_2);
         tracker.setEnabled(true);
         TrackerUtils.sendPageView("net/ftb/gui/LaunchFrame.java", "Launcher Start v" + version);
         if (!new File(Settings.getSettings().getInstallPath(), "FTBOSSent" + version + ".txt").exists()) {
@@ -290,10 +293,49 @@ public class LaunchFrame extends JFrame {
                     LoadingDialog.setProgress(150);
 
                     if (!Settings.getSettings().getLoaded() && !Settings.getSettings().getSnooper()) {
+                        TrackerUtils.sendPageView("net/ftb/gui/LaunchFrame.java", "OS: " + System.getProperty("os.name") + " : " + System.getProperty("os.arch"));
                         TrackerUtils.sendPageView("net/ftb/gui/LaunchFrame.java", "Unique User (Settings)");
                         Settings.getSettings().setLoaded(true);
                     }
 
+                } catch (FileNotFoundException e1) {
+                    Logger.logError(e1.getMessage());
+                } catch (IOException e1) {
+                    Logger.logError(e1.getMessage());
+                }
+                File stamp = new File(OSUtils.getDynamicStorageLocation(), "stamp");
+                long unixTime = System.currentTimeMillis() / 1000L;
+                try {
+                    if (!stamp.exists()) {
+                        FileOutputStream fos = new FileOutputStream(stamp);
+                        OutputStreamWriter osw = new OutputStreamWriter(fos);
+
+                        osw.write(String.valueOf(unixTime));
+                        osw.flush();
+                        Logger.logInfo("Reporting daily use");
+                        TrackerUtils.sendPageView("net/ftb/gui/LaunchFrame.java", "Daily User (Flat)");
+                    }else{
+                        FileInputStream fis = new FileInputStream(stamp);
+                        int content;
+                        StringBuilder timeBuilder = new StringBuilder();
+                        while ((content = fis.read()) != -1) {
+                            char c = (char) content;
+                            timeBuilder.append(String.valueOf(c));
+                        }
+                        String time = timeBuilder.toString();
+                        long unixts = Long.valueOf(time);
+                        unixts = unixts + (24*60*60);
+                        if(unixts < unixTime){
+                            FileOutputStream fos = new FileOutputStream(stamp);
+                            OutputStreamWriter osw = new OutputStreamWriter(fos);
+
+                            osw.write(String.valueOf(unixTime));
+                            osw.flush();
+                            Logger.logInfo("Reporting daily use");
+                            TrackerUtils.sendPageView("net/ftb/gui/LaunchFrame.java", "Daily User (Flat)");
+
+                        }
+                    }
                 } catch (FileNotFoundException e1) {
                     Logger.logError(e1.getMessage());
                 } catch (IOException e1) {

@@ -42,8 +42,8 @@ project.ext {
 }
 
 group = 'net.ftb'
-version = '1.1.7'
-description = "FTB Launcher"
+version = '1.1.9'
+description = "FTNT Launcher"
 sourceCompatibility = 1.6
 targetCompatibility = 1.6
 shadow {
