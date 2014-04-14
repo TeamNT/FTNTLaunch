@@ -3,6 +3,7 @@ package net.ftb.download.info;
 import java.io.File;
 import java.net.URL;
 
+import net.ftb.download.info.DownloadInfo.DLType;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -53,5 +54,15 @@ public class DownloadInfo {
 
     public enum DLType {
         ETag, ContentMD5, FTBBackup, NONE
+    }
+
+    public DLType getPrimaryDLType () {
+        primaryDLType = DLType.ContentMD5;
+        return null;
+    }
+
+    public DLType getBackupDLType () {
+        backupDLType = DLType.FTBBackup;
+        return null;
     }
 }
