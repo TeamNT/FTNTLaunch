@@ -1,7 +1,7 @@
 LOCALE_NAME = English
 LOCALE_LOADED = English language file loaded!
 
-# Footer #
+# Footer
 DONATE_BUTTON = Donate
 
 # Main Tab
@@ -11,9 +11,12 @@ PROFILE_CREATE = Create Profile
 PROFILE_SELECT = Select Profile
 DOWNLOAD_SERVER_PACK = Download Server ModPack
 
-#Console
+# Console
+CONSOLE_TITLE = Console
 CONSOLE_COPYCLIP = Copy log to clipboard
 CONSOLE_CLIP_CONFIRM = Do you want to copy the full log to your clipboard?
+CONSOLE_PASTEBIN = Paste my log to pastebin.com
+CONSOLE_SUPPORT = Need support? Click me!
 
 # Map Tab
 INSTALL_MAP = Install Map

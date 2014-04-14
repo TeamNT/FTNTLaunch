@@ -47,6 +47,7 @@ public class ModpackLoader extends Thread {
 
     @Override
     public void run () {
+        //TODO ASAP thread this
         for (String xmlFile : xmlFiles) {
             boolean privatePack = !xmlFile.equalsIgnoreCase("modpacks.xml");
             File modPackFile = new File(OSUtils.getDynamicStorageLocation(), "ModPacks" + File.separator + xmlFile);
@@ -94,7 +95,7 @@ public class ModpackLoader extends Thread {
                                 .getTextContent() : "", modPackAttr.getNamedItem("oldVersions") != null ? modPackAttr.getNamedItem("oldVersions").getTextContent() : "", modPackAttr
                                 .getNamedItem("animation") != null ? modPackAttr.getNamedItem("animation").getTextContent() : "", modPackAttr.getNamedItem("maxPermSize") != null ? modPackAttr
                                 .getNamedItem("maxPermSize").getTextContent() : "", (ModPack.getPackArray().isEmpty() ? 0 : ModPack.getPackArray().size()), privatePack, xmlFile, modPackAttr
-                                .getNamedItem("bundledMap") != null ? modPackAttr.getNamedItem("bundledMap").getTextContent() : "", modPackAttr.getNamedItem("customTP") != null ? true : false));
+                                .getNamedItem("bundledMap") != null ? true : false, modPackAttr.getNamedItem("customTP") != null ? true : false));
                     } catch (Exception e) {
                         Logger.logError(e.getMessage(), e);
                     }

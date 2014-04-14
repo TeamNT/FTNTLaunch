@@ -4,14 +4,14 @@
 	<classpathentry kind="src" path="res"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	
-	<classpathentry exported="true" kind="lib" path="/FTNTLaunch/lib/swingx-all-1.6.4.jar"		sourcepath="/FTNTLaunch/lib/swingx-all-1.6.4-sources.jar"/>
-	<classpathentry exported="true" kind="lib" path="/FTNTLaunch/lib/gson-2.2.4.jar"			sourcepath="/FTNTLaunch/lib/gson-2.2.4-sources.jar"/>
-	<classpathentry exported="true" kind="lib" path="/FTNTLaunch/lib/authlib-1.4.2.jar"			sourcepath="/FTNTLaunch/lib/authlib-1.4.2-sources.jar"/>
-	<classpathentry exported="true" kind="lib" path="/FTNTLaunch/lib/log4j-api-2.0-beta9.jar"	sourcepath="/FTNTLaunch/lib/log4j-api-2.0-beta9-sources.jar"/>
-	<classpathentry exported="true" kind="lib" path="/FTNTLaunch/lib/log4j-core-2.0-beta9.jar"	sourcepath="/FTNTLaunch/lib/log4j-core-2.0-beta9-sources.jar"/>
-	<classpathentry exported="true" kind="lib" path="/FTNTLaunch/lib/commons-codec-1.9.jar"		sourcepath="/FTNTLaunch/lib/commons-codec-1.9-sources.jar"/>
-	<classpathentry exported="true" kind="lib" path="/FTNTLaunch/lib/commons-io-2.4.jar"		sourcepath="/FTNTLaunch/lib/commons-io-2.4-sources.jar"/>
-	<classpathentry exported="true" kind="lib" path="/FTNTLaunch/lib/commons-lang3-3.2.1.jar"	sourcepath="/FTNTLaunch/lib/commons-lang3-3.2.1-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/swingx-all-1.6.4.jar" sourcepath="lib/swingx-all-1.6.4-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/gson-2.2.4.jar" sourcepath="lib/gson-2.2.4-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/authlib-1.4.2.jar" sourcepath="lib/authlib-1.4.2-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/log4j-api-2.0-beta9.jar" sourcepath="lib/log4j-api-2.0-beta9-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/log4j-core-2.0-beta9.jar" sourcepath="lib/log4j-core-2.0-beta9-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-codec-1.9.jar" sourcepath="lib/commons-codec-1.9-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-io-2.4.jar" sourcepath="lib/commons-io-2.4-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-lang3-3.2.1.jar" sourcepath="lib/commons-lang3-3.2.1-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/lombok.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
