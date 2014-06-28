@@ -13,11 +13,11 @@ public class Locations {
     //location of the FTB maven repo within the FTB2/static part of the repository
     public final static String ftb_maven = "maven/";
 
-    public static final String chRepo = new String("http://ftnt.rd-h.fr");
+    public static final String chRepo = new String("http://ftnt.redheberg.com");
     public static final String curseRepo = new String("http://ftb.cursecdn.com");
     //this changes based on the primary automatic server in the balancing logic
-    public static String masterRepo = new String("http://ftnt.rd-h.fr");
-    public static String masterRepoNoHTTP = new String("ftnt.rd-h.fr");
+    public static String masterRepo = new String("http://ftnt.redheberg.com");
+    public static String masterRepoNoHTTP = new String("ftnt.redheberg.com");
     // used in mirroring logic
     public static boolean primaryCH = true;
 

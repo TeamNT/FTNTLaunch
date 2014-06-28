@@ -133,7 +133,7 @@ public class LaunchFrame extends JFrame {
     private static String[] dropdown_ = { "Select Profile", "Create Profile" };
     private static JComboBox users, tpInstallLocation, mapInstallLocation;
     private static LaunchFrame instance = null;
-    private static String version = "1.2.1";
+    private static String version = "1.2.2";
     public static boolean canUseAuthlib;
 
     public final JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
@@ -145,7 +145,7 @@ public class LaunchFrame extends JFrame {
     public TexturepackPane tpPane;
     public OptionsPane optionsPane;
 
-    public static int buildNumber = 121;
+    public static int buildNumber = 122;
     public static boolean noConfig = false;
     public static boolean allowVersionChange = false;
     public static boolean doVersionBackup = false;
@@ -420,7 +420,7 @@ public class LaunchFrame extends JFrame {
         footerLogo.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked (MouseEvent event) {
-                OSUtils.browse("http://ftnt.rd-h.fr");
+                OSUtils.browse("http://ftnt.redheberg.com");
             }
         });
 
@@ -1483,7 +1483,7 @@ public class LaunchFrame extends JFrame {
         int i = 0;
         BufferedReader reader = null;
         try {
-            reader = new BufferedReader(new InputStreamReader(new URL("http://ftnt.rd-h.fr/newsupdate").openStream()));
+            reader = new BufferedReader(new InputStreamReader(new URL("http://ftnt.redheberg.com/newsupdate.txt").openStream()));
             ArrayList<Long> timeStamps = new ArrayList<Long>();
             String s = reader.readLine();
             s = s.trim();

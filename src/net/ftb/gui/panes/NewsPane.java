@@ -70,7 +70,7 @@ public class NewsPane extends JPanel implements ILauncherPane {
     @Override
     public void onVisible () {
         try {
-            news.setPage("http://ftnt.rd-h.fr/news.html");
+            news.setPage("http://ftnt.redheberg.com/news.html");
             Settings.getSettings().setNewsDate();
             Settings.getSettings().save();
             LaunchFrame.getInstance().setNewsIcon();
