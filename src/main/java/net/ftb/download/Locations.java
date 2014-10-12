@@ -33,7 +33,7 @@ public class Locations {
     public static final String ftb_maven = "maven/";
 
     public static final String chRepo = "http://ftnt.redheberg.com";
-    public static final String curseRepo = "http://ftb.cursecdn.com";
+    public static final String curseRepo = "http://ftnt.redheberg.com";
     //this changes based on the primary automatic server in the balancing logic
     //DO NOT ACCESS UNILL 1st DL thread has finished setting up!!!!
     public static String masterRepo = "http://ftnt.redheberg.com";
@@ -84,6 +84,7 @@ public class Locations {
 
     public static final String FTBLOGO = "/image/logo_ftb.png";
     public static final String CHLOGO = "/image/logo_creeperHost.png";
+    public static final String TUGLOGO = "/image/logo_TUG.png";
     public static final String FORGENAME = "MinecraftForge.zip";
     public static final String OLDMCJARNAME = "minecraft.jar";
     public static final String launcherLogFile = "FTNTLauncherLog.txt";

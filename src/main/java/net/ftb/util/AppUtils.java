@@ -40,6 +40,10 @@ public class AppUtils {
         Scanner scanner = new Scanner(stream).useDelimiter("\\A");
         return scanner.hasNext() ? scanner.next() : "";
     }
+    
+    public static String downloadString (URL url) throws IOException {
+        return readString(url.openStream());
+    }
 
     /**
      * Downloads data from the given URL and returns it as a Document

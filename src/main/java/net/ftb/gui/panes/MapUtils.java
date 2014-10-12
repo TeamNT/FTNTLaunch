@@ -371,8 +371,8 @@ public class MapUtils  extends JPanel implements ILauncherPane, MapListener{
     }
 
     private static boolean originCheck (Map map) {
-        return (origin.equalsIgnoreCase(I18N.getLocaleString("MAIN_ALL"))) || (origin.equalsIgnoreCase("ftb") && map.getAuthor().equalsIgnoreCase("the teamnt"))
-                || (origin.equalsIgnoreCase(I18N.getLocaleString("FILTER_3THPARTY")) && !map.getAuthor().equalsIgnoreCase(""));
+        return (origin.equalsIgnoreCase(I18N.getLocaleString("MAIN_ALL"))) || (origin.equalsIgnoreCase("ftb") && map.getAuthor().equalsIgnoreCase("the ftb team"))
+                || (origin.equalsIgnoreCase(I18N.getLocaleString("FILTER_3THPARTY")) && !map.getAuthor().equalsIgnoreCase("the ftb team"));
     }
 
     private static boolean compatibilityCheck (Map map) {
