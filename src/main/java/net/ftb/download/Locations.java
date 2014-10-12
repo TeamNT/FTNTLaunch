@@ -86,7 +86,7 @@ public class Locations {
     public static final String CHLOGO = "/image/logo_creeperHost.png";
     public static final String FORGENAME = "MinecraftForge.zip";
     public static final String OLDMCJARNAME = "minecraft.jar";
-    public static final String launcherLogFile = "FTBLauncherLog.txt";
+    public static final String launcherLogFile = "FTNTLauncherLog.txt";
     public static final String minecraftLogFile = "MinecraftLog.txt";
 
 }
