@@ -1,0 +1,192 @@
+LOCALE_NAME = Deutsch
+LOCALE_LOADED = Deutsche Sprachdatei geladen!
+
+# Footer
+DONATE_BUTTON = Spenden
+
+# Main Tab
+EDIT_BUTTON = Bearbeiten
+LAUNCH_BUTTON = Starten
+PROFILE_CREATE = Profil erstellen
+PROFILE_SELECT = Profil auswählen
+DOWNLOAD_SERVER_PACK = Serverpack downloaden
+WARN_32BIT_OS = 
+WARN_32BIT_JAVA = 
+WARN_JAVA6 = 
+
+# Console
+CONSOLE_TITLE = Konsole
+CONSOLE_COPYCLIP = Bericht in Zwischenablage kopieren
+CONSOLE_CLIP_CONFIRM = Möchtest du den gesamten Bericht in deine Zwischenablage kopieren?
+CONSOLE_PASTE = Auf pastebin.com hochladen
+CONSOLE_SUPPORT = Support benötigt? Klick mich!
+
+# Map Tab
+INSTALL_MAP = Map installieren
+DOWNLOAD_MAP_SERVER = Server-Map herunterladen
+
+#tab swapping
+SWAP_MAP = 
+SWAP_TEXTURE = 
+
+# TexturePack Tab
+INSTALL_TEXTUREPACK = Texturenpaket installieren
+
+# Options pane
+INSTALL_FOLDER = Installationsverzeichnis
+FORCE_UPDATE = Update erzwingen?
+RAM_MAX = RAM Maximum (MB)
+LANGUAGE = Sprache
+SHOW_CONSOLE = Konsole anzeigen?
+OPT_JAVA_ARGS = Optimierungs-Argumente für schnelle Computer benutzen?
+USE_SYSTEM_PROXY = 
+REOPEN_LAUNCHER = Launcher erneut öffnen, nachdem Minecraft beendet wurde
+ADVANCED_OPTIONS = Erweiterte Optionen
+INSTALL_FIRSTUSE = Da dies das erste Mal ist, dass du diesen Launcher verwendest, empfehlen wir, das Installationsverzeichnis zu bestimmen.
+DOWNLOAD_JAVA64 = Java 64-bit herunterladen
+DOWNLOAD_JAVA32 = Java 32-bit herunterladen
+DOWNLOAD_JAVAGOOD = Empfohlenes Java herunterladen
+JAVA_OLD_Warning = Java ist zu alt. Java 7 ist für die meisten FTP Packete empfohlen.
+JAVA_NEW_Warning = Java 8 wird nicht unterstützt. (Minecraft unterstützt nicht Java 8 auf Mac.)
+JAVA_32BIT_WARNING = Dein System verwendet eine 32-bit-Version von Java. Dies wird Minecraft auf 1.5GB Arbeitsspeicher begrenzen.
+
+# Shared strings
+FILTER_SETTINGS = Filtern
+
+# Modpacks pane
+MODS_EDIT_PACK = Modpack bearbeiten
+MODS_WAIT_WHILE_LOADING = Bitte warten während die Mods geladen werden...
+DOWNLOAD_SERVER = Server herunterladen
+MODPACK_VERSIONS = 
+PACK_CODES = 
+
+# EditModPackDialog
+MODS_EDIT_ENABLED_LABEL = Aktivierte Mods
+MODS_EDIT_DISABLED_LABEL = Deaktivierte Mods
+MODS_EDIT_OPEN_FOLDER = Verzeichnis öffnen
+MODS_EDIT_ADD_MOD = Mod hinzufügen
+MODS_EDIT_ENABLE_MOD = << aktivieren
+MODS_EDIT_DISABLE_MOD = deaktivieren >>
+MODS_EDIT_TITLE = Modpack bearbeiten
+
+# Maps pane
+MAPS_WAIT_WHILE_LOADING = Bitte warten während die Maps geladen werden...
+
+# TexturePack pane
+TEXTURE_WAIT_WHILE_LOADING = Bitte warten während die Texture Packs geladen werden...
+
+# Advanced  Options
+ADVANCED_OPTIONS_TITLE = Erweiterte Einstellungen
+ADVANCED_OPTIONS_DLLOCATION = Downloadort:
+ADVANCED_OPTIONS_MCWINDOW_SIZE = Minecraft Fenster Größe:
+ADVANCED_OPTIONS_MCWINDOW_POS = Minecraft Fenster Position:
+ADVANCED_OPTIONS_MCWINDOW_AUTOMAXCHECK = Automatisch Vollbild?
+ADVANCED_OPTIONS_DISABLEGOOGLEANALYTICS = Schalte Google Analytics aus
+ADVANCED_OPTIONS_JAVA_PATH = 
+ADVANCED_OPTIONS_ADDJAVAOPTIONS = Zusätzliche Java-Parameter:
+ADVANCED_OPTIONS_DEBUGLAUNCHERVERBOSE = Extra Launcher-Debugging
+ADVANCED_OPTIONS_BETA = Benutzung der Beta-Version des Launchers erlaubt?
+
+# Update
+UPDATE_WICHUPDATE = Möchtest du updaten?
+UPDATE_DOWNGRADE = Möchtest du downgraden?
+
+# LUNCHERUPDATE
+LUNCHERUPDATE_ISAVAILABLE = von dem Launcher ist verfügbar.
+LUNCHERUPDATE_CHANGELOG = Änderungen
+LUNCHERUPDATE_ISAVAILABLETITLE = Launcher Update ist verfügbar.
+LUNCHERUPDATE_CURRENTDEAD = 
+
+# Modpack Update
+UPDATEMODPACK_ISAVALIBLE = Eine neue Modpackversion ist verfügbar!
+UPDATEMODPACK_BACKUPCFG = Konfigurationen sichern?
+UPDATEMODPACK_BACKUPSave = Speicherstände sichern?
+UPDATEMODPACK_TITLE = Modpackupdate ist verfügbar
+UPDATEMODPACK_DOWNGRADE = Installierte Version ist neuer als gewählte Version
+UPDATEMODPACK_FROM_TO_VERSION = Aktuelle Version: %LOCALVER%\nGewählte Version: %ONLINEVER%
+
+# Private Pack
+PRIVATEPACK_TITLE = Private Pack Interface
+PRIVATEPACK_ERROR = Ungültiges Private Pack.
+PRIVATEPACK_TEXT = Gib den Private Code ein, den du vom Private Pack Besitzer bekommen hast, und klicke hinzufügen. Das Pack wird dann deiner Modpack Liste hinzufügt und automatisch beim Start geladen. Wenn du das Private Pack entfernen möchtest, gib einfach den Code nochmal ein und klicke entfernen.
+PRIVATEPACK_SECCESS = Erfolgreich gelöscht.
+PRIVATEPACK_NOTEXISTS = Falscher Packname.
+PRIVATEPACK_ALREADY_ADDED = 
+
+# Filter
+FILTER_PACKTYPE = Modpacktyp:
+FILTER_COMPERTIBLEPACK = Kompatibles Pack:
+FILTER_APPLY = Filter anwenden
+FILTER_SEARCHMAP = Suche Maps
+FILTER_TITLE = Filter
+FILTER_PUBLIC = Öfentlich
+FILTER_PRIVATE = Privat
+FILTER_MODPACKAVALIABILITY = Modpack-Verfügbarkeit:
+FILTER_MCVERSION = Minecraftversion:
+FILTER_RESULUTION = Modpackauflösung:
+FILTER_TEXSEARCH = Suche Packs
+FILTER_SEARCHPACK = Suchen
+
+# Play Offline
+PLAYOFFLINE_WANNA = Etwas stimmt nicht..\nMöchtest du offline spielen?
+
+# Password
+PASSWORD_PASSLABEL = Passwort: 
+PASSWORD_TITLE = Bitte gib dein Passwort ein
+
+# Profile
+OLDCREDS = Veraltete Login-Daten gefunden oder Login-Daten fehlen: Bitte erneuern.
+CHANGEDUUID = Eine Änderung in der Hardware des Nutzers, die den Launcher am Zugriff auf deine Daten hindern, wurde erkannt, bitte gib diese erneut ein.
+PROFILEADDER_USERNAME = Nutzername:
+PROFILEADDER_PASSWORD = Passwort:
+PROFILEADDER_NAME = Profilname:
+PROFILEADDER_SAVEPASSWORD = Passwort speichern
+PROFILEADDER_TITLE = Profilerstellung
+PROFILADDER_ERROR = Fehler bei der Profilerstellung.
+PROFILEADDER_UPDATE = Update
+PROFILEDITOR_TITLE = Profileditor
+PROFILEADDER_SAVEMOJANGDATA = 
+
+# Map Override
+MAPOVERRIDE_FOUNDERROR = Warnung! Es exististiert bereits eine Map mit diesem Namen!
+MAPOVERRIDE_WISHOVERRIDE = Möchtest du sie überschreiben?
+
+# Force Kill MC
+KILL_MC = Minecraft töten
+KILL_MC_TITLE = Minecraft töten?
+KILL_MC_MESSAGE = Warnung! Das kann Instanzen beschädigen und sollte nur benutzt werden, wenn das Spiel eingefroren ist!
+KILL_MC_CONFIRM = Bist du dir sicher, dass du den Minecraft-Prozess töten willst?
+
+# Main
+MAIN_EXIT = Schließen
+MAIN_APPLY = Annehmen
+MAIN_YES = Ja
+MAIN_NO = Nein
+MAIN_ALL = Alle
+MAIN_CANCEL = Abbrechen
+MAIN_SUBMIT = Abschicken
+MAIN_REMOVE = Löschen
+MAIN_ADD = Hinzufügen
+BUTTON_IGNORE = 
+BUTTON_OK = 
+NAG_SCREEN_MESSAGE = 
+
+# First run dialog
+INSTALL_TITLE = 
+INSTALL_LANGUAGE = 
+INSTALL_CHANGE = 
+
+# System Tray
+TRAY_QUIT = 
+TRAY_FTB_WEBSITE = 
+
+# CheckInstallPath
+CIP_BADPATH = 
+CIP_PROGRAMFILES = 
+CIP_INTERNETFILES = 
+CIP_USERPROFILE = 
+CIP_WRITEPROTECT = 
+CIP_EXISTS = 
+CIP_CREATE = 
+CIP_SELECTAGAIN = 
+CIP_PLEASECHANGE = 

@@ -1,17 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="src" path="res"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
-	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry exported="true" kind="lib" path="lib/swingx-all-1.6.4.jar" sourcepath="lib/swingx-all-1.6.4-sources.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/gson-2.2.4.jar" sourcepath="lib/gson-2.2.4-sources.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/authlib-1.4.2.jar" sourcepath="lib/authlib-1.4.2-sources.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/log4j-api-2.0-beta9.jar" sourcepath="lib/log4j-api-2.0-beta9-sources.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/log4j-core-2.0-beta9.jar" sourcepath="lib/log4j-core-2.0-beta9-sources.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/commons-codec-1.9.jar" sourcepath="lib/commons-codec-1.9-sources.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/commons-io-2.4.jar" sourcepath="lib/commons-io-2.4-sources.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/commons-lang3-3.2.1.jar" sourcepath="lib/commons-lang3-3.2.1-sources.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/lombok.jar"/>
+	<classpathentry kind="src" path="src/main/java"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="bin"/>
+	<classpathentry kind="src" path="src/main/resources"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER" exported="true"/>
+	<classpathentry sourcepath="C:/Users/Farès/.gradle/caches/modules-2/files-2.1/org.swinglabs.swingx/swingx-all/1.6.4/e1db5a228834fbf0ea2a74a08098f266a43acea3/swingx-all-1.6.4-sources.jar" kind="lib" path="C:/Users/Farès/.gradle/caches/modules-2/files-2.1/org.swinglabs.swingx/swingx-all/1.6.4/c0d8a3265d194cc886bafd585117b6465fd97dce/swingx-all-1.6.4.jar" exported="true"/>
+	<classpathentry sourcepath="C:/Users/Farès/.gradle/caches/modules-2/files-2.1/com.google.code.gson/gson/2.2.4/a6dc5db8a12928e583bd3f23e72d3ab611ecd58f/gson-2.2.4-sources.jar" kind="lib" path="C:/Users/Farès/.gradle/caches/modules-2/files-2.1/com.google.code.gson/gson/2.2.4/a60a5e993c98c864010053cb901b7eab25306568/gson-2.2.4.jar" exported="true"/>
+	<classpathentry sourcepath="C:/Users/Farès/.gradle/caches/modules-2/files-2.1/com.mojang/authlib/1.5.16/f7d1af1fd1232bb4f2e7898f059b536ad5bc950/authlib-1.5.16-sources.jar" kind="lib" path="C:/Users/Farès/.gradle/caches/modules-2/files-2.1/com.mojang/authlib/1.5.16/ef1582b11fd0943d069cdcb72e99008ac209a283/authlib-1.5.16.jar" exported="true"/>
+	<classpathentry sourcepath="C:/Users/Farès/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-api/2.0-beta9/c6682b8a47ddd9f29108838aed0dc8e0ffdedf68/log4j-api-2.0-beta9-sources.jar" kind="lib" path="C:/Users/Farès/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-api/2.0-beta9/1dd66e68cccd907880229f9e2de1314bd13ff785/log4j-api-2.0-beta9.jar" exported="true"/>
+	<classpathentry sourcepath="C:/Users/Farès/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-core/2.0-beta9/c7da50fd52d6ee6991a0e16e2df1431f7656a7f4/log4j-core-2.0-beta9-sources.jar" kind="lib" path="C:/Users/Farès/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-core/2.0-beta9/678861ba1b2e1fccb594bb0ca03114bb05da9695/log4j-core-2.0-beta9.jar" exported="true"/>
+	<classpathentry sourcepath="C:/Users/Farès/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.12.6/f3bc33d364a97c3fc2b8d6557f03e594c898a927/lombok-1.12.6-sources.jar" kind="lib" path="C:/Users/Farès/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.12.6/f5df0f60aa42762a86e31e29892da07c5aaa0c71/lombok-1.12.6.jar" exported="true"/>
+	<classpathentry sourcepath="C:/Users/Farès/.gradle/caches/modules-2/files-2.1/com.google.guava/guava/17.0/7ca0efbeb87ca845b5d7a0ac9c21a4b7b95f7b28/guava-17.0-sources.jar" kind="lib" path="C:/Users/Farès/.gradle/caches/modules-2/files-2.1/com.google.guava/guava/17.0/9c6ef172e8de35fd8d4d8783e4821e57cdef7445/guava-17.0.jar" exported="true"/>
+	<classpathentry sourcepath="C:/Users/Farès/.gradle/caches/modules-2/files-2.1/com.beust/jcommander/1.30/745bd229231c1e28abfe54c9551b7eb98797d093/jcommander-1.30-sources.jar" kind="lib" path="C:/Users/Farès/.gradle/caches/modules-2/files-2.1/com.beust/jcommander/1.30/c440b30a944ba199751551aee393f8aa03b3c327/jcommander-1.30.jar" exported="true"/>
+	<classpathentry sourcepath="C:/Users/Farès/.gradle/caches/modules-2/files-2.1/junit/junit/4.10/6c98d6766e72d5575f96c9479d1c1d3b865c6e25/junit-4.10-sources.jar" kind="lib" path="C:/Users/Farès/.gradle/caches/modules-2/files-2.1/junit/junit/4.10/e4f1766ce7404a08f45d859fb9c226fc9e41a861/junit-4.10.jar" exported="true"/>
+	<classpathentry sourcepath="C:/Users/Farès/.gradle/caches/modules-2/files-2.1/org.apache.commons/commons-lang3/3.3.2/d2a489573c0ed2c4942b3660decad5d65087b406/commons-lang3-3.3.2-sources.jar" kind="lib" path="C:/Users/Farès/.gradle/caches/modules-2/files-2.1/org.apache.commons/commons-lang3/3.3.2/90a3822c38ec8c996e84c16a3477ef632cbc87a3/commons-lang3-3.3.2.jar" exported="true"/>
+	<classpathentry sourcepath="C:/Users/Farès/.gradle/caches/modules-2/files-2.1/commons-codec/commons-codec/1.9/3f15fff45d57656685abfee9e8302bf14580044c/commons-codec-1.9-sources.jar" kind="lib" path="C:/Users/Farès/.gradle/caches/modules-2/files-2.1/commons-codec/commons-codec/1.9/9ce04e34240f674bc72680f8b843b1457383161a/commons-codec-1.9.jar" exported="true"/>
+	<classpathentry sourcepath="C:/Users/Farès/.gradle/caches/modules-2/files-2.1/commons-io/commons-io/2.4/f2d8698c46d1167ff24b06a840a87d91a02db891/commons-io-2.4-sources.jar" kind="lib" path="C:/Users/Farès/.gradle/caches/modules-2/files-2.1/commons-io/commons-io/2.4/b1b6ea3b7e4aa4f492509a4952029cd8e48019ad/commons-io-2.4.jar" exported="true"/>
+	<classpathentry sourcepath="C:/Users/Farès/.gradle/caches/modules-2/files-2.1/org.hamcrest/hamcrest-core/1.1/2ccf1154d1a8936042a8a742dc3e611d02ac7213/hamcrest-core-1.1-sources.jar" kind="lib" path="C:/Users/Farès/.gradle/caches/modules-2/files-2.1/org.hamcrest/hamcrest-core/1.1/860340562250678d1a344907ac75754e259cdb14/hamcrest-core-1.1.jar" exported="true"/>
 </classpath>

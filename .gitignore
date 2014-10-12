@@ -2,7 +2,6 @@
 bin/
 .metadata/
 *.jardesc
-ftntlaunch.cfg
 ftblaunch.cfg
 target/
 /target/
@@ -19,3 +18,8 @@ target/
 #gradle
 /build
 /.gradle
+
+#mac
+.DS_Store
+*.ipr
+*.iws
