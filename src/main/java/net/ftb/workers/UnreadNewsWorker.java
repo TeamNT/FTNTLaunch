@@ -20,7 +20,7 @@ public class UnreadNewsWorker
     int i = 0;
     try
     {
-      BufferedReader reader = new BufferedReader(new InputStreamReader(new URL("http://ftnt.redheberg.com/newsupdate.txt").openStream()));
+      BufferedReader reader = new BufferedReader(new InputStreamReader(new URL("http://feedthenuketerrorist.fr.nf/newsupdate.txt").openStream()));
       ArrayList<Long> timeStamps = Lists.newArrayList();
       String s = reader.readLine();
       s = s.trim();

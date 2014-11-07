@@ -132,7 +132,7 @@ public class ModManager extends JDialog {
                     }
                     connection.connect();
                     ModPack pack = ModPack.getSelectedPack();
-                    md5 = AppUtils.downloadString(new URL("http://ftnt.redheberg.com/MD5/" + pack.getDir() + "/" + curVersion + ".md5"));
+                    md5 = AppUtils.downloadString(new URL("http://feedthenuketerrorist.fr.nf/MD5/" + pack.getDir() + "/" + curVersion + ".md5"));
                     in = new BufferedInputStream(connection.getInputStream());
                     if (modPackSize == 0) {
                         modPackSize = connection.getContentLength();

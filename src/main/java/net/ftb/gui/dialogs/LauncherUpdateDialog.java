@@ -55,7 +55,7 @@ public class LauncherUpdateDialog extends JDialog {
             public void actionPerformed (ActionEvent arg0) {
                 // TODO: Call new frame containing html page?
                 // TODO: beta changelogs???
-                OSUtils.browse("http://ftnt.redheberg.com/change-log.html");//TODO update this!!!
+                OSUtils.browse("http://feedthenuketerrorist.fr.nf/change-log.html");//TODO update this!!!
             }
         });
 
