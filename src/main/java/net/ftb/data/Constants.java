@@ -19,9 +19,9 @@ package net.ftb.data;
 public class Constants {
 	
 	public static final String name = "TeamNT Launcher";
-	public static final String version = "2.0.3";
+	public static final String version = "2.0.4";
 
     //limit for version component is 99.
-	public static final int buildNumber = 2 * 100 * 100 + 0 * 100 + 3 * 1;
+	public static final int buildNumber = 2 * 100 * 100 + 0 * 100 + 4 * 1;
 
 }
