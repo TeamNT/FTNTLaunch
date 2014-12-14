@@ -164,7 +164,7 @@ public class LaunchFrame extends JFrame {
             }
         });
 
-        footerCreeper.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        /*footerCreeper.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         footerCreeper.setBounds(72, 20, 132, 42);
         footerCreeper.addMouseListener(new MouseAdapter() {
             @Override
@@ -180,7 +180,7 @@ public class LaunchFrame extends JFrame {
             public void mouseClicked (MouseEvent event) {
                 OSUtils.browse("http://feed-the-beast.com/tug");
             }
-        });
+        });*/
 
         dropdown_[0] = I18N.getLocaleString("PROFILE_SELECT");
         dropdown_[1] = I18N.getLocaleString("PROFILE_CREATE");

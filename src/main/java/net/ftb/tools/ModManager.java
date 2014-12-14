@@ -45,7 +45,6 @@ import net.ftb.data.Settings;
 import net.ftb.gui.LaunchFrame;
 import net.ftb.gui.dialogs.ModpackUpdateDialog;
 import net.ftb.log.Logger;
-import net.ftb.util.AppUtils;
 import net.ftb.util.*;
 import net.ftb.util.FTBFileUtils;
 
@@ -131,8 +130,7 @@ public class ModManager extends JDialog {
                         connection.setRequestProperty("Range", "bytes=" + amount + "-");
                     }
                     connection.connect();
-                    ModPack pack = ModPack.getSelectedPack();
-                    md5 = AppUtils.downloadString(new URL("http://feedthenuketerrorist.fr.nf/MD5/" + pack.getDir() + "/" + curVersion + ".md5"));
+                    md5 = connection.getHeaderField("Content-MD5");
                     in = new BufferedInputStream(connection.getInputStream());
                     if (modPackSize == 0) {
                         modPackSize = connection.getContentLength();

@@ -1,7 +1,7 @@
 /*
  * This file is part of FTB Launcher.
  *
- * Copyright Â© 2012-2014, FTB Launcher Contributors <https://github.com/Slowpoke101/FTBLaunch/>
+ * Copyright © 2012-2014, FTB Launcher Contributors <https://github.com/Slowpoke101/FTBLaunch/>
  * FTB Launcher is licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -80,7 +80,7 @@ public class NewsPane extends JPanel implements ILauncherPane {
             Settings.getSettings().save();
             LaunchFrame.getInstance().setNewsIcon();
         } catch (IOException e1) {
-            Logger.logError("Erreur lors de la mise Ã  jour des news !", e1);
+            Logger.logError("Erreur lors de la mise à jour des news !", e1);
         }
     }
     

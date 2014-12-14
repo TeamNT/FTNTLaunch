@@ -118,7 +118,7 @@ public class TexturepackPane extends JPanel implements ILauncherPane, TexturePac
 
 
         mapButton = new JButton(I18N.getLocaleString("SWAP_MAP"));
-        mapButton.setBounds(400, 5, 105, 25);
+        mapButton.setBounds(490, 5, 105, 25);
         mapButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed (ActionEvent arg0) {
@@ -128,7 +128,7 @@ public class TexturepackPane extends JPanel implements ILauncherPane, TexturePac
         add(mapButton);
 
         textureButton = new JButton(I18N.getLocaleString("SWAP_TEXTURE"));
-        textureButton.setBounds(510, 5, 105, 25);
+        textureButton.setBounds(720, 5, 105, 25);
         textureButton.setBackground(UIManager.getColor("control").darker().darker());
         textureButton.setForeground(UIManager.getColor("text").darker());
         textureButton.addActionListener(new ActionListener() {
@@ -141,7 +141,7 @@ public class TexturepackPane extends JPanel implements ILauncherPane, TexturePac
 
 
         typeLbl = new JLabel(typeLblText);
-        typeLbl.setBounds(115, 5, 295, 25);
+        typeLbl.setBounds(155, 5, 295, 25);
         typeLbl.setHorizontalAlignment(SwingConstants.CENTER);
         add(typeLbl);
 

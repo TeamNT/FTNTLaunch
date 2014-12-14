@@ -74,7 +74,7 @@ public class OSUtils {
             Logger.logError("Unexcepted error", e);
         }
         Logger.logWarn("Failed to get path for current directory - falling back to user's home directory.");
-        return System.getProperty("user.dir") + "//FTB Pack Install";
+        return System.getProperty("user.dir") + "//FTNT Pack Install";
     }
 
     /**
@@ -116,7 +116,6 @@ public class OSUtils {
         case MACOSX:
             return cachedUserHome + "/Library/Application Support/ftntlauncher/";
         case UNIX:
-            return cachedUserHome + "/.ftntlauncher/";
         default:
             return getDefInstallPath() + "/temp/";
         }

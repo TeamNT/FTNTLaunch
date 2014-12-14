@@ -63,8 +63,9 @@ public class Locations {
     public static final String jreMac = "http://javadl.sun.com/webapps/download/AutoDL?BundleId=87438";
     public static final String jdkMac = "http://javadl.sun.com/webapps/download/AutoDL?BundleId=87438";
     
-    // Forum URL
+    // Forum and Feed URL
     public static final String forum = "http://forum.feed-the-beast.com/";
+    public static final String feedURL = "http://forum.feed-the-beast.com/forum/modpack-and-launcher-news.35/index.rss";
 
     //folder constants all slashes must be web safe... replace w/ system slash on win
     public static final String MAPS = "Maps/";
@@ -77,7 +78,7 @@ public class Locations {
     public static final String THIRDPARTYXML = "thirdparty.xml";
     public static final String TEXTUREPACKXML= "texturepack.xml";
     public static final String SUPPORTSITE = "http://support.feed-the-beast.com/";
-    public static final String FTBSITE = "http://feedthenuketerrorist.fr.nf";
+    public static final String FTBSITE = "http://www.feedthenuketerrorist.fr.nf";
 
     public static final String PIWIK = "http://stats.feed-the-beast.com/";
 

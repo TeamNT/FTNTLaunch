@@ -122,7 +122,7 @@ public class MapUtils  extends JPanel implements ILauncherPane, MapListener{
         getInstance().add(filter);
 
         mapButton = new JButton(I18N.getLocaleString("SWAP_MAP"));
-        mapButton.setBounds(400, 5, 105, 25);
+        mapButton.setBounds(490, 5, 105, 25);
         mapButton.setBackground(UIManager.getColor("control").darker().darker());
         mapButton.setForeground(UIManager.getColor("text").darker());
         mapButton.addActionListener(new ActionListener() {
@@ -134,7 +134,7 @@ public class MapUtils  extends JPanel implements ILauncherPane, MapListener{
         add(mapButton);
 
         textureButton = new JButton(I18N.getLocaleString("SWAP_TEXTURE"));
-        textureButton.setBounds(510, 5, 105, 25);
+        textureButton.setBounds(720, 5, 105, 25);
         textureButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed (ActionEvent arg0) {
@@ -156,7 +156,7 @@ public class MapUtils  extends JPanel implements ILauncherPane, MapListener{
         typeLblText += "</body></html>";
 
         typeLbl = new JLabel(typeLblText);
-        typeLbl.setBounds(115, 5, 295, 25);
+        typeLbl.setBounds(155, 5, 295, 25);
         typeLbl.setHorizontalAlignment(SwingConstants.CENTER);
         getInstance().add(typeLbl);
 

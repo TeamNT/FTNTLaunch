@@ -62,7 +62,7 @@ public class LoadingDialog extends JDialog {
 
     private void setupGui () {
         setIconImage(Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("/image/logo_ftb.png")));
-        setTitle(I18N.getLocaleString("TeamNT Launcher"));
+        setTitle(I18N.getLocaleString("Feed the Beast Launcher"));
         setSize(300, 260);
         setLayout(null);
         setLocationRelativeTo(null);
