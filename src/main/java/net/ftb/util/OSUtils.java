@@ -116,6 +116,7 @@ public class OSUtils {
         case MACOSX:
             return cachedUserHome + "/Library/Application Support/ftntlauncher/";
         case UNIX:
+            return cachedUserHome + "/.ftntlauncher/";
         default:
             return getDefInstallPath() + "/temp/";
         }
