@@ -8,13 +8,13 @@ package net.ftb.util.winreg;
  * and 64-bits view from a 32-bits JVM (KEY_WOW64_64KEY).
  *****************************************************************************/
 
+import net.ftb.log.Logger;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.prefs.Preferences;
-
-import net.ftb.log.Logger;
 
 public class WinRegistry {
     private static final int HKEY_CURRENT_USER = 0x80000001;
@@ -66,7 +66,7 @@ public class WinRegistry {
         }
     }
 
-    private WinRegistry() {
+    private WinRegistry () {
     }
 
     /**
@@ -92,7 +92,6 @@ public class WinRegistry {
         }
     }
 
-
     /**
      * Read the value name(s) from a given key
      * @param hkey  HKEY_CURRENT_USER/HKEY_LOCAL_MACHINE
@@ -115,9 +114,6 @@ public class WinRegistry {
         }
     }
 
-
-
-
     //========================================================================
     private static String readString (Preferences root, int hkey, String key, String value, int wow64) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
         int[] handles = (int[]) regOpenKey.invoke(root, hkey, toCstr(key), KEY_READ | wow64);
@@ -128,7 +124,6 @@ public class WinRegistry {
         regCloseKey.invoke(root, handles[0]);
         return (valb != null ? new String(valb).trim() : null);
     }
-
 
     //========================================================================
     private static List<String> readStringSubKeys (Preferences root, int hkey, String key, int wow64) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {

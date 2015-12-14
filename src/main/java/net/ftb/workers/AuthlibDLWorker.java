@@ -16,24 +16,23 @@
  */
 package net.ftb.workers;
 
+import net.ftb.download.Locations;
+import net.ftb.log.Logger;
+import net.ftb.main.Main;
+import net.ftb.util.Benchmark;
+import net.ftb.util.DownloadUtils;
+import net.ftb.util.SSLUtils;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.net.URLConnection;
+import java.net.*;
 
-import javax.swing.SwingWorker;
-
-import net.ftb.download.Locations;
-import net.ftb.gui.LaunchFrame;
-import net.ftb.log.Logger;
-import net.ftb.util.Benchmark;
-import net.ftb.util.DownloadUtils;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLException;
+import javax.swing.*;
 
 /**
  * SwingWorker that downloads Authlib. Returns true if successful, false if it
@@ -45,7 +44,7 @@ public class AuthlibDLWorker extends SwingWorker<Boolean, Void> {
     protected String authlibVersion;
     protected URL jarURLs;
 
-    public AuthlibDLWorker(String DLFolder, String authver) {
+    public AuthlibDLWorker (String DLFolder, String authver) {
         this.binDir = new File(DLFolder);
         this.authlibVersion = authver;
         this.status = "";
@@ -55,12 +54,14 @@ public class AuthlibDLWorker extends SwingWorker<Boolean, Void> {
     protected Boolean doInBackground () {
         Benchmark.start("Authlib");
         Logger.logDebug("Loading Authlib...");
-        if (!binDir.exists())
+        if (!binDir.exists()) {
             binDir.mkdirs();
+        }
         if (!downloadJars()) {
             Logger.logError("Authlib Download Failed");
-            if (!new File(binDir + File.separator + "authlib-" + authlibVersion + ".jar").exists())
+            if (!new File(binDir + File.separator + "authlib-" + authlibVersion + ".jar").exists()) {
                 return false;
+            }
             Logger.logInfo("Local Authlib copy exists: trying to load it anyway");
         }
         setStatus("Adding Authlib to Classpath");
@@ -84,7 +85,7 @@ public class AuthlibDLWorker extends SwingWorker<Boolean, Void> {
             Logger.logError(t.getMessage(), t);
             return false;
         }
-        LaunchFrame.canUseAuthlib = true;
+        Main.setAuthlibReadyToUse(true);
         Benchmark.logBenchAs("Authlib", "Authlib DL Worker Init");
         return true;
     }
@@ -112,9 +113,10 @@ public class AuthlibDLWorker extends SwingWorker<Boolean, Void> {
         double totalDownloadSize = 0, totalDownloadedSize = 0;
         int[] fileSizes = new int[1];
         String hash = "";
+        HttpsURLConnection conn = null;
         for (int i = 0; i < 1; i++) {
             try {
-                HttpURLConnection conn = (HttpURLConnection) jarURLs.openConnection();
+                conn = (HttpsURLConnection) jarURLs.openConnection();
                 conn.setRequestProperty("Cache-Control", "no-transform");
                 conn.setRequestMethod("HEAD");
                 conn.connect();
@@ -122,13 +124,24 @@ public class AuthlibDLWorker extends SwingWorker<Boolean, Void> {
                 fileSizes[i] = conn.getContentLength();
                 conn.disconnect();
                 totalDownloadSize += fileSizes[i];
+
+                //SSLUtils.printServerCertChain("libraries.minecraft.net", 443);
+            } catch (SSLException e) {
+                Logger.logWarn("Authlib checksum download failed, please check log for bad SSL certificates", e);
+                SSLUtils.printServerCertChain("libraries.minecraft.net", 443);
+                return false;
+            } catch (SocketException e) {
+                Logger.logWarn("Generic socket exception", e);
+                Logger.logDebug("Trying to fetch cert chain");
+                SSLUtils.printServerCertChain("libraries.minecraft.net", 443);
+                return false;
             } catch (Exception e) {
                 Logger.logWarn("Authlib checksum download failed", e);
                 return false;
             }
         }
         boolean downloadSuccess = false;
-        if (hash != null && !hash.equals("") && new File(binDir, getFilename(jarURLs)).exists())
+        if (hash != null && !hash.equals("") && new File(binDir, getFilename(jarURLs)).exists()) {
             try {
                 if (hash.toLowerCase().equals(DownloadUtils.fileMD5(new File(binDir, getFilename(jarURLs))).toLowerCase())) {
                     Logger.logInfo("Local Authlib Version is good, skipping Download");
@@ -136,6 +149,7 @@ public class AuthlibDLWorker extends SwingWorker<Boolean, Void> {
                 }
             } catch (Exception e1) {
             }
+        }
         int attempt = 0;
         final int attempts = 5;
         while (!downloadSuccess && (attempt < attempts)) {

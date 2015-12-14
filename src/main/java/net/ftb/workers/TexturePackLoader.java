@@ -16,8 +16,6 @@
  */
 package net.ftb.workers;
 
-import java.net.URL;
-
 import net.ftb.data.TexturePack;
 import net.ftb.download.Locations;
 import net.ftb.gui.LaunchFrame;
@@ -26,15 +24,16 @@ import net.ftb.log.Logger;
 import net.ftb.util.AppUtils;
 import net.ftb.util.Benchmark;
 import net.ftb.util.DownloadUtils;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import java.net.URL;
+
 public class TexturePackLoader extends Thread {
 
-    public TexturePackLoader() {
+    public TexturePackLoader () {
     }
 
     @Override
@@ -52,7 +51,9 @@ public class TexturePackLoader extends Thread {
                 NamedNodeMap textureAttr = texturePack.getAttributes();
                 TexturePack.addTexturePack(new TexturePack(textureAttr.getNamedItem("name").getTextContent(), textureAttr.getNamedItem("author").getTextContent(), textureAttr.getNamedItem("version")
                         .getTextContent(), textureAttr.getNamedItem("url").getTextContent(), textureAttr.getNamedItem("logo").getTextContent(), textureAttr.getNamedItem("image").getTextContent(),
-                        textureAttr.getNamedItem("mcversion").getTextContent(), textureAttr.getNamedItem("compatible").getTextContent(), textureAttr.getNamedItem("description")==null?null:textureAttr.getNamedItem("description").getTextContent().replace("\\n", "\n"),
+                        textureAttr.getNamedItem("mcversion").getTextContent(), textureAttr.getNamedItem("compatible").getTextContent(),
+                        textureAttr.getNamedItem("description") == null ? null : textureAttr.getNamedItem("description").getTextContent().replace(
+                                "\\n", "\n"),
                         textureAttr.getNamedItem("resolution").getTextContent(), i));
             }
         } catch (Exception e) {

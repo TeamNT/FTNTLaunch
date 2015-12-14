@@ -16,18 +16,7 @@
  */
 package net.ftb.tools;
 
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.io.File;
-import java.io.IOException;
-
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JProgressBar;
-import javax.swing.SwingConstants;
-import javax.swing.border.EmptyBorder;
+import static net.ftb.download.Locations.MAPS;
 
 import net.ftb.data.Map;
 import net.ftb.gui.LaunchFrame;
@@ -36,7 +25,15 @@ import net.ftb.util.FTBFileUtils;
 import net.ftb.util.OSUtils;
 import net.ftb.workers.MapManagerWorker;
 
-import static net.ftb.download.Locations.MAPS;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.IOException;
+import java.util.concurrent.ExecutionException;
+
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+
 @SuppressWarnings("serial")
 public class MapManager extends JDialog {
     private JPanel contentPane;
@@ -45,8 +42,7 @@ public class MapManager extends JDialog {
     public static boolean overwrite = false;
     private static String sep = File.separator;
 
-
-    public MapManager(JFrame owner, Boolean model) {
+    public MapManager (JFrame owner, Boolean model) {
         super(owner, model);
         setResizable(false);
         setTitle("Downloading...");
@@ -77,19 +73,29 @@ public class MapManager extends JDialog {
                 MapManagerWorker worker = new MapManagerWorker(overwrite) {
                     @Override
                     protected void done () {
+                        try {
+                            get();
+                        } catch (InterruptedException e) {
+                            Logger.logDebug("Swingworker Exception", e);
+                        } catch (ExecutionException e) {
+                            Logger.logDebug("Swingworker Exception", e.getCause());
+                        }
                         setVisible(false);
                         super.done();
                     }
+
                     @Override
-                    public void setLabelText(String s) {
+                    public void setLabelText (String s) {
                         label.setText(s);
                     }
+
                     @Override
-                    public void setProgressBarMaximum (int i){
+                    public void setProgressBarMaximum (int i) {
                         progressBar.setMaximum(i);
                     }
+
                     @Override
-                    public void setProgressBarValue (int i){
+                    public void setProgressBarValue (int i) {
                         progressBar.setValue(i);
                     }
 
@@ -101,7 +107,7 @@ public class MapManager extends JDialog {
 
     public static void cleanUp () {
         Map map = Map.getMap(LaunchFrame.getSelectedMapIndex());
-        File tempFolder = new File(OSUtils.getCacheStorageLocation(),  MAPS.replace("/",sep) + map.getMapName() + sep);
+        File tempFolder = new File(OSUtils.getCacheStorageLocation(), MAPS.replace("/", sep) + map.getMapName() + sep);
         for (String file : tempFolder.list()) {
             if (!file.equals(map.getLogoName()) && !file.equals(map.getImageName()) && !file.equalsIgnoreCase("version")) {
                 try {

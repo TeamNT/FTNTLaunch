@@ -16,8 +16,22 @@
  */
 package net.ftb.util;
 
+import static com.google.common.net.HttpHeaders.CACHE_CONTROL;
 import static net.ftb.download.Locations.backupServers;
 import static net.ftb.download.Locations.downloadServers;
+
+import com.google.common.collect.Lists;
+import com.google.common.hash.Hashing;
+import com.google.common.io.Files;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import lombok.NonNull;
+import net.ftb.data.Settings;
+import net.ftb.download.Locations;
+import net.ftb.gui.LaunchFrame;
+import net.ftb.log.Logger;
+import org.apache.commons.io.IOUtils;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -39,22 +53,6 @@ import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Scanner;
 
-import com.google.common.collect.Lists;
-import com.google.common.hash.Hashing;
-import com.google.common.io.Files;
-import lombok.NonNull;
-import net.ftb.data.Settings;
-import net.ftb.download.Locations;
-import net.ftb.gui.LaunchFrame;
-import net.ftb.gui.dialogs.LoadingDialog;
-import net.ftb.log.Logger;
-
-import org.apache.commons.io.IOUtils;
-
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
 import javax.imageio.ImageIO;
 
 public class DownloadUtils extends Thread {
@@ -66,18 +64,20 @@ public class DownloadUtils extends Thread {
     public static String getCreeperhostLink (String file) {
         String resolved = (downloadServers.containsKey(Settings.getSettings().getDownloadServer())) ? "http://" + downloadServers.get(Settings.getSettings().getDownloadServer())
                 : Locations.masterRepo;
-        resolved += "/FTB2/" +  file;
+        resolved += "/FTB2/" + file;
         HttpURLConnection connection = null;
         try {
             connection = (HttpURLConnection) new URL(resolved).openConnection();
-            connection.setRequestProperty("Cache-Control", "no-transform");
+            connection.setRequestProperty(CACHE_CONTROL, "no-transform");
             connection.setRequestMethod("HEAD");
             for (String server : downloadServers.values()) {
                 // TODO: should we return null or "" or raise Exception when getting 404 from  server? Otherwise it loops through all servers
                 if (connection.getResponseCode() != 200) {
+                    Logger.logDebug("failed");
+                    AppUtils.debugConnection(connection);
                     resolved = "http://" + server + "/FTB2/" + file;
                     connection = (HttpURLConnection) new URL(resolved).openConnection();
-                    connection.setRequestProperty("Cache-Control", "no-transform");
+                    connection.setRequestProperty(CACHE_CONTROL, "no-transform");
                     connection.setRequestMethod("HEAD");
                 } else {
                     break;
@@ -102,13 +102,16 @@ public class DownloadUtils extends Thread {
         boolean good = false;
         try {
             connection = (HttpURLConnection) new URL(resolved).openConnection();
-            connection.setRequestProperty("Cache-Control", "no-transform");
-            connection.setRequestMethod("HEAD");
+            connection.setRequestProperty(CACHE_CONTROL, "no-transform");
+            connection.setRequestMethod("GET");
             for (String server : downloadServers.values()) {
                 if (connection.getResponseCode() != 200) {
+                    Logger.logDebug("failed");
+                    // TODO: remove responseCode test later.
+                    AppUtils.debugConnection(connection, connection.getResponseCode()!=404);
                     resolved = "http://" + server + "/FTB2/static/" + file;
                     connection = (HttpURLConnection) new URL(resolved).openConnection();
-                    connection.setRequestProperty("Cache-Control", "no-transform");
+                    connection.setRequestProperty(CACHE_CONTROL, "no-transform");
                     connection.setRequestMethod("HEAD");
                 } else {
                     good = true;
@@ -118,10 +121,15 @@ public class DownloadUtils extends Thread {
         } catch (IOException e) {
         }
         connection.disconnect();
-        if (good)
+        if (good) {
             return resolved;
-        else {
+        } else {
             Logger.logWarn("Using backupLink for " + file);
+            if (!file.contains("1.8")) {
+                // FTB hosts own version.json fails. If we are here something failed. Why?
+                Logger.logError("GET request for " + file + " failed. Please Send log to launcher team and provide your public IP address if possible.");
+                TrackerUtils.sendPageView("getStaticCreeperhostLinkOrBackup", "GET_failed: " + file);
+        }
             return backupLink;
         }
     }
@@ -137,14 +145,16 @@ public class DownloadUtils extends Thread {
         HttpURLConnection connection = null;
         try {
             connection = (HttpURLConnection) new URL(resolved).openConnection();
-            connection.setRequestProperty("Cache-Control", "no-transform");
+            connection.setRequestProperty(CACHE_CONTROL, "no-transform");
             connection.setRequestMethod("HEAD");
             if (connection.getResponseCode() != 200) {
                 for (String server : downloadServers.values()) {
                     if (connection.getResponseCode() != 200) {
+                        Logger.logDebug("failed");
+                        AppUtils.debugConnection(connection);
                         resolved = "http://" + server + "/FTB2/static/" + file;
                         connection = (HttpURLConnection) new URL(resolved).openConnection();
-                        connection.setRequestProperty("Cache-Control", "no-transform");
+                        connection.setRequestProperty(CACHE_CONTROL, "no-transform");
                         connection.setRequestMethod("HEAD");
                     } else {
                         break;
@@ -164,7 +174,7 @@ public class DownloadUtils extends Thread {
     public static boolean staticFileExists (String file) {
         try {
             HttpURLConnection connection = (HttpURLConnection) new URL(getStaticCreeperhostLink(file)).openConnection();
-            connection.setRequestProperty("Cache-Control", "no-transform");
+            connection.setRequestProperty(CACHE_CONTROL, "no-transform");
             connection.setRequestMethod("HEAD");
             return (connection.getResponseCode() == 200);
         } catch (Exception e) {
@@ -179,7 +189,7 @@ public class DownloadUtils extends Thread {
     public static boolean fileExists (String file) {
         try {
             HttpURLConnection connection = (HttpURLConnection) new URL(Locations.masterRepo + "/FTB2/" + file).openConnection();
-            connection.setRequestProperty("Cache-Control", "no-transform");
+            connection.setRequestProperty(CACHE_CONTROL, "no-transform");
             connection.setRequestMethod("HEAD");
             return (connection.getResponseCode() == 200);
         } catch (Exception e) {
@@ -188,16 +198,16 @@ public class DownloadUtils extends Thread {
     }
 
     /**
-     * @param URL for file
+     * @param url for file
      * @return true if file is found
      */
     public static boolean fileExistsURL (String url) {
         try {
             HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
-            connection.setRequestProperty("Cache-Control", "no-transform");
+            connection.setRequestProperty(CACHE_CONTROL, "no-transform");
             connection.setRequestMethod("HEAD");
             int code = connection.getResponseCode();
-            return (code != 200);
+            return (code == 200);
         } catch (Exception e) {
             return false;
         }
@@ -212,11 +222,13 @@ public class DownloadUtils extends Thread {
         try {
             boolean ret;
             HttpURLConnection connection = (HttpURLConnection) new URL(repoURL + "cdn-cgi/trace").openConnection();
-            if (!fullDebug)
+            if (!fullDebug) {
                 connection.setRequestMethod("HEAD");
-            Logger.logInfo("CF-RAY: " + connection.getHeaderField("CF-RAY"));
-            if (fullDebug)
-                Logger.logInfo("CF Debug Info: " + connection.getContent().toString());
+            }
+            Logger.logDebug("CF-RAY: " + connection.getHeaderField("CF-RAY"));
+            if (fullDebug) {
+                Logger.logDebug("CF Debug Info: \n" + IOUtils.toString(connection.getInputStream()));
+            }
             ret = connection.getResponseCode() == 200;
             IOUtils.close(connection);
             return ret;
@@ -240,6 +252,7 @@ public class DownloadUtils extends Thread {
      * @param file The file to save to.
      *
      * TODO: how to handle partial downloads? Old file is overwritten as soon as FileOutputStream is created.
+     *       how to handle headers? in some cases we want to print those and in other we don't
      */
     public static void downloadToFile (URL url, File file) throws IOException {
         file.getParentFile().mkdirs();
@@ -302,11 +315,10 @@ public class DownloadUtils extends Thread {
      * @param file - File to check
      * @param md5 - remote MD5 to compare against
      * @return boolean representing if it is valid
-     * @throws IOException 
+     * @throws IOException
      */
     public static boolean isValid (File file, String md5) throws IOException {
         String result = fileMD5(file);
-        // Logger.logInfo("OLDHASHING: " + fileHash(file, "md5"));
         Logger.logInfo("Local: " + result.toUpperCase());
         Logger.logInfo("Remote: " + md5.toUpperCase());
         return md5.equalsIgnoreCase(result);
@@ -317,19 +329,21 @@ public class DownloadUtils extends Thread {
      * @param file - File to check
      * @param url - base url to grab md5 with old method
      * @return boolean representing if it is valid
-     * @throws IOException 
+     * @throws IOException
      */
     public static boolean backupIsValid (File file, String url) throws IOException {
         Logger.logInfo("Issue with new md5 method, attempting to use backup method.");
         String content = null;
         Scanner scanner = null;
-        String resolved = (downloadServers.containsKey(Settings.getSettings().getDownloadServer())) ? "http://" + downloadServers.get(Settings.getSettings().getDownloadServer())
-                : Locations.masterRepo;
+        //String resolved = (downloadServers.containsKey(Settings.getSettings().getDownloadServer())) ? "http://" + downloadServers.get(Settings.getSettings().getDownloadServer()) : Locations.masterRepo;
+
+        // Only curse has /md5/ do not try to use creeperrepo even if user has selected it
+        String resolved = Locations.curseRepo;
         resolved += "/md5/FTB2/" + url;
         HttpURLConnection connection = null;
         try {
             connection = (HttpURLConnection) new URL(resolved).openConnection();
-            connection.setRequestProperty("Cache-Control", "no-transform");
+            connection.setRequestProperty(CACHE_CONTROL, "no-transform");
             int response = connection.getResponseCode();
             if (response == 200) {
                 scanner = new Scanner(connection.getInputStream());
@@ -340,7 +354,7 @@ public class DownloadUtils extends Thread {
                 for (String server : backupServers.values()) {
                     resolved = "http://" + server + "/md5/FTB2/" + url;
                     connection = (HttpURLConnection) new URL(resolved).openConnection();
-                    connection.setRequestProperty("Cache-Control", "no-transform");
+                    connection.setRequestProperty(CACHE_CONTROL, "no-transform");
                     response = connection.getResponseCode();
                     if (response == 200) {
                         scanner = new Scanner(connection.getInputStream());
@@ -369,39 +383,34 @@ public class DownloadUtils extends Thread {
      * Gets the md5 of the downloaded file
      * @param file - File to check
      * @return - string of file's md5
-     * @throws IOException 
+     * @throws IOException
      */
     public static String fileMD5 (File file) throws IOException {
         if (file.exists()) {
             return Files.hash(file, Hashing.md5()).toString();
-            //FileInputStream fis = new FileInputStream(file);
-            //String result = DigestUtils.md5Hex(fis);
-            //fis.close();
-            //return result;
-        } else
+        } else {
             return "";
+        }
     }
 
     public static String fileSHA (File file) throws IOException {
         if (file.exists()) {
             return Files.hash(file, Hashing.sha1()).toString();
-            //FileInputStream fis = new FileInputStream(file);
-            //String result = DigestUtils.sha1Hex(fis).toLowerCase();
-            //fis.close();
-            //return result;
-        } else
+        } else {
             return "";
-        //return fileHash(file, "sha1").toLowerCase();
+        }
     }
 
     public static String fileHash (File file, String type) throws IOException {
         if (!file.exists()) {
             return "";
         }
-        if(type.equalsIgnoreCase("md5"))
+        if (type.equalsIgnoreCase("md5")) {
             return fileMD5(file);
-        if(type.equalsIgnoreCase("sha1"))
+        }
+        if (type.equalsIgnoreCase("sha1")) {
             return fileSHA(file);
+        }
         URL fileUrl = file.toURI().toURL();
         MessageDigest dgest = null;
         try {
@@ -429,17 +438,43 @@ public class DownloadUtils extends Thread {
      */
     @Override
     public void run () {
+        boolean bothReposFailed = false;
+        boolean curseFailed = false;
+        boolean creeperFailed = false;
         setName("DownloadUtils");
+        // test for proxies
+        OSUtils.getProxy(Locations.curseRepo);
+        OSUtils.getProxy(Locations.chRepo);
         if (!Locations.hasDLInitialized) {
             Benchmark.start("DlUtils");
-            Logger.logInfo("DownloadUtils.run() starting");
+            Logger.logDebug("DownloadUtils.run() starting");
             downloadServers.put("Automatic", Locations.masterRepoNoHTTP);
             Random r = new Random();
             double choice = r.nextDouble();
             try { // Super catch-all to ensure the launcher always renders
+                String json = null;
+                // Fetch the percentage json first
                 try {
-                    // Fetch the percentage json first
-                    String json = IOUtils.toString(new URL(Locations.masterRepo + "/FTB2/static/balance.json"));
+                    json = IOUtils.toString(new URL(Locations.curseRepo + "/FTB2/static/balance.json"));
+                } catch (IOException e) {
+                    curseFailed = true;
+                }
+                Benchmark.logBenchAs("DlUtils", "Download Utils Balance (curse)");
+
+                if (curseFailed) {
+                    try {
+                        json = IOUtils.toString(new URL(Locations.chRepo + "/FTB2/static/balance.json"));
+                    } catch (IOException e) {
+                        creeperFailed = true;
+                        bothReposFailed = true;
+                    }
+                    Benchmark.logBenchAs("DlUtils", "Download Utils Balance (creeper)");
+                }
+
+                // ok we got working balance.json
+                if (!bothReposFailed) {
+                    // should we catch network failures here and try to fetch balance from creeperrepo
+                    // and if it also fails we can automatically start parsing hardcoded edges.json
                     JsonElement element = new JsonParser().parse(json);
 
                     if (element != null && element.isJsonObject()) {
@@ -450,7 +485,7 @@ public class DownloadUtils extends Thread {
                         if (jso != null && jso.get("chEnabled") != null) {
                             Locations.chEnabled = jso.get("chEnabled").getAsBoolean();
                         }
-                        if (jso != null && jso.get("repoSplitCurse") != null) {
+                        if (jso != null && jso.get("repoSplitCurse") != null && Locations.chEnabled) {
                             JsonElement e = jso.get("repoSplitCurse");
                             Logger.logDebug("Balance Settings: " + e.getAsDouble() + " > " + choice);
                             if (e != null && e.getAsDouble() > choice) {
@@ -465,36 +500,33 @@ public class DownloadUtils extends Thread {
                             }
                         }
                     }
-                    Benchmark.logBenchAs("DlUtils", "Download Utils Bal");
+                    Benchmark.logBenchAs("DlUtils", "Download Utils Balance");
                     if (Locations.chEnabled) {
                         // Fetch servers from creeperhost using edges.json first
                         parseJSONtoMap(new URL(Locations.chRepo + "/edges.json"), "CH", downloadServers, false, "edges.json");
-                        Benchmark.logBenchAs("DlUtils", "Download Utils CH");
+                        Benchmark.logBenchAs("DlUtils", "Download Utils CH edges.json");
                     }
                     // Fetch servers list from curse using edges.json second
                     parseJSONtoMap(new URL(Locations.curseRepo + "/edges.json"), "Curse", downloadServers, false, "edges.json");
-                    Benchmark.logBenchAs("DlUtils", "Download Utils Curse");
-                    LoadingDialog.setProgress(80);
-                } catch (IOException e) {
-                    int i = 10;
+                    Benchmark.logBenchAs("DlUtils", "Download Utils Curse edges.json");
 
-                    // If fetching edges.json failed, assume new. is inaccessible
-                    // Try alternate mirrors from the cached server list in resources
+                } else {
+                    //both repos failed. use builtin edges.json, remove previously selected Automatic entry
                     downloadServers.clear();
-
-                    Logger.logInfo("Primary mirror failed, Trying alternative mirrors");
-                    LoadingDialog.setProgress(i);
+                    Logger.logWarn("Primary mirror failed, Trying alternative mirrors");
                     parseJSONtoMap(this.getClass().getResource("/edges.json"), "Backup", downloadServers, true, "edges.json");
+                    Benchmark.logBenchAs("DlUtils", "Download Utils Builtin servers tested");
                 }
-                LoadingDialog.setProgress(90);
 
                 if (downloadServers.size() == 0) {
+                    // only if previous else block was executed and did not find working server. (e.g. network is down)
                     Logger.logError("Could not find any working mirrors! If you are running a software firewall please allow the FTB Launcher permission to use the internet.");
 
                     // Fall back to new. (old system) on critical failure
                     downloadServers.put("Automatic", Locations.masterRepoNoHTTP);
                 } else if (!downloadServers.containsKey("Automatic")) {
-                    // Use a random server from edges.json as the Automatic server
+                    // only if previous else block found working servers
+                    // Use a random server from builtin edges.json as the Automatic server
                     int index = (int) (Math.random() * downloadServers.size());
                     List<String> keys = Lists.newArrayList(downloadServers.keySet());
                     String defaultServer = downloadServers.get(keys.get(index));
@@ -507,12 +539,11 @@ public class DownloadUtils extends Thread {
                 downloadServers.put("Automatic", Locations.masterRepoNoHTTP);
             }
 
-            LoadingDialog.setProgress(100);
             Locations.serversLoaded = true;
 
             // This line absolutely must be hit, or the console will not be shown
             // and the user/we will not even know why an error has occurred. 
-            Logger.logInfo("DL ready");
+            Logger.logDebug("DL ready");
 
             String selectedMirror = Settings.getSettings().getDownloadServer();
             String selectedHost = downloadServers.get(selectedMirror);
@@ -524,13 +555,14 @@ public class DownloadUtils extends Thread {
                 InetAddress ipAddress = InetAddress.getByName(selectedHost);
                 resolvedIP = ipAddress.getHostAddress();
             } catch (UnknownHostException e) {
-                Logger.logError("Failed to resolve selected mirror: " + e.getMessage());
+                Logger.logWarn("Failed to resolve selected mirror: " + e.getMessage());
             }
 
             try {
                 for (String key : downloadServers.keySet()) {
-                    if (key.equals("Automatic"))
+                    if (key.equals("Automatic")) {
                         continue;
+                    }
 
                     InetAddress host = InetAddress.getByName(downloadServers.get(key));
 
@@ -541,7 +573,7 @@ public class DownloadUtils extends Thread {
                     }
                 }
             } catch (UnknownHostException e) {
-                Logger.logError("Failed to resolve mirror: " + e.getMessage());
+                Logger.logWarn("Failed to resolve mirror: " + e.getMessage());
             }
 
             Logger.logInfo("Using download server " + selectedMirror + ":" + resolvedMirror + " on host " + resolvedHost + " (" + resolvedIP + ")");
@@ -568,8 +600,9 @@ public class DownloadUtils extends Thread {
                 JsonObject jso = element.getAsJsonObject();
                 for (Entry<String, JsonElement> e : jso.entrySet()) {
                     if (testEntries) {
+                        //TODO: this should  be threaded or at least use sensible timeout for connect()
                         try {
-                            Logger.logInfo("Testing Server:" + e.getKey());
+                            Logger.logDebug("Testing Server:" + e.getKey());
                             //test that the server will properly handle file DL's if it doesn't throw an error the web daemon should be functional
                             IOUtils.toString(new URL("http://" + e.getValue().getAsString() + "/" + location));
                             h.put(e.getKey(), e.getValue().getAsString());
@@ -577,9 +610,9 @@ public class DownloadUtils extends Thread {
                             Logger.logWarn((e.getValue().getAsString().contains("creeper") ? "CreeperHost" : "Curse") + " Server: " + e.getKey() + " was not accessible, ignoring." + ex.getMessage());
                         }
 
-                        if (i < 90)
+                        if (i < 90) {
                             i += 10;
-                        LoadingDialog.setProgress(i);
+                        }
                     } else {
                         h.put(e.getKey(), e.getValue().getAsString());
                     }

@@ -115,6 +115,9 @@ PRIVATEPACK_ALREADY_ADDED = Частный пакет уже добавлен
 
 # Filter
 FILTER_PACKTYPE = Тип пакета модов:
+FILTER_ORIGIN = 
+FILTER_3THPARTY = 
+FILTER_FTB = 
 FILTER_COMPERTIBLEPACK = Совместимый пакет:
 FILTER_APPLY = Применить фильтр
 FILTER_SEARCHMAP = Искать карты
@@ -157,6 +160,13 @@ KILL_MC_TITLE = Закрыть Minecraft?
 KILL_MC_MESSAGE = Внимание! Это может вызвать повреждение сохранения и должно использоваться только при зависании игры!
 KILL_MC_CONFIRM = Вы уверены, что хотите закрыть процесс Minecraft?
 
+# Thread dump MC
+TD_MC = 
+TD_MC_TITLE = 
+TD_MC_MESSAGE = 
+TD_MC_CONFIRM = 
+TD_MC_FAIL_MESSAGE = 
+
 # Main
 MAIN_EXIT = ВЫХОД
 MAIN_APPLY = Применить
@@ -167,6 +177,8 @@ MAIN_CANCEL = Отмена
 MAIN_SUBMIT = Подтвердить
 MAIN_REMOVE = Удалить
 MAIN_ADD = Добавить
+MAIN_CLIENT = 
+MAIN_SERVER = 
 BUTTON_IGNORE = Игнорировать
 BUTTON_OK = ОК
 NAG_SCREEN_MESSAGE = Нажмите OK, чтобы продолжить, или ИГНОРИРОВАТЬ, чтобы пропустить это предупреждение в будущем

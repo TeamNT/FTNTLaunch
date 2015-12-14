@@ -16,15 +16,6 @@
  */
 package net.ftb.gui;
 
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.IOException;
-
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-
 import net.ftb.data.Settings;
 import net.ftb.gui.dialogs.EditModPackDialog;
 import net.ftb.gui.dialogs.FirstRunDialog;
@@ -33,24 +24,32 @@ import net.ftb.log.Logger;
 import net.ftb.util.ErrorUtils;
 import net.ftb.util.FTBFileUtils;
 
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
+
+import javax.swing.*;
+
 public class ChooseDir extends JFrame implements ActionListener {
     private OptionsPane optionsPane;
     private EditModPackDialog editMPD;
     private FirstRunDialog firstRunDialog;
 
-    public ChooseDir(OptionsPane optionsPane) {
+    public ChooseDir (OptionsPane optionsPane) {
         super();
         this.optionsPane = optionsPane;
         editMPD = null;
     }
 
-    public ChooseDir(EditModPackDialog editMPD) {
+    public ChooseDir (EditModPackDialog editMPD) {
         super();
         optionsPane = null;
         this.editMPD = editMPD;
     }
 
-    public ChooseDir(FirstRunDialog firstRunDialog) {
+    public ChooseDir (FirstRunDialog firstRunDialog) {
         super();
         optionsPane = null;
         editMPD = null;

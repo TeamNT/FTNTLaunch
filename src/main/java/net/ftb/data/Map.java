@@ -16,8 +16,15 @@
  */
 package net.ftb.data;
 
-import java.awt.Image;
-import java.awt.Toolkit;
+import net.ftb.data.events.MapListener;
+import net.ftb.gui.LaunchFrame;
+import net.ftb.gui.panes.MapUtils;
+import net.ftb.log.Logger;
+import net.ftb.util.DownloadUtils;
+import net.ftb.util.OSUtils;
+import net.ftb.workers.MapLoader;
+
+import java.awt.*;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -27,14 +34,6 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
-
-import net.ftb.data.events.MapListener;
-import net.ftb.gui.LaunchFrame;
-import net.ftb.gui.panes.MapUtils;
-import net.ftb.log.Logger;
-import net.ftb.util.DownloadUtils;
-import net.ftb.util.OSUtils;
-import net.ftb.workers.MapLoader;
 
 public class Map {
     private String name, author, version, url, mapname, mcversion, logoName, imageName, info, sep = File.separator;
@@ -114,7 +113,7 @@ public class Map {
      * @throws IOException
      * @throws NoSuchAlgorithmException
      */
-    public Map(String name, String author, String version, String url, String logo, String image, String compatible, String mcversion, String mapname, String info, int idx)
+    public Map (String name, String author, String version, String url, String logo, String image, String compatible, String mcversion, String mapname, String info, int idx)
             throws NoSuchAlgorithmException, IOException {
         index = idx;
         this.name = name;
@@ -132,15 +131,15 @@ public class Map {
         File verFile = new File(tempDir, "version");
 
         if (!upToDate(verFile)) {
-            DownloadUtils.saveImage(logo, tempDir,  "png");
-            DownloadUtils.saveImage(image, tempDir,  "png");
+            DownloadUtils.saveImage(logo, tempDir, "png");
+            DownloadUtils.saveImage(image, tempDir, "png");
 
         } else {
             if (!new File(tempDir, logo).exists()) {
-                DownloadUtils.saveImage(logo, tempDir,  "png");
+                DownloadUtils.saveImage(logo, tempDir, "png");
             }
             if (!new File(tempDir, image).exists()) {
-                DownloadUtils.saveImage(image, tempDir,  "png");
+                DownloadUtils.saveImage(image, tempDir, "png");
             }
         }
 
@@ -318,9 +317,8 @@ public class Map {
         for (String aCompatible : compatible) {
             ModPack pack = ModPack.getPack(aCompatible);
             if (pack == null) {
-                Logger.logDebug("Map is compatible with "  + packName + " , but modpack not found");
-            }
-            else {
+                Logger.logDebug("Map is compatible with " + packName + " , but modpack not found");
+            } else {
                 return pack.getName().equals(packName);
             }
         }

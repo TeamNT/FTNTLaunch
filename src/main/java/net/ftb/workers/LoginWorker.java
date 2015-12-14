@@ -16,14 +16,14 @@
  */
 package net.ftb.workers;
 
-import javax.swing.SwingWorker;
-
 import lombok.Getter;
 import net.ftb.data.LoginResponse;
-import net.ftb.gui.LaunchFrame;
 import net.ftb.log.Logger;
+import net.ftb.main.Main;
 import net.ftb.util.Benchmark;
 import net.ftb.util.ErrorUtils;
+
+import javax.swing.*;
 
 /**
  * SwingWorker that logs into minecraft.net. Returns a string containing the response received from the server.
@@ -33,7 +33,7 @@ public class LoginWorker extends SwingWorker<String, Void> {
     @Getter
     LoginResponse resp;
 
-    public LoginWorker(String username, String password, String mojangData, String selectedProfile) {
+    public LoginWorker (String username, String password, String mojangData, String selectedProfile) {
         super();
         this.username = username;
         this.password = password;
@@ -45,7 +45,7 @@ public class LoginWorker extends SwingWorker<String, Void> {
     protected String doInBackground () {
         Benchmark.start("LoginWorker");
         try {
-            if (LaunchFrame.canUseAuthlib) {
+            if (Main.isAuthlibReadyToUse()) {
                 try {
                     LoginResponse resp = AuthlibHelper.authenticateWithAuthlib(username, password, mojangData, selectedProfile);
                     this.resp = resp;
@@ -57,16 +57,18 @@ public class LoginWorker extends SwingWorker<String, Void> {
                             return "offline";
                         }
                     }
-                    if (resp == null)
+                    if (resp == null) {
                         return "nullResponse";
-                    if (resp.getUsername() == null)
+                    }
+                    if (resp.getUsername() == null) {
                         return "NullUsername";
+                    }
                     return "bad";
                 } catch (Exception e) {
                     Logger.logError("Error using authlib", e);
                 }
             } else {
-                ErrorUtils.tossError("Authlib Unavaible");
+                ErrorUtils.tossError("Authlib Unavaible. Please check your log for errors. If you contact FTB support attach launcher log or link to log in your request.");
             }
         } catch (Exception e) {
             ErrorUtils.tossError("Exception occurred, minecraft servers might be down. Check @ help.mojang.com");

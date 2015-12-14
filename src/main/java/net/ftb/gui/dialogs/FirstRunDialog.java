@@ -16,34 +16,23 @@
  */
 package net.ftb.gui.dialogs;
 
-import java.awt.BorderLayout;
-import java.awt.Font;
-import java.awt.Toolkit;
-
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JPanel;
-import javax.swing.SwingConstants;
-import javax.swing.border.EmptyBorder;
-import javax.swing.JLabel;
-
 import net.ftb.data.Settings;
 import net.ftb.gui.ChooseDir;
 import net.ftb.gui.LaunchFrame;
 import net.ftb.locale.I18N;
 import net.ftb.log.Logger;
 import net.ftb.util.CheckInstallPath;
+import net.ftb.util.CheckInstallPath.Action;
 import net.ftb.util.ErrorUtils;
 import net.ftb.util.OSUtils;
-import net.ftb.util.CheckInstallPath.Action;
 
-import javax.swing.JTextField;
-
-import java.awt.event.ActionListener;
+import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Map;
 
-import javax.swing.JComboBox;
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 
 public class FirstRunDialog extends JDialog {
 
@@ -60,7 +49,7 @@ public class FirstRunDialog extends JDialog {
 
     private JComboBox languageList;
 
-    public FirstRunDialog() {
+    public FirstRunDialog () {
         super(LaunchFrame.getInstance(), true);
 
         setupGUI();
@@ -74,6 +63,7 @@ public class FirstRunDialog extends JDialog {
         applyButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed (ActionEvent arg0) {
+                Logger.logDebug("Trying path: " + installPath.getText());
                 CheckInstallPath checkResult = new CheckInstallPath(installPath.getText());
 
                 if (checkResult.action == Action.BLOCK) {
@@ -95,8 +85,8 @@ public class FirstRunDialog extends JDialog {
         });
     }
 
-    private void setupGUI() {
-    	setTitle(I18N.getLocaleString("INSTALL_TITLE"));
+    private void setupGUI () {
+        setTitle(I18N.getLocaleString("INSTALL_TITLE"));
         setIconImage(Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("/image/logo_ftb.png")));
         setResizable(false);
         setLocationRelativeTo(null);
@@ -160,11 +150,11 @@ public class FirstRunDialog extends JDialog {
         contentPanel.add(languageList);
     }
 
-    public void setInstallFolderText(String text) {
+    public void setInstallFolderText (String text) {
         installPath.setText(text);
     }
 
-    private void updateLocale() {
+    private void updateLocale () {
         setTitle(I18N.getLocaleString("INSTALL_TITLE"));
         messageLbl.setText(I18N.getLocaleString("INSTALL_FIRSTUSE"));
         installPathLbl.setText(I18N.getLocaleString("INSTALL_FOLDER"));

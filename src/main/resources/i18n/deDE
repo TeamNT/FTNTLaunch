@@ -115,6 +115,9 @@ PRIVATEPACK_ALREADY_ADDED =
 
 # Filter
 FILTER_PACKTYPE = Modpacktyp:
+FILTER_ORIGIN = 
+FILTER_3THPARTY = 
+FILTER_FTB = 
 FILTER_COMPERTIBLEPACK = Kompatibles Pack:
 FILTER_APPLY = Filter anwenden
 FILTER_SEARCHMAP = Suche Maps
@@ -157,6 +160,13 @@ KILL_MC_TITLE = Minecraft töten?
 KILL_MC_MESSAGE = Warnung! Das kann Instanzen beschädigen und sollte nur benutzt werden, wenn das Spiel eingefroren ist!
 KILL_MC_CONFIRM = Bist du dir sicher, dass du den Minecraft-Prozess töten willst?
 
+# Thread dump MC
+TD_MC = 
+TD_MC_TITLE = 
+TD_MC_MESSAGE = 
+TD_MC_CONFIRM = 
+TD_MC_FAIL_MESSAGE = 
+
 # Main
 MAIN_EXIT = Schließen
 MAIN_APPLY = Annehmen
@@ -167,6 +177,8 @@ MAIN_CANCEL = Abbrechen
 MAIN_SUBMIT = Abschicken
 MAIN_REMOVE = Löschen
 MAIN_ADD = Hinzufügen
+MAIN_CLIENT = 
+MAIN_SERVER = 
 BUTTON_IGNORE = 
 BUTTON_OK = 
 NAG_SCREEN_MESSAGE = 

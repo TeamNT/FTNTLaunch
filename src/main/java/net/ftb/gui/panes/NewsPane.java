@@ -29,6 +29,7 @@ import javax.swing.event.HyperlinkListener;
 import javax.swing.text.html.HTMLEditorKit;
 
 import net.ftb.data.Settings;
+import net.ftb.download.Locations;
 import net.ftb.gui.LaunchFrame;
 import net.ftb.log.Logger;
 import net.ftb.util.OSUtils;
@@ -42,6 +43,25 @@ public class NewsPane extends JPanel implements ILauncherPane {
     
     private final HTMLEditorKit news_kit = new HTMLEditorKit();
 
+    private final JEditorPane news_pane = new JEditorPane("text/html", "") {
+        {
+            this.setEditable(false);
+            this.setEditorKit(news_kit);
+            this.addHyperlinkListener(new HyperlinkListener() {
+                @Override
+                public void hyperlinkUpdate (HyperlinkEvent e) {
+                    if (e.getEventType() == EventType.ACTIVATED) {
+                        if (e.getDescription().substring(0, 7).equals("members")) {
+                            OSUtils.browse(Locations.forum + e.getDescription());
+                        } else {
+                            OSUtils.browse(e.getDescription());
+                        }
+                    }
+                }
+            });
+        }
+    };
+    
     public NewsPane() {
         super();
         
@@ -84,4 +104,8 @@ public class NewsPane extends JPanel implements ILauncherPane {
         }
     }
     
+    public void setContent(String s) {
+        this.news_pane.setText(s);
+    }
+
 }

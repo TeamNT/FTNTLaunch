@@ -16,6 +16,13 @@
  */
 package net.ftb.data;
 
+import net.ftb.gui.LaunchFrame;
+import net.ftb.gui.dialogs.ProfileAdderDialog;
+import net.ftb.locale.I18N;
+import net.ftb.log.Logger;
+import net.ftb.util.CryptoUtils;
+import net.ftb.util.OSUtils;
+
 import java.io.BufferedReader;
 import java.io.EOFException;
 import java.io.File;
@@ -28,19 +35,12 @@ import java.io.ObjectOutputStream;
 import java.io.StreamCorruptedException;
 import java.util.ArrayList;
 
-import net.ftb.gui.LaunchFrame;
-import net.ftb.gui.dialogs.ProfileAdderDialog;
-import net.ftb.locale.I18N;
-import net.ftb.log.Logger;
-import net.ftb.util.CryptoUtils;
-import net.ftb.util.OSUtils;
-
 public class UserManager {
     public final static ArrayList<User> _users = new ArrayList<User>();
     private File _file;
     private File _oldFile;
 
-    public UserManager(File file, File oldFile) {
+    public UserManager (File file, File oldFile) {
         _file = file;
         _oldFile = oldFile;
         read();
@@ -49,13 +49,13 @@ public class UserManager {
     public void write () throws IOException {
 
         if (OSUtils.getCurrentOS() == OSUtils.OS.WINDOWS) {
-                if (_oldFile.exists()) {
-                    _oldFile.delete();
-                }
+            if (_oldFile.exists()) {
+                _oldFile.delete();
+            }
 
-                if (_file.exists()) {
-                    _file.delete();
-                }
+            if (_file.exists()) {
+                _file.delete();
+            }
         }
 
         FileOutputStream fileOutputStream = new FileOutputStream(_file);
@@ -64,7 +64,7 @@ public class UserManager {
             for (User user : _users) {
                 objectOutputStream.writeObject(user);
             }
-            
+
         } finally {
             objectOutputStream.close();
             fileOutputStream.close();
@@ -85,13 +85,13 @@ public class UserManager {
         }
         try {
             FileInputStream fileInputStream;
-            
-            if(_file.exists()) {
+
+            if (_file.exists()) {
                 fileInputStream = new FileInputStream(_file);
             } else {
                 fileInputStream = new FileInputStream(_oldFile);
             }
-            
+
             ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
             try {
                 Object obj;
@@ -119,13 +119,13 @@ public class UserManager {
 
             try {
                 BufferedReader read;
-                
-                if(_file.exists()) {
+
+                if (_file.exists()) {
                     read = new BufferedReader(new FileReader(_file));
                 } else {
                     read = new BufferedReader(new FileReader(_oldFile));
                 }
-                
+
                 String str;
                 while ((str = read.readLine()) != null) {
                     str = CryptoUtils.decryptLegacy(str, OSUtils.getMacAddress());
@@ -218,39 +218,43 @@ public class UserManager {
 
     //used by authlib helper in order to send key's back to disc for next load
     public static void setStore (String user, String encode) {
-        if (encode != null && !encode.isEmpty()){
+        if (encode != null && !encode.isEmpty()) {
             User temp = findUser(user);
-            if(temp != null)
+            if (temp != null) {
                 temp.setStore(encode);
+            }
         }
     }
 
     //used by authlib helper in order to send key's back to disc for next load
     public static String getMojangData (String user) {
         User temp = findUser(user);
-        if(temp != null)
+        if (temp != null) {
             return temp.getDecryptedDatastore();
+        }
         return null;
     }
 
-
     public static String getUUID (String username) {
         User temp = findUser(username);
-        if(temp != null)
+        if (temp != null) {
             return temp.getDecryptedDatastore();
+        }
         return null;
     }
 
     public static void setUUID (String username, String uuid) {
         User temp = findUser(username);
-        if(temp != null)
+        if (temp != null) {
             temp.setUUID(uuid);
+        }
     }
 
     public static void setSaveMojangData (String username, boolean b) {
         User temp = findUser(username);
-        if(temp != null)
+        if (temp != null) {
             temp.setSaveMojangData(b);
+        }
     }
 
     public static boolean getSaveMojangData (String username) {
@@ -258,10 +262,11 @@ public class UserManager {
         return temp != null && temp.getSaveMojangData();
     }
 
-    public static String getName ( String username) {
+    public static String getName (String username) {
         User temp = findUser(username);
-        if(temp != null)
+        if (temp != null) {
             return temp.getName();
+        }
         return null;
     }
 }

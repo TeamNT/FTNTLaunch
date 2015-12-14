@@ -16,27 +16,28 @@
  */
 package net.ftb.util;
 
-import java.awt.Desktop;
-import java.io.*;
-import java.lang.management.ManagementFactory;
-import java.lang.management.OperatingSystemMXBean;
-import java.lang.reflect.Method;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.security.CodeSource;
-import java.util.Enumeration;
-import java.util.Map;
-
-import javax.swing.text.html.StyleSheet;
-
+import com.sun.jna.Library;
+import com.sun.jna.Native;
 import lombok.Getter;
 import net.ftb.data.CommandLineSettings;
+import net.ftb.data.Settings;
 import net.ftb.gui.LaunchFrame;
 import net.ftb.log.Logger;
 import net.ftb.util.winreg.JavaFinder;
 import net.ftb.util.winreg.RuntimeStreamer;
+import org.apache.commons.io.FileUtils;
+
+import java.awt.*;
+import java.io.*;
+import java.lang.management.ManagementFactory;
+import java.lang.management.OperatingSystemMXBean;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.net.*;
+import java.security.CodeSource;
+import java.util.*;
+
+import javax.swing.text.html.StyleSheet;
 
 public class OSUtils {
     private static byte[] cachedMacAddress;
@@ -44,12 +45,49 @@ public class OSUtils {
 
     /**
      * gets the number of cores for use in DL threading
-     * 
+     *
      * @return number of cores on the system
      */
     @Getter
     private static int numCores;
     private static byte[] hardwareID;
+
+    private static UUID clientUUID;
+
+    public static Proxy getProxy (String url) {
+        // this is set explicitly with command line define or by our proxy setting
+        String system = System.getProperty("java.net.useSystemProxies");
+        // System-wide setting from java control panel or command line define
+        String socks = System.getProperty("socksProxyHost");
+
+        if (system != null && system.equals("true")) {
+            Logger.logDebug("Detected system proxy");
+        }
+        if (socks != null && !socks.isEmpty()) {
+            Logger.logDebug("Detected socks proxy");
+        }
+
+        java.util.List<Proxy> l = null;
+        try {
+            l = ProxySelector.getDefault().select(new URI(url));
+            if (l != null) {
+                for (Proxy p: l) {
+                    InetSocketAddress address = (InetSocketAddress) p.address();
+                    if (address == null) {
+                        Logger.logDebug("ProxySelector: type: " + p.type() + ", no proxy for " + url);
+                    } else {
+                        Logger.logDebug("ProxySelector: type: " + p.type() + ", for " + url);
+                    }
+                }
+                // correct? Can' decide without feedback
+                return l.get(0);
+            }
+        } catch (Exception e) {
+            Logger.logDebug("failed", e);
+        }
+        Logger.logWarn("Proxy was turned on but ProxySelector did not returned proxies for " + url);
+        return Proxy.NO_PROXY;
+    }
 
     public static enum OS {
         WINDOWS, UNIX, MACOSX, OTHER,
@@ -65,16 +103,37 @@ public class OSUtils {
      * @return a string containing the default install path for the current OS.
      */
     public static String getDefInstallPath () {
-        try {
-            CodeSource codeSource = LaunchFrame.class.getProtectionDomain().getCodeSource();
-            File jarFile;
-            jarFile = new File(codeSource.getLocation().toURI().getPath());
-            return jarFile.getParentFile().getPath();
-        } catch (URISyntaxException e) {
-            Logger.logError("Unexcepted error", e);
+        switch (getCurrentOS()) {
+        case WINDOWS:
+            String defaultLocation = "c:\\ftb";
+            File testFile = new File(defaultLocation);
+            // existing directory and we can write
+            if (testFile.canWrite()) {
+                return defaultLocation;
+            }
+
+            // We can create default directory
+            if (testFile.getParentFile().canWrite()) {
+                return defaultLocation;
+            }
+            Logger.logWarn("Can't use default installation location. Using current location of the launcher executable.");
+
+        case MACOSX:
+            return System.getProperty("user.home") + "/ftb";
+        case UNIX:
+            return System.getProperty("user.home") + "/ftb";
+        default:
+            try {
+                CodeSource codeSource = LaunchFrame.class.getProtectionDomain().getCodeSource();
+                File jarFile;
+                jarFile = new File(codeSource.getLocation().toURI().getPath());
+                return jarFile.getParentFile().getPath();
+            } catch (URISyntaxException e) {
+                Logger.logError("Unexcepted error", e);
+            }
+
+            return System.getProperty("user.home") + System.getProperty("path.separator") + "FTB";
         }
-        Logger.logWarn("Failed to get path for current directory - falling back to user's home directory.");
-        return System.getProperty("user.dir") + "//FTNT Pack Install";
     }
 
     /**
@@ -100,7 +159,7 @@ public class OSUtils {
     /**
      * Used to get a location to store cached content such as maps,
      * texture packs and pack archives.
-     * 
+     *
      * @return string containing cache storage location
      */
     public static String getCacheStorageLocation () {
@@ -109,10 +168,11 @@ public class OSUtils {
         }
         switch (getCurrentOS()) {
         case WINDOWS:
-            if (System.getenv("LOCALAPPDATA") != null && System.getenv("LOCALAPPDATA").length() > 5)
+            if (System.getenv("LOCALAPPDATA") != null && System.getenv("LOCALAPPDATA").length() > 5) {
                 return System.getenv("LOCALAPPDATA") + "/ftntlauncher/";
-            else
+            } else {
                 return System.getenv("APPDATA") + "/ftntlauncher/";
+            }
         case MACOSX:
             return cachedUserHome + "/Library/Application Support/ftntlauncher/";
         case UNIX:
@@ -260,9 +320,9 @@ public class OSUtils {
      * @return true if 64-bit OS X
      */
 
-    public static boolean is64BitOSX() {
+    public static boolean is64BitOSX () {
         String line, result = "";
-        if( !(System.getProperty("os.version").startsWith("10.6") || System.getProperty("os.version").startsWith("10.5"))) {
+        if (!(System.getProperty("os.version").startsWith("10.6") || System.getProperty("os.version").startsWith("10.5"))) {
             return true;//10.7+ only shipped on hardware capable of using 64 bit java
         }
         try {
@@ -348,7 +408,7 @@ public class OSUtils {
             while (networkInterfaces.hasMoreElements()) {
                 NetworkInterface network = networkInterfaces.nextElement();
                 byte[] mac = network.getHardwareAddress();
-                if (mac != null && mac.length > 0 && !network.isLoopback() && !network.isVirtual() && !network.isPointToPoint()) {
+                if (mac != null && mac.length > 0 && !network.isLoopback() && !network.isVirtual() && !network.isPointToPoint() && network.getName().substring(0,3) != "ham") {
                     Logger.logDebug("Interface: " + network.getDisplayName() + " : " + network.getName());
                     cachedMacAddress = new byte[mac.length * 10];
                     for (int i = 0; i < cachedMacAddress.length; i++) {
@@ -370,7 +430,7 @@ public class OSUtils {
      * @return Unique Id based on hardware
      */
     public static byte[] getHardwareID () {
-        if (hardwareID== null) {
+        if (hardwareID == null) {
             hardwareID = genHardwareID();
         }
         return hardwareID;
@@ -388,6 +448,7 @@ public class OSUtils {
             return null;
         }
     }
+
     private static byte[] genHardwareIDUNIX () {
         String line;
         if (CommandLineSettings.getSettings().isUseMac()) {
@@ -407,24 +468,26 @@ public class OSUtils {
     private static byte[] genHardwareIDMACOSX () {
         String line;
         try {
-            Process command = Runtime.getRuntime().exec(new String[] {"system_profiler", "SPHardwareDataType"});
+            Process command = Runtime.getRuntime().exec(new String[] { "system_profiler", "SPHardwareDataType" });
             BufferedReader in = new BufferedReader(new InputStreamReader(command.getInputStream()));
             while ((line = in.readLine()) != null) {
                 if (line.contains("Serial Number"))
-                    //TODO: does that more checks?
+                //TODO: does that more checks?
+                {
                     return line.split(":")[1].trim().getBytes();
+                }
             }
-            return new byte[]{};
+            return new byte[] { };
         } catch (Exception e) {
             Logger.logDebug("failed", e);
-            return new byte[]{};
+            return new byte[] { };
         }
     }
 
-    private static byte[] genHardwareIDWINDOWS() {
+    private static byte[] genHardwareIDWINDOWS () {
         String processOutput;
         try {
-            processOutput = RuntimeStreamer.execute(new String[] {"wmic", "bios", "get", "serialnumber"});
+            processOutput = RuntimeStreamer.execute(new String[] { "wmic", "bios", "get", "serialnumber" });
             /*
              * wmic's output has special formatting:
              * SerialNumber<SP><SP><SP><CR><CR><LF>
@@ -436,7 +499,7 @@ public class OSUtils {
             // at least VM will report serial to be 0. Does real hardware do it?
             if (line.equals("0")) {
                 return new byte[] { };
-            } else{
+            } else {
                 return line.trim().getBytes();
             }
         } catch (Exception e) {
@@ -451,8 +514,8 @@ public class OSUtils {
      */
     public static void browse (String url) {
         try {
-            if (Desktop.isDesktopSupported()) {
-                Desktop.getDesktop().browse(new URI(url));
+            if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+                Desktop.getDesktop().browse(new URI(url.replace(" ", "+")));
             } else if (getCurrentOS() == OS.UNIX && (new File("/usr/bin/xdg-open").exists() || new File("/usr/local/bin/xdg-open").exists())) {
                 // Work-around to support non-GNOME Linux desktop environments with xdg-open installed
                 new ProcessBuilder("xdg-open", url).start();
@@ -460,7 +523,7 @@ public class OSUtils {
                 Logger.logWarn("Could not open Java Download url, not supported");
             }
         } catch (Exception e) {
-            Logger.logError("Could not open link", e);
+            Logger.logError("Could not open link: " + url, e);
         }
     }
 
@@ -473,7 +536,7 @@ public class OSUtils {
             return;
         }
         try {
-            if (Desktop.isDesktopSupported()) {
+            if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.OPEN)) {
                 Desktop.getDesktop().open(path);
             } else if (getCurrentOS() == OS.UNIX) {
                 // Work-around to support non-GNOME Linux desktop environments with xdg-open installed
@@ -501,18 +564,194 @@ public class OSUtils {
         environment.remove("JAVA_TOOL_OPTIONS");
         environment.remove("JAVA_OPTIONS");
     }
-    
-    public static StyleSheet makeStyleSheet(String name){
-        try{
+
+    public static StyleSheet makeStyleSheet (String name) {
+        try {
             StyleSheet sheet = new StyleSheet();
             Reader reader = new InputStreamReader(System.class.getResourceAsStream("/css/" + name + ".css"));
             sheet.loadRules(reader, null);
             reader.close();
 
             return sheet;
-        } catch(Exception ex){
+        } catch (Exception ex) {
             ex.printStackTrace();
             return null;
         }
+    }
+
+    public static UUID getClientToken() {
+        if (clientUUID != null) {
+            return clientUUID;
+        } else {
+            String s = null;
+
+            File tokenFile = new File(getCacheStorageLocation() + File.separator + "clientToken");
+            if (tokenFile.exists() && tokenFile.isFile()) {
+                try {
+                    s = FileUtils.readFileToString(tokenFile);
+                } catch (IOException e) {
+                    s = null;
+                    Logger.logError("Client token read failed:", e);
+                }
+            }
+
+            if (s != null) {
+                try {
+                    clientUUID = UUID.fromString(s);
+                } catch (IllegalArgumentException e) {
+                    Logger.logError("Client token read failed", e);
+                    clientUUID = createUUID();
+                }
+            } else {
+                clientUUID = createUUID();
+            }
+            return clientUUID;
+        }
+    }
+
+    public static void setClientToken(UUID u) {
+        File tokenFile = new File(getCacheStorageLocation() + File.separator + "clientToken");
+        try {
+            FileUtils.writeStringToFile(tokenFile, u.toString());
+        } catch (IOException e) {
+            Logger.logError("Client token write failed", e);
+        }
+    }
+
+    private static UUID createUUID() {
+        UUID u =  UUID.randomUUID();
+        setClientToken(u);
+        return u;
+    }
+
+    /**
+     *
+     * @return pid of the running process. -1 if fail
+     */
+    public static long getPID () {
+        String name = ManagementFactory.getRuntimeMXBean().getName();
+        String pid = name.split("@")[0];
+        long numericpid = -1;
+        try {
+            numericpid = Long.parseLong(pid);
+        } catch (Exception e) {
+            numericpid = -1;
+            Logger.logDebug("failed", e);
+        }
+        return numericpid;
+    }
+
+    public static long getPID (Process process) {
+        // windows
+        if (getCurrentOS()==OS.WINDOWS && (process.getClass().getName().equals("java.lang.Win32Process") ||
+                process.getClass().getName().equals("java.lang.ProcessImpl"))) {
+            long pid = -1;
+            try {
+                Field f = process.getClass().getDeclaredField("handle");
+                f.setAccessible(true);
+                pid = Kernel32.INSTANCE.GetProcessId((Long) f.get(process));
+
+            } catch (Exception e) {
+                pid = -1;
+                Logger.logDebug("failed", e);
+            }
+
+            return pid;
+        }
+
+        // java 9 removes java.lang.UNIXProcess and uses revised java.lang.ProcessImple which includes field pid
+        // http://openjdk.java.net/jeps/102
+        if (process.getClass().getName().equals("java.lang.UNIXProcess") || process.getClass().getName().equals("java.lang.ProcessImpl")) {
+        /* get the PID on unix/linux systems */
+            long pid = -1;
+            try {
+                Field f = process.getClass().getDeclaredField("pid");
+                f.setAccessible(true);
+                pid = f.getInt(process);
+
+            } catch (Throwable e) {
+                pid = -1;
+                Logger.logDebug("failed", e);
+            }
+            return pid;
+        }
+
+        Logger.logWarn("Unable to find getpid implementation");
+        return -1;
+    }
+
+    public static boolean genThreadDump(long pid) {
+        if (OSUtils.getCurrentOS()==OS.WINDOWS) {
+            File directory = null;
+            File sendsignal = null;
+            try {
+                directory = new File(OSUtils.class.getProtectionDomain().getCodeSource().getLocation().getPath()).getParentFile();
+            } catch (Exception e) {
+                Logger.logDebug("failed" , e);
+            }
+
+            if (directory != null && directory.exists() && directory.isDirectory()) {
+                sendsignal = new File(directory, "sendsignal.exe");
+                if (!sendsignal.exists()) {
+                    // try to download file automatically
+                    try {
+                        Logger.logInfo("Downloading sendsignal.exe");
+                        String address;
+                        if (is64BitOS()) {
+                            address = DownloadUtils.getCreeperhostLink("launcher/tools/sendsignal.exe ");
+                        } else {
+                            address = DownloadUtils.getCreeperhostLink("launcher/tools/sendsignal32.exe ");
+                        }
+                        DownloadUtils.downloadToFile(sendsignal.getCanonicalPath(), address);
+                    } catch (Exception e) {
+                        Logger.logDebug("failed" , e);
+                    }
+                }
+            }
+
+            // Now file is downloaded by the launcher or user. Try to run sendsignal.exe from %path% or %cd%
+            try {
+                Runtime runtime = Runtime.getRuntime();
+                runtime.exec(new String[] { "sendsignal.exe", Long.toString(pid) });
+            } catch (Exception e) {
+                Logger.logError("Failed. You need to install sendsignal.exe in your path to eanble this functionality");
+                Logger.logError("Failed", e);
+                return false;
+            }
+            return true;
+        } else if (OSUtils.getCurrentOS()==OS.UNIX || OSUtils.getCurrentOS()==OS.MACOSX) {
+            Runtime runtime = Runtime.getRuntime();
+            try {
+                runtime.exec(new String[] { "kill", "-3", Long.toString(pid) });
+            } catch (Exception e) {
+                Logger.logError("Failed", e);
+                return false;
+            }
+            return true;
+        } else {
+            Logger.logError("Unable to find genThreadDump implementation");
+            return false;
+        }
+    }
+
+    public static void printGPUinformation() {
+        if (getCurrentOS() == OS.WINDOWS) {
+            String result = RuntimeStreamer.execute(new String[] { "wmic", "path", "win32_VideoController",
+                    "get", "description,adapterRAM,driverDate,DriverVersion,InstalledDisplayDrivers"
+            });
+            if (result != null) {
+                Logger.logDebug("GPU information:\n" + result.replace("\n\n", "\n").trim().replaceAll("[ ]*\n", "\n"));
+            } else {
+                Logger.logError("Getting GPU information failed!! Launcher has detected windows path environment variable issues, "
+                        + "please see http://support.feed-the-beast.com/t/windows-path-issues/19630 for more information.");
+            }
+        } else {
+            // not implemented yet
+        }
+    }
+
+    static interface Kernel32 extends Library {
+        public static Kernel32 INSTANCE = (Kernel32) Native.loadLibrary("kernel32", Kernel32.class);
+        public int GetProcessId (Long hProcess);
     }
 }

@@ -16,17 +16,6 @@
  */
 package net.ftb.gui;
 
-import java.awt.*;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.StringSelection;
-import java.awt.event.*;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-
-import javax.swing.*;
-import javax.swing.text.*;
-
 import net.ftb.data.Constants;
 import net.ftb.download.Locations;
 import net.ftb.locale.I18N;
@@ -40,6 +29,22 @@ import net.ftb.tools.PastebinPoster;
 import net.ftb.util.GameUtils;
 import net.ftb.util.OSUtils;
 
+import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
+import javax.swing.*;
+import javax.swing.text.Document;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
+
 @SuppressWarnings("serial")
 public class LauncherConsole extends JFrame implements ILogListener {
     private final JTextPane displayArea;
@@ -49,13 +54,14 @@ public class LauncherConsole extends JFrame implements ILogListener {
     private LogSource logSource = LogSource.ALL;
     private LogLevel logLevel = LogLevel.INFO;
     private JButton killMCButton;
+    private JButton threadDumpButton;
     private final Document displayAreaDoc;
     private final Font FONT = new Font("Monospaced", 0, 12);
 
     private SimpleAttributeSet RED = new SimpleAttributeSet();
     private SimpleAttributeSet YELLOW = new SimpleAttributeSet();
 
-    public LauncherConsole() {
+    public LauncherConsole () {
         setTitle(Constants.name + " " + I18N.getLocaleString("CONSOLE_TITLE"));
         setMinimumSize(new Dimension(800, 400));
         setPreferredSize(new Dimension(800, 400));
@@ -130,13 +136,13 @@ public class LauncherConsole extends JFrame implements ILogListener {
                 // setup loglevel. If DEBUG selected show also DEBUG messages
                 switch (logType) {
                 case MINIMAL:
-                    logLevel=LogLevel.INFO;
+                    logLevel = LogLevel.INFO;
                     break;
                 case EXTENDED:
-                    logLevel=LogLevel.INFO;
+                    logLevel = LogLevel.INFO;
                     break;
                 case DEBUG:
-                    logLevel=LogLevel.DEBUG;
+                    logLevel = LogLevel.DEBUG;
                     break;
                 }
 
@@ -175,10 +181,21 @@ public class LauncherConsole extends JFrame implements ILogListener {
         });
         panel.add(killMCButton);
 
-        // setup log area
-        displayArea = new JTextPane(){
+        threadDumpButton = new JButton(I18N.getLocaleString("TD_MC"));
+        threadDumpButton.setEnabled(false);
+        threadDumpButton.setVisible(true);
+        threadDumpButton.addActionListener(new ActionListener() {
             @Override
-            public boolean getScrollableTracksViewportWidth() {
+            public void actionPerformed (ActionEvent arg0) {
+                GameUtils.threadDumpMC();
+            }
+        });
+        panel.add(threadDumpButton);
+
+        // setup log area
+        displayArea = new JTextPane() {
+            @Override
+            public boolean getScrollableTracksViewportWidth () {
                 return true;
             }
         };
@@ -200,7 +217,7 @@ public class LauncherConsole extends JFrame implements ILogListener {
 
         addWindowListener(new WindowAdapter() {
             @Override
-            public void windowClosing(WindowEvent e) {
+            public void windowClosing (WindowEvent e) {
                 Logger.removeListener(LaunchFrame.con);
                 if (LaunchFrame.trayMenu != null) {
                     LaunchFrame.trayMenu.updateShowConsole(false);
@@ -235,7 +252,7 @@ public class LauncherConsole extends JFrame implements ILogListener {
         displayArea.setCaretPosition(displayArea.getDocument().getLength());
     }
 
-    synchronized private void addMessage(LogEntry entry, Document d) {
+    synchronized private void addMessage (LogEntry entry, Document d) {
         SimpleAttributeSet color = null;
         switch (entry.level) {
         case ERROR:
@@ -259,20 +276,22 @@ public class LauncherConsole extends JFrame implements ILogListener {
         }
     }
 
-    public void minecraftStarted() {
+    public void minecraftStarted () {
         killMCButton.setEnabled(true);
+        threadDumpButton.setEnabled(true);
     }
-    
-    public void minecraftStopped() {
+
+    public void minecraftStopped () {
         killMCButton.setEnabled(false);
+        threadDumpButton.setEnabled(false);
     }
-    
+
     @Override
     public void onLogEvent (final LogEntry entry) {
         // drop unneeded messages as soon as possible
-        if ((logSource == LogSource.ALL || entry.source == logSource) && (logLevel == LogLevel.DEBUG || logLevel.includes(entry.level))){
+        if ((logSource == LogSource.ALL || entry.source == logSource) && (logLevel == LogLevel.DEBUG || logLevel.includes(entry.level))) {
             SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
+                public void run () {
                     addMessage(entry, LaunchFrame.con.displayAreaDoc);
                 }
             });

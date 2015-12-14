@@ -16,8 +16,17 @@
  */
 package net.ftb.data;
 
-import java.awt.Image;
-import java.awt.Toolkit;
+import com.google.common.collect.Lists;
+import lombok.Getter;
+import net.ftb.data.events.TexturePackListener;
+import net.ftb.gui.LaunchFrame;
+import net.ftb.gui.panes.TexturepackPane;
+import net.ftb.log.Logger;
+import net.ftb.util.DownloadUtils;
+import net.ftb.util.OSUtils;
+import net.ftb.workers.TexturePackLoader;
+
+import java.awt.*;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -29,16 +38,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-
-import com.google.common.collect.Lists;
-import lombok.Getter;
-import net.ftb.data.events.TexturePackListener;
-import net.ftb.gui.LaunchFrame;
-import net.ftb.gui.panes.TexturepackPane;
-import net.ftb.log.Logger;
-import net.ftb.util.DownloadUtils;
-import net.ftb.util.OSUtils;
-import net.ftb.workers.TexturePackLoader;
 
 public class TexturePack {
     @Getter
@@ -54,7 +53,7 @@ public class TexturePack {
     @Getter
     private int index;
     @Getter
-    private final static ArrayList<TexturePack> texturePackArray =Lists.newArrayList();
+    private final static ArrayList<TexturePack> texturePackArray = Lists.newArrayList();
     private static List<TexturePackListener> listeners = Lists.newArrayList();
 
     public static void addListener (TexturePackListener listener) {
@@ -87,7 +86,7 @@ public class TexturePack {
         return getTexturePack(TexturepackPane.getSelectedTexturePackIndex());
     }
 
-    public TexturePack(String name, String author, String version, String url, String logo, String image, String mcversion, String compatible, String info, String resolution, int idx)
+    public TexturePack (String name, String author, String version, String url, String logo, String image, String mcversion, String compatible, String info, String resolution, int idx)
             throws NoSuchAlgorithmException, IOException {
         index = idx;
         this.name = name;
@@ -102,7 +101,7 @@ public class TexturePack {
         Collections.addAll(this.compatible, tmp);
         this.info = info;
         this.resolution = resolution;
-        for (Iterator<String> it = this.compatible.iterator(); it.hasNext();) {
+        for (Iterator<String> it = this.compatible.iterator(); it.hasNext(); ) {
             String s = it.next();
             if (s.toLowerCase().startsWith("master")) {
                 masters.add(s.replace("master_", ""));
@@ -110,8 +109,9 @@ public class TexturePack {
             }
         }
         for (ModPack p : ModPack.getPackArray()) {
-            if (!p.hasCustomTP() && !this.compatible.contains(p.getDir()) && masters.contains(p.getMcVersion().replace(".", "_")))
+            if (!p.hasCustomTP() && !this.compatible.contains(p.getDir()) && masters.contains(p.getMcVersion().replace(".", "_"))) {
                 this.compatible.add(p.getDir());
+            }
         }
         File tempDir = new File(installPath, "TexturePacks" + sep + name);
         File verFile = new File(tempDir, "version");
@@ -189,10 +189,9 @@ public class TexturePack {
         for (String aCompatible : compatible) {
             ModPack pack = ModPack.getPack(aCompatible);
             if (pack == null) {
-                Logger.logDebug("Texturepack is compatible with "  + packName + " , but modpack not found");
-            }
-            else {
-                return pack.getName().equals(packName);
+                Logger.logDebug("Texturepack is compatible with " + aCompatible + " , but modpack not found");
+            } else if (pack.getName().equals(packName)) {
+                return true;
             }
         }
         return false;
