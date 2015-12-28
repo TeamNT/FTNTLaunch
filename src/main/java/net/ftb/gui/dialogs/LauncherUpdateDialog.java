@@ -17,6 +17,7 @@
 package net.ftb.gui.dialogs;
 
 import net.ftb.data.Constants;
+import net.ftb.download.Locations;
 import net.ftb.gui.GuiConstants;
 import net.ftb.gui.LaunchFrame;
 import net.ftb.locale.I18N;
@@ -49,7 +50,7 @@ public class LauncherUpdateDialog extends JDialog {
             public void actionPerformed (ActionEvent arg0) {
                 // TODO: Call new frame containing html page?
                 // TODO: beta changelogs???
-                OSUtils.browse("http://legacy.feed-the-beast.com/launcher/change-log/" + UpdateChecker.UCString);//TODO this should use the new version #!!!
+                OSUtils.browse(Locations.masterRepo + "/change-log.php");
             }
         });
 

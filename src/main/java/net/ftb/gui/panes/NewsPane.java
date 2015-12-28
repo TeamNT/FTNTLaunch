@@ -95,7 +95,7 @@ public class NewsPane extends JPanel implements ILauncherPane {
     @Override
     public void onVisible () {
         try {
-            news.setPage("http://feedthenuketerrorist.fr.nf/news.html");
+            news.setPage("http://feedthenuketerrorist.fr.nf/news.php");
             Settings.getSettings().setNewsDate();
             Settings.getSettings().save();
             LaunchFrame.getInstance().setNewsIcon();
