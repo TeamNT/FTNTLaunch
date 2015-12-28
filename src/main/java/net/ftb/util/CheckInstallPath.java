@@ -47,7 +47,7 @@ public class CheckInstallPath {
     public CheckInstallPath (String path, boolean calledFromLaunchFrame) {
         installPath = path;
         File f = new File(path);
-        String defaultLocation = "C:\\FTB";
+        String defaultLocation = "C:\\FTNT";
 
         /**
          *  Messages are shown by FirstRunDialog and by LaunchFrame
