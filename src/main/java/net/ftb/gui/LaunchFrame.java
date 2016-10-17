@@ -107,8 +107,8 @@ public class LaunchFrame extends JFrame
 	public static JPanel panel;
 	private JPanel footer = new JPanel();
 	private JLabel footerLogo = new JLabel(new ImageIcon(this.getClass().getResource(Locations.FTBLOGO)));
-	private JLabel footerCreeper = new JLabel(new ImageIcon(this.getClass().getResource(Locations.CHLOGO)));
-	private JLabel footerCurse = new JLabel(new ImageIcon(this.getClass().getResource(Locations.CURSELOGO)));
+	// private JLabel footerCreeper = new JLabel(new ImageIcon(this.getClass().getResource(Locations.CHLOGO))); // Removed by Iclario
+	// private JLabel footerCurse = new JLabel(new ImageIcon(this.getClass().getResource(Locations.CURSELOGO))); // Removed by Iclario
 	private JLabel tpInstallLocLbl = new JLabel();
 	@Getter
 	private final JButton launch = new JButton(), edit = new JButton(), serverbutton = new JButton(), mapInstall = new JButton(), serverMap = new JButton(), tpInstall = new JButton();
@@ -208,27 +208,33 @@ public class LaunchFrame extends JFrame
 			}
 		});
 
-		footerCreeper.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-		footerCreeper.setMinimumSize(new Dimension(132, 42));
-		footerCreeper.addMouseListener(new MouseAdapter()
-		{
-			@Override
-			public void mouseClicked (MouseEvent event)
-			{
-				OSUtils.browse("http://billing.creeperhost.net/link.php?id=2");
-			}
-		});
+		/*
+		 * footerCreeper.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		 * footerCreeper.setMinimumSize(new Dimension(132, 42));
+		 * footerCreeper.addMouseListener(new MouseAdapter()
+		 * {
+		 * 
+		 * @Override
+		 * public void mouseClicked (MouseEvent event)
+		 * {
+		 * OSUtils.browse("http://billing.creeperhost.net/link.php?id=2");
+		 * }
+		 * });
+		 */ //Removed by Iclario
 
-		footerCurse.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-		footerCurse.setMinimumSize(new Dimension(118, 29));
-		footerCurse.addMouseListener(new MouseAdapter()
-		{
-			@Override
-			public void mouseClicked (MouseEvent event)
-			{
-				OSUtils.browse(Locations.CURSEVOICE);
-			}
-		});
+		/*
+		 * footerCurse.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		 * footerCurse.setMinimumSize(new Dimension(118, 29));
+		 * footerCurse.addMouseListener(new MouseAdapter()
+		 * {
+		 * 
+		 * @Override
+		 * public void mouseClicked (MouseEvent event)
+		 * {
+		 * OSUtils.browse(Locations.CURSEVOICE);
+		 * }
+		 * });
+		 */ //Removed by Iclario
 
 		dropdown_[0] = I18N.getLocaleString("PROFILE_SELECT");
 		dropdown_[1] = I18N.getLocaleString("PROFILE_CREATE");
@@ -390,8 +396,8 @@ public class LaunchFrame extends JFrame
 		JPanel logoPanel = new JPanel();
 		logoPanel.setBackground(LauncherStyle.getCurrentStyle().footerColor);
 		logoPanel.add(footerLogo);
-		logoPanel.add(footerCreeper);
-		logoPanel.add(footerCurse);
+		//logoPanel.add(footerCreeper); // Removed by Iclario
+		//logoPanel.add(footerCurse); // Removed by Iclario
 
 		// Panel for the items in the bottom right
 		JPanel buttonFooterPanel = new JPanel();
