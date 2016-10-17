@@ -1,7 +1,7 @@
 /*
  * This file is part of FTB Launcher.
  *
- * Copyright © 2012-2014, FTB Launcher Contributors <https://github.com/Slowpoke101/FTBLaunch/>
+ * Copyright © 2012-2016, FTB Launcher Contributors <https://github.com/Slowpoke101/FTBLaunch/>
  * FTB Launcher is licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -108,7 +108,7 @@ public class DownloadUtils extends Thread {
                 if (connection.getResponseCode() != 200) {
                     Logger.logDebug("failed");
                     // TODO: remove responseCode test later.
-                    AppUtils.debugConnection(connection, connection.getResponseCode()!=404);
+                    AppUtils.debugConnection(connection, connection.getResponseCode() != 404);
                     resolved = "http://" + server + "/FTB2/static/" + file;
                     connection = (HttpURLConnection) new URL(resolved).openConnection();
                     connection.setRequestProperty(CACHE_CONTROL, "no-transform");
@@ -125,11 +125,11 @@ public class DownloadUtils extends Thread {
             return resolved;
         } else {
             Logger.logWarn("Using backupLink for " + file);
-            if (!file.contains("1.8")) {
+            if (!file.contains("1.8") && !file.contains("1.9") && !file.contains("1.10") && !file.contains("1.11") && !file.contains("1.12")) {
                 // FTB hosts own version.json fails. If we are here something failed. Why?
                 Logger.logError("GET request for " + file + " failed. Please Send log to launcher team and provide your public IP address if possible.");
                 TrackerUtils.sendPageView("getStaticCreeperhostLinkOrBackup", "GET_failed: " + file);
-        }
+            }
             return backupLink;
         }
     }
@@ -375,7 +375,11 @@ public class DownloadUtils extends Thread {
         }
         String result = fileMD5(file);
         Logger.logInfo("Local: " + result.toUpperCase());
-        Logger.logInfo("Remote: " + content.toUpperCase());
+        if (content != null) {
+            Logger.logInfo("Remote: " + content.toUpperCase());
+        } else {
+            Logger.logError("could not find remote hash for " + url);
+        }
         return content.equalsIgnoreCase(result);
     }
 

@@ -16,6 +16,10 @@
  */
 package net.feed_the_beast.launcher.json.versions;
 
-public enum Action {
-    ALLOW, DISALLOW
-}
+import lombok.Data;
+
+@Data
+public class Latest {
+    private String snapshot;
+    private String release;
+    }

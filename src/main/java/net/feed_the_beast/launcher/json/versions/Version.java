@@ -1,7 +1,7 @@
 /*
  * This file is part of FTB Launcher.
  *
- * Copyright © 2012-2014, FTB Launcher Contributors <https://github.com/Slowpoke101/FTBLaunch/>
+ * Copyright © 2012-2016, FTB Launcher Contributors <https://github.com/Slowpoke101/FTBLaunch/>
  * FTB Launcher is licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,9 +16,12 @@
  */
 package net.feed_the_beast.launcher.json.versions;
 
+import com.google.common.collect.Maps;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public class Version {
     public String id;
@@ -35,6 +38,8 @@ public class Version {
     public String inheritsFrom;
     public String jar;
     private List<Library> _libraries;
+    public Asset assetIndex;
+    private Map<DownloadType, Downloadable> downloads = Maps.newEnumMap(DownloadType.class);
 
     public List<Library> getLibraries () {
         if (_libraries == null) {

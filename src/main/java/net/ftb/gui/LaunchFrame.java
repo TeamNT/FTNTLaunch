@@ -1,7 +1,7 @@
 /*
  * This file is part of FTB Launcher.
  *
- * Copyright © 2012-2014, FTB Launcher Contributors <https://github.com/Slowpoke101/FTBLaunch/>
+ * Copyright © 2012-2016, FTB Launcher Contributors <https://github.com/Slowpoke101/FTBLaunch/>
  * FTB Launcher is licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -81,6 +81,8 @@ public class LaunchFrame extends JFrame {
     public static JPanel panel;
     private JPanel footer = new JPanel();
     private JLabel footerLogo = new JLabel(new ImageIcon(this.getClass().getResource(Locations.FTBLOGO)));
+    private JLabel footerCreeper = new JLabel(new ImageIcon(this.getClass().getResource(Locations.CHLOGO)));
+    private JLabel footerCurse = new JLabel(new ImageIcon(this.getClass().getResource(Locations.CURSELOGO)));
     private JLabel tpInstallLocLbl = new JLabel();
     @Getter
     private final JButton launch = new JButton(), edit = new JButton(), serverbutton = new JButton(), mapInstall = new JButton(), serverMap = new JButton(),
@@ -169,6 +171,24 @@ public class LaunchFrame extends JFrame {
             @Override
             public void mouseClicked (MouseEvent event) {
                 OSUtils.browse(Locations.FTBSITE);
+            }
+        });
+
+        footerCreeper.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        footerCreeper.setMinimumSize(new Dimension(132, 42));
+        footerCreeper.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked (MouseEvent event) {
+                OSUtils.browse("http://billing.creeperhost.net/link.php?id=2");
+            }
+        });
+
+        footerCurse.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        footerCurse.setMinimumSize(new Dimension(118, 29));
+        footerCurse.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked (MouseEvent event) {
+                OSUtils.browse(Locations.CURSEVOICE);
             }
         });
 
@@ -310,6 +330,8 @@ public class LaunchFrame extends JFrame {
         JPanel logoPanel = new JPanel();
         logoPanel.setBackground(LauncherStyle.getCurrentStyle().footerColor);
         logoPanel.add(footerLogo);
+        logoPanel.add(footerCreeper);
+        logoPanel.add(footerCurse);
 
         // Panel for the items in the bottom right
         JPanel buttonFooterPanel = new JPanel();
@@ -651,7 +673,7 @@ public class LaunchFrame extends JFrame {
         } catch (Exception e1) {
         }
         boolean isLegacy = true;
-        if (pack.getMcVersion().startsWith("1.6") || pack.getMcVersion().startsWith("1.7") || pack.getMcVersion().startsWith("1.8") || pack.getMcVersion().startsWith("14w")) {
+        if (pack.getMcVersion().startsWith("1.6") || pack.getMcVersion().startsWith("1.7") || pack.getMcVersion().startsWith("1.8") || pack.getMcVersion().startsWith("1.9") || pack.getMcVersion().startsWith("1.10") || pack.getMcVersion().startsWith("1.11") || pack.getMcVersion().startsWith("1.12") || pack.getMcVersion().startsWith("14w")|| pack.getMcVersion().startsWith("15w")|| pack.getMcVersion().startsWith("16w")) {
             isLegacy = false;
         }
         MCInstaller.setupNewStyle(installPath, pack, isLegacy, RESPONSE);

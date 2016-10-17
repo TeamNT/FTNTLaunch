@@ -1,7 +1,7 @@
 /*
  * This file is part of FTB Launcher.
  *
- * Copyright © 2012-2014, FTB Launcher Contributors <https://github.com/Slowpoke101/FTBLaunch/>
+ * Copyright © 2012-2016, FTB Launcher Contributors <https://github.com/Slowpoke101/FTBLaunch/>
  * FTB Launcher is licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -62,7 +62,7 @@ public class MCLauncher {
     private static StringBuilder cpb;
 
     public static Process launchMinecraft (String javaPath, String gameFolder, File assetDir, File nativesDir, List<File> classpath, String mainClass, String args, String assetIndex, String rmax,
-            String maxPermSize, String version, UserAuthentication authentication, boolean legacy) throws IOException {
+            String maxPermSize, String version, UserAuthentication authentication, boolean legacy, String versionType) throws IOException {
 
         cpb = new StringBuilder("");
         isLegacy = legacy;
@@ -116,6 +116,7 @@ public class MCLauncher {
         arguments.add("-Dorg.lwjgl.librarypath=" + nativesDir.getAbsolutePath());
         arguments.add("-Dnet.java.games.input.librarypath=" + nativesDir.getAbsolutePath());
         arguments.add("-Duser.home=" + gameDir.getParentFile().getAbsolutePath());
+        arguments.add("-Duser.language=en");
 
         if (OSUtils.getCurrentOS() == OSUtils.OS.WINDOWS) {
             arguments.add("-XX:HeapDumpPath=MojangTricksIntelDriversForPerformance_javaw.exe_minecraft.exe.heapdump");
@@ -220,6 +221,8 @@ public class MCLauncher {
                     arguments.add(new GsonBuilder().registerTypeAdapter(PropertyMap.class, new PropertyMap.Serializer()).create().toJson(authentication.getUserProperties()));
                 } else if (isLegacy) {
                     arguments.add(parseLegacyArgs(s));
+                } else if(s.equals("${version_type}")) {
+                    arguments.add(versionType);
                 } else {
                     arguments.add(s);
                 }

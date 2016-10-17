@@ -16,6 +16,6 @@
  */
 package net.feed_the_beast.launcher.json.versions;
 
-public enum Action {
-    ALLOW, DISALLOW
+public enum DownloadType {
+    CLIENT, SERVER, WINDOWS_SERVER;
 }

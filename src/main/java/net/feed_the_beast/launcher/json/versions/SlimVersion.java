@@ -16,6 +16,17 @@
  */
 package net.feed_the_beast.launcher.json.versions;
 
-public enum Action {
-    ALLOW, DISALLOW
+import lombok.Data;
+
+import java.net.URL;
+import java.util.Date;
+
+@Data
+public class SlimVersion {
+    private String id;
+    private Date time;
+    private Date releaseTime;
+    private String type;
+    private URL url;
+
 }

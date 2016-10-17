@@ -1,7 +1,7 @@
 /*
  * This file is part of FTB Launcher.
  *
- * Copyright © 2012-2014, FTB Launcher Contributors <https://github.com/Slowpoke101/FTBLaunch/>
+ * Copyright © 2012-2016, FTB Launcher Contributors <https://github.com/Slowpoke101/FTBLaunch/>
  * FTB Launcher is licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -124,7 +124,7 @@ public class MCInstaller {
      */
     private static List<DownloadInfo> gatherAssets (final File root, String installDir, boolean isLegacy) {
         try {
-            Logger.logInfo("Checking local assets file, for MC version" + packmcversion + " Please wait! ");
+            Logger.logInfo("Checking local assets file, for MC version " + packmcversion + " Please wait! ");
             List<DownloadInfo> list = Lists.newArrayList();
             Boolean forceUpdate = Settings.getSettings().isForceUpdateEnabled();
             File local;
@@ -412,7 +412,7 @@ public class MCInstaller {
 
             Process minecraftProcess = MCLauncher.launchMinecraft(Settings.getSettings().getJavaPath(), gameFolder, assetDir, natDir, classpath,
                     packjson.mainClass != null ? packjson.mainClass : base.mainClass, packjson.minecraftArguments != null ? packjson.minecraftArguments : base.minecraftArguments,
-                    packjson.assets != null ? packjson.assets : base.getAssets(), Settings.getSettings().getRamMax(), pack.getMaxPermSize(), pack.getMcVersion(packVer), resp.getAuth(), isLegacy);
+                    packjson.assets != null ? packjson.assets : base.getAssets(), Settings.getSettings().getRamMax(), pack.getMaxPermSize(), pack.getMcVersion(packVer), resp.getAuth(), isLegacy, packjson.type);
             LaunchFrame.MCRunning = true;
 
             if (!CommandLineSettings.getSettings().isDisableMCLogging()) {

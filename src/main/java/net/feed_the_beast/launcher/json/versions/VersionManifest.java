@@ -16,20 +16,36 @@
  */
 package net.feed_the_beast.launcher.json.versions;
 
+import com.beust.jcommander.internal.Maps;
+import lombok.Data;
+
 import java.util.List;
+import java.util.Map;
 
-public class ExtractRule {
-    private List<String> exclude;
+@Data
+public class VersionManifest {
+    private Latest latest;
+    private List<SlimVersion> versions;
 
-    public boolean exclude (String name) {
-        if (exclude == null) {
-            return false;
-        }
-        for (String s : exclude) {
-            if (name.startsWith(s)) {
-                return true;
+    private Map<String,SlimVersion> versionMap = null;
+    public Map<String,SlimVersion> getVersionMap() {
+        if(versionMap == null) {
+            versionMap = Maps.newHashMap();
+            for (SlimVersion version : versions)
+            {
+                versionMap.put(version.getId(), version);
             }
         }
-        return false;
+        return versionMap;
+    }
+    public SlimVersion getVersionByName(String name){
+        if(versionMap == null) {
+            versionMap = Maps.newHashMap();
+            for (SlimVersion version : versions)
+            {
+                versionMap.put(version.getId(), version);
+            }
+        }
+        return versionMap.get(name);
     }
 }

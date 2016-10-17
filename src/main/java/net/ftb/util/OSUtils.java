@@ -1,7 +1,7 @@
 /*
  * This file is part of FTB Launcher.
  *
- * Copyright © 2012-2014, FTB Launcher Contributors <https://github.com/Slowpoke101/FTBLaunch/>
+ * Copyright © 2012-2016, FTB Launcher Contributors <https://github.com/Slowpoke101/FTBLaunch/>
  * FTB Launcher is licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -105,7 +105,7 @@ public class OSUtils {
     public static String getDefInstallPath () {
         switch (getCurrentOS()) {
         case WINDOWS:
-            String defaultLocation = "c:\\ftb";
+            String defaultLocation = "c:\\ftnt";
             File testFile = new File(defaultLocation);
             // existing directory and we can write
             if (testFile.canWrite()) {
@@ -119,9 +119,9 @@ public class OSUtils {
             Logger.logWarn("Can't use default installation location. Using current location of the launcher executable.");
 
         case MACOSX:
-            return System.getProperty("user.home") + "/ftb";
+            return System.getProperty("user.home") + "/ftnt";
         case UNIX:
-            return System.getProperty("user.home") + "/ftb";
+            return System.getProperty("user.home") + "/ftnt";
         default:
             try {
                 CodeSource codeSource = LaunchFrame.class.getProtectionDomain().getCodeSource();
@@ -132,7 +132,7 @@ public class OSUtils {
                 Logger.logError("Unexcepted error", e);
             }
 
-            return System.getProperty("user.home") + System.getProperty("path.separator") + "FTB";
+            return System.getProperty("user.home") + System.getProperty("path.separator") + "FTNT";
         }
     }
 
@@ -408,7 +408,7 @@ public class OSUtils {
             while (networkInterfaces.hasMoreElements()) {
                 NetworkInterface network = networkInterfaces.nextElement();
                 byte[] mac = network.getHardwareAddress();
-                if (mac != null && mac.length > 0 && !network.isLoopback() && !network.isVirtual() && !network.isPointToPoint() && network.getName().substring(0,3) != "ham") {
+                if (mac != null && mac.length > 0 && !network.isLoopback() && !network.isVirtual() && !network.isPointToPoint() && network.getName().substring(0,3) != "ham" && network.getName().substring(0,3) != "vir" && !network.getName().startsWith("docker")) {
                     Logger.logDebug("Interface: " + network.getDisplayName() + " : " + network.getName());
                     cachedMacAddress = new byte[mac.length * 10];
                     for (int i = 0; i < cachedMacAddress.length; i++) {
@@ -452,12 +452,21 @@ public class OSUtils {
     private static byte[] genHardwareIDUNIX () {
         String line;
         if (CommandLineSettings.getSettings().isUseMac()) {
+            BufferedReader reader = null;
             try {
-                BufferedReader reader = new BufferedReader(new FileReader("/etc/machine-id"));
+                reader = new BufferedReader(new FileReader("/etc/machine-id"));
                 line = reader.readLine();
             } catch (Exception e) {
                 Logger.logDebug("failed", e);
                 return new byte[] { };
+            } finally {
+                if(reader != null)
+                    try {
+                        reader.close();
+                    } catch (IOException e) {
+                        Logger.logWarn("Error while generating Hardware ID UNIX", e);
+                    }
+
             }
             return line.getBytes();
         } else {
@@ -516,7 +525,7 @@ public class OSUtils {
         try {
             if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
                 Desktop.getDesktop().browse(new URI(url.replace(" ", "+")));
-            } else if (getCurrentOS() == OS.UNIX && (new File("/usr/bin/xdg-open").exists() || new File("/usr/local/bin/xdg-open").exists())) {
+            } else if (getCurrentOS() == OS.UNIX) {
                 // Work-around to support non-GNOME Linux desktop environments with xdg-open installed
                 new ProcessBuilder("xdg-open", url).start();
             } else {
@@ -540,9 +549,7 @@ public class OSUtils {
                 Desktop.getDesktop().open(path);
             } else if (getCurrentOS() == OS.UNIX) {
                 // Work-around to support non-GNOME Linux desktop environments with xdg-open installed
-                if (new File("/usr/bin/xdg-open").exists() || new File("/usr/local/bin/xdg-open").exists()) {
-                    new ProcessBuilder("xdg-open", path.toString()).start();
-                }
+                new ProcessBuilder("xdg-open", path.toString()).start();
             }
         } catch (Exception e) {
             Logger.logError("Could not open file", e);
@@ -563,6 +570,10 @@ public class OSUtils {
         environment.remove("_JAVA_OPTIONS");
         environment.remove("JAVA_TOOL_OPTIONS");
         environment.remove("JAVA_OPTIONS");
+
+        if (OSUtils.getCurrentOS() == OS.WINDOWS) {
+            environment.put("__COMPAT_LAYER", "WIN8RTM");
+        }
     }
 
     public static StyleSheet makeStyleSheet (String name) {

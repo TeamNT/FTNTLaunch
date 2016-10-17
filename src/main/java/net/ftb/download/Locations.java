@@ -1,7 +1,7 @@
 /*
  * This file is part of FTB Launcher.
  *
- * Copyright © 2012-2014, FTB Launcher Contributors <https://github.com/Slowpoke101/FTBLaunch/>
+ * Copyright © 2012-2016, FTB Launcher Contributors <https://github.com/Slowpoke101/FTBLaunch/>
  * FTB Launcher is licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -24,8 +24,10 @@ import java.util.HashMap;
 public class Locations {
 
     //location of them Mojang server that MC itself & the json's are pulled from
+    @Deprecated
     public static final String mc_dl = "https://s3.amazonaws.com/Minecraft.Download/";
     //location of them Mojang server that MC's resources are pulled from
+    public static final String mc_versionsmanifest = "https://launchermeta.mojang.com/mc/game/version_manifest.json";
     public static final String mc_res = "http://resources.download.minecraft.net/";
     //location of them Mojang server that hosts the Minecraft Maven host
     public static final String mc_libs = "https://libraries.minecraft.net/";

@@ -1,7 +1,7 @@
 /*
  * This file is part of FTB Launcher.
  *
- * Copyright © 2012-2014, FTB Launcher Contributors <https://github.com/Slowpoke101/FTBLaunch/>
+ * Copyright © 2012-2016, FTB Launcher Contributors <https://github.com/Slowpoke101/FTBLaunch/>
  * FTB Launcher is licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,11 +16,8 @@
  */
 package net.ftb.log;
 
-import com.google.common.collect.Maps;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Map;
 
 public class LogEntry {
     private String message = "";
@@ -28,14 +25,24 @@ public class LogEntry {
     public LogSource source = LogSource.LAUNCHER;
     private Throwable cause;
     private String location;
-    private final String dateString;
-    private final Map<LogType, String> messageCache = Maps.newHashMap();
-    private static final String dateFormatString = "HH:mm:ss";
+    private final Date date;
+    private String[] messageCache;
+    private static final ThreadLocal<SimpleDateFormat> dateFormat = new ThreadLocal<SimpleDateFormat>() {
+        @Override
+        protected SimpleDateFormat initialValue () {
+            return new SimpleDateFormat("HH:mm:ss");
+        }
+    };
 
     public LogEntry () {
-        Date date = new Date();
-        this.dateString = new SimpleDateFormat(dateFormatString).format(date);
-        this.location = getLocation(cause);
+        this(true);
+    }
+
+    public LogEntry (boolean setLocation) {
+        this.date = new Date();
+        if (setLocation) {
+            this.location = getLocation(cause);
+        }
     }
 
     public LogEntry message (String message) {
@@ -89,13 +96,13 @@ public class LogEntry {
     }
 
     public String toString (LogType type) {
-        if (messageCache.containsKey(type)) {
-            return messageCache.get(type);
+        if (messageCache != null && messageCache[type.ordinal()] != null) {
+            return messageCache[type.ordinal()];
         }
         StringBuilder entryMessage = new StringBuilder();
         if (source != LogSource.EXTERNAL) {
             if (type.includes(LogType.EXTENDED)) {
-                entryMessage.append("[").append(dateString).append("] ");
+                entryMessage.append("[").append(dateFormat.get().format(date)).append("] ");
             }
             if (type.includes(LogType.EXTENDED)) {
                 entryMessage.append("[").append(level).append("] ");
@@ -117,7 +124,12 @@ public class LogEntry {
             }
         }
         String message = entryMessage.toString();
-        messageCache.put(type, message);
+
+        if (messageCache == null) {
+            messageCache = new String[LogType.indexCount];
+        }
+        messageCache[type.ordinal()] = message;
+
         return message;
     }
 

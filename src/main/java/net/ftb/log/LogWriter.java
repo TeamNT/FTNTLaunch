@@ -1,7 +1,7 @@
 /*
  * This file is part of FTB Launcher.
  *
- * Copyright © 2012-2014, FTB Launcher Contributors <https://github.com/Slowpoke101/FTBLaunch/>
+ * Copyright © 2012-2016, FTB Launcher Contributors <https://github.com/Slowpoke101/FTBLaunch/>
  * FTB Launcher is licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -31,6 +31,16 @@ public class LogWriter implements ILogListener {
         this.logWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(logFile), "UTF-8"));
         this.logWriter.write(logFile + ": written by FTB Launcher" + System.getProperty("line.separator"));
         this.logWriter.flush();
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
+            public void run() {
+                try {
+                    logWriter.flush();
+                } catch (IOException ignored) {
+                    // ignored
+                }
+            }
+        });
     }
 
     @Override
@@ -38,7 +48,6 @@ public class LogWriter implements ILogListener {
         if (entry.source == source) {
             try {
                 logWriter.write(entry.toString(LogType.EXTENDED) + System.getProperty("line.separator"));
-                logWriter.flush();
             } catch (IOException e) {
                 // We probably do not want to trigger new errors
                 // How can we notify user? Is notify needed?

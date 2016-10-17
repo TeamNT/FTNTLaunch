@@ -1,7 +1,7 @@
 /*
  * This file is part of FTB Launcher.
  *
- * Copyright © 2012-2014, FTB Launcher Contributors <https://github.com/Slowpoke101/FTBLaunch/>
+ * Copyright © 2012-2016, FTB Launcher Contributors <https://github.com/Slowpoke101/FTBLaunch/>
  * FTB Launcher is licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -183,7 +183,11 @@ public abstract class AbstractModPackPane extends JPanel {
                                 url = DownloadUtils.getCreeperhostLink("modpacks/" + pack.getDir() + "/" + version + "/" + pack.getServerUrl());
                             }
 
-                            OSUtils.browse(url);
+                            if (DownloadUtils.fileExistsURL(url)) {
+                                OSUtils.browse(url);
+                            } else {
+                                ErrorUtils.tossError("Server file for selected version was not found on the server");
+                            }
                             TrackerUtils.sendPageView(pack.getName() + " Server Download", "Server Download / " + pack.getName() + " / " + version);
                         }
                     }

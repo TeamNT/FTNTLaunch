@@ -16,6 +16,14 @@
  */
 package net.feed_the_beast.launcher.json.versions;
 
-public enum Action {
-    ALLOW, DISALLOW
+import lombok.Data;
+
+import java.net.URL;
+
+@Data
+public class Downloadable {
+
+    private URL url;
+    private String sha1;
+    private int size;
 }
