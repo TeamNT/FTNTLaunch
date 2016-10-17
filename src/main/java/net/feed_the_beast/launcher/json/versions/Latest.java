@@ -19,7 +19,8 @@ package net.feed_the_beast.launcher.json.versions;
 import lombok.Data;
 
 @Data
-public class Latest {
-    private String snapshot;
-    private String release;
-    }
+public class Latest
+{
+	private String snapshot;
+	private String release;
+}

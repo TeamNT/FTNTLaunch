@@ -16,75 +16,91 @@
  */
 package net.ftb.updater;
 
-import com.google.common.collect.Lists;
-import net.ftb.log.Logger;
-import net.ftb.util.FTBFileUtils;
-import net.ftb.util.OSUtils;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SelfUpdate {
-    public static void runUpdate (String currentPath, String temporaryUpdatePath) {
-        List<String> arguments = Lists.newArrayList();
+import com.google.common.collect.Lists;
 
-        String separator = System.getProperty("file.separator");
-        String path = System.getProperty("java.home") + separator + "bin" + separator + "java";
-        arguments.add(path);
-        arguments.add("-cp");
-        arguments.add(temporaryUpdatePath);
-        arguments.add(SelfUpdate.class.getCanonicalName());
-        arguments.add(currentPath);
-        arguments.add(temporaryUpdatePath);
+import net.ftb.log.Logger;
+import net.ftb.util.FTBFileUtils;
+import net.ftb.util.OSUtils;
 
-        Logger.logInfo("Would update with: " + arguments);
-        Logger.logInfo("current: " + currentPath);
-        Logger.logInfo("new: " + temporaryUpdatePath);
-        ProcessBuilder processBuilder = new ProcessBuilder();
-        processBuilder.command(arguments);
-        try {
-            processBuilder.start();
-        } catch (IOException e) {
-            Logger.logError("Failed to start self-update process", e);
-        }
-        System.exit(0);
-    }
+public class SelfUpdate
+{
+	public static void runUpdate (String currentPath, String temporaryUpdatePath)
+	{
+		List<String> arguments = Lists.newArrayList();
 
-    public static void main (String[] args) {
-        try {
-            if (OSUtils.getCurrentOS() != OSUtils.OS.UNIX) {
-                Thread.sleep(4000);//why is this here???
-            }
-        } catch (InterruptedException ignored) {
-        }
-        String launcherPath = args[0];
-        String temporaryUpdatePath = args[1];
-        File launcher = new File(launcherPath);
-        File temporaryUpdate = new File(temporaryUpdatePath);
-        try {
-            FTBFileUtils.delete(launcher);
-            FTBFileUtils.copyFile(temporaryUpdate, launcher);
-            launcher.setExecutable(true);
-        } catch (IOException e) {
-            Logger.logError("Auto Updating Failed", e);
-        }
+		String separator = System.getProperty("file.separator");
+		String path = System.getProperty("java.home") + separator + "bin" + separator + "java";
+		arguments.add(path);
+		arguments.add("-cp");
+		arguments.add(temporaryUpdatePath);
+		arguments.add(SelfUpdate.class.getCanonicalName());
+		arguments.add(currentPath);
+		arguments.add(temporaryUpdatePath);
 
-        List<String> arguments = new ArrayList<String>();
+		Logger.logInfo("Would update with: " + arguments);
+		Logger.logInfo("current: " + currentPath);
+		Logger.logInfo("new: " + temporaryUpdatePath);
+		ProcessBuilder processBuilder = new ProcessBuilder();
+		processBuilder.command(arguments);
+		try
+		{
+			processBuilder.start();
+		}
+		catch (IOException e)
+		{
+			Logger.logError("Failed to start self-update process", e);
+		}
+		System.exit(0);
+	}
 
-        String separator = System.getProperty("file.separator");
-        String path = System.getProperty("java.home") + separator + "bin" + separator + "java";
-        arguments.add(path);
-        arguments.add("-jar");
-        arguments.add(launcherPath);
+	public static void main (String[] args)
+	{
+		try
+		{
+			if (OSUtils.getCurrentOS() != OSUtils.OS.UNIX)
+			{
+				Thread.sleep(4000);// why is this here???
+			}
+		}
+		catch (InterruptedException ignored)
+		{}
+		String launcherPath = args[0];
+		String temporaryUpdatePath = args[1];
+		File launcher = new File(launcherPath);
+		File temporaryUpdate = new File(temporaryUpdatePath);
+		try
+		{
+			FTBFileUtils.delete(launcher);
+			FTBFileUtils.copyFile(temporaryUpdate, launcher);
+			launcher.setExecutable(true);
+		}
+		catch (IOException e)
+		{
+			Logger.logError("Auto Updating Failed", e);
+		}
 
-        ProcessBuilder processBuilder = new ProcessBuilder();
-        processBuilder.command(arguments);
-        try {
-            processBuilder.start();
-        } catch (IOException e) {
-            Logger.logError("Failed to start launcher process after updating", e);
-        }
-    }
+		List<String> arguments = new ArrayList<String>();
+
+		String separator = System.getProperty("file.separator");
+		String path = System.getProperty("java.home") + separator + "bin" + separator + "java";
+		arguments.add(path);
+		arguments.add("-jar");
+		arguments.add(launcherPath);
+
+		ProcessBuilder processBuilder = new ProcessBuilder();
+		processBuilder.command(arguments);
+		try
+		{
+			processBuilder.start();
+		}
+		catch (IOException e)
+		{
+			Logger.logError("Failed to start launcher process after updating", e);
+		}
+	}
 }

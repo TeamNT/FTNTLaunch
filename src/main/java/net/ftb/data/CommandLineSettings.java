@@ -19,6 +19,7 @@ package net.ftb.data;
 import com.beust.jcommander.IParameterValidator;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
+
 import lombok.Getter;
 
 /**
@@ -27,102 +28,126 @@ import lombok.Getter;
  * Note: due a bug in jcommander do not use single long name, e.g. "--help". It will break output of usage()
  *
  * TODO:
- *   * add hints about required values as soon as jcommander supports meta values
- *   * ValidateRequiredValue.validate()'s argument name is always first item in the array. How to fix? will it confuse users?
- *   * "help = true" does not stop Validators from running => ValidateRequiredValue will throw exception even if --help is given
+ * * add hints about required values as soon as jcommander supports meta values
+ * * ValidateRequiredValue.validate()'s argument name is always first item in the array. How to fix? will it confuse users?
+ * * "help = true" does not stop Validators from running => ValidateRequiredValue will throw exception even if --help is given
  *
  */
-public class CommandLineSettings {
-    @Getter
-    private static CommandLineSettings settings;
+public class CommandLineSettings
+{
+	@Getter
+	private static CommandLineSettings settings;
 
-    static {
-        settings = new CommandLineSettings();
-    }
+	static
+	{
+		settings = new CommandLineSettings();
+	}
 
-    @Parameter(names = { "--verbose", "-V" }, description = "Level of verbosity: 0=debug, 1=info, 2=warning, 3=error", arity = 1)
-    @Getter
-    // default = VERBOSE
-    private int verbosity = 0;
+	@Parameter(names =
+		{"--verbose", "-V"}, description = "Level of verbosity: 0=debug, 1=info, 2=warning, 3=error", arity = 1)
+	@Getter
+	// default = VERBOSE
+	private int verbosity = 0;
 
-    @Parameter(names = { "--log-mc", "-m" }, description = "Show messages from minecraft process")
-    @Getter
-    private boolean mcLogs = false;
+	@Parameter(names =
+		{"--log-mc", "-m"}, description = "Show messages from minecraft process")
+	@Getter
+	private boolean mcLogs = false;
 
-    @Parameter(names = { "--no-console", "-c" }, description = "Do not open console window. (Overrides GUI option.)")
-    @Getter
-    private boolean noConsole = false;
+	@Parameter(names =
+		{"--no-console", "-c"}, description = "Do not open console window. (Overrides GUI option.)")
+	@Getter
+	private boolean noConsole = false;
 
-    @Parameter(names = { "--autostart", "-a" }, description = "Automatically start given pack (WIP feature)", arity = 1)
-    @Getter
-    private String packDir;
+	@Parameter(names =
+		{"--autostart", "-a"}, description = "Automatically start given pack (WIP feature)", arity = 1)
+	@Getter
+	private String packDir;
 
-    @Parameter(names = { "--cache-dir", "-C" }, description = "Cache directory", arity = 1, validateWith = ValidateRequiredValue.class)
-    @Getter
-    private String cacheDir;
+	@Parameter(names =
+		{"--cache-dir", "-C"}, description = "Cache directory", arity = 1, validateWith = ValidateRequiredValue.class)
+	@Getter
+	private String cacheDir;
 
-    @Parameter(names = { "--dynamic-dir", "-D" }, description = "Dynamic directory", arity = 1, validateWith = ValidateRequiredValue.class)
-    @Getter
-    private String dynamicDir;
+	@Parameter(names =
+		{"--dynamic-dir", "-D"}, description = "Dynamic directory", arity = 1, validateWith = ValidateRequiredValue.class)
+	@Getter
+	private String dynamicDir;
 
-    @Parameter(names = { "--pack-dir", "-P" }, description = "FTB installation directory", arity = 1, validateWith = ValidateRequiredValue.class)
-    @Getter
-    private String installDir;
+	@Parameter(names =
+		{"--pack-dir", "-P"}, description = "FTB installation directory", arity = 1, validateWith = ValidateRequiredValue.class)
+	@Getter
+	private String installDir;
 
-    @Parameter(names = { "--use-mac", "-M" }, description = "Use mac address as an encryption key")
-    @Getter
-    private boolean useMac = false;
+	@Parameter(names =
+		{"--use-mac", "-M"}, description = "Use mac address as an encryption key")
+	@Getter
+	private boolean useMac = false;
 
-    @Parameter(names = { "--help", "-h" }, help = true, description = "Shows help")
-    @Getter
-    private boolean help = false;
+	@Parameter(names =
+		{"--help", "-h"}, help = true, description = "Shows help")
+	@Getter
+	private boolean help = false;
 
-    @Parameter(names = { "--disable-tray", "-t" }, description = "Disable tray icon")
-    @Getter
-    private boolean disableTray = false;
+	@Parameter(names =
+		{"--disable-tray", "-t"}, description = "Disable tray icon")
+	@Getter
+	private boolean disableTray = false;
 
-    @Parameter(names = { "--skip-first", "-s" }, description = "Skip first time startup dialogue")
-    @Getter
-    private boolean skipFirst = false;
+	@Parameter(names =
+		{"--skip-first", "-s"}, description = "Skip first time startup dialogue")
+	@Getter
+	private boolean skipFirst = false;
 
-    @Parameter(names = {"--set-version"}, description = "Set version")
-    @Getter
-    private int manualVersion = 0;
+	@Parameter(names =
+		{"--set-version"}, description = "Set version")
+	@Getter
+	private int manualVersion = 0;
 
-    @Parameter(names = {"--set-build"}, description = "Set build number")
-    @Getter
-    private int manualBuildNumber = 0;
+	@Parameter(names =
+		{"--set-build"}, description = "Set build number")
+	@Getter
+	private int manualBuildNumber = 0;
 
-    @Parameter(names = {"--disable-bitness-checks"}, description = "Disable JVM bitness check nagging screens")
-    @Getter
-    private boolean disableJVMBitnessCheck = false;
+	@Parameter(names =
+		{"--disable-bitness-checks"}, description = "Disable JVM bitness check nagging screens")
+	@Getter
+	private boolean disableJVMBitnessCheck = false;
 
-    @Parameter(names = {"--disable-jvm-version-checks"}, description = "Disable JVM version check nagging screens")
-    @Getter
-    private boolean disableJVMVersionCheck = false;
+	@Parameter(names =
+		{"--disable-jvm-version-checks"}, description = "Disable JVM version check nagging screens")
+	@Getter
+	private boolean disableJVMVersionCheck = false;
 
-    @Parameter(names = {"--disable-installation-location-checks"}, description = "Disable installation location checks")
-    @Getter
-    private boolean disableInstallLocChecks = false;
+	@Parameter(names =
+		{"--disable-installation-location-checks"}, description = "Disable installation location checks")
+	@Getter
+	private boolean disableInstallLocChecks = false;
 
-    @Parameter(names = {"--disable-mc-logging"}, description = "Disable MC logging")
-    @Getter
-    private boolean disableMCLogging = false;
+	@Parameter(names =
+		{"--disable-mc-logging"}, description = "Disable MC logging")
+	@Getter
+	private boolean disableMCLogging = false;
 
-    @Parameter(names = {"--disable-news"}, description = "Disable contents of news pane")
-    @Getter
-    private boolean disableNews = false;
+	@Parameter(names =
+		{"--disable-news"}, description = "Disable contents of news pane")
+	@Getter
+	private boolean disableNews = false;
 
-    public static class ValidateRequiredValue implements IParameterValidator {
-        @Override
-        public void validate (String name, String value) throws ParameterException {
-            if (value == null || value.isEmpty()) {
-                // this should never happen because jcommander bug
-                throw new ParameterException("Expected a value after parameter " + name);
-            }
-            if (value.startsWith("-") && !value.equals("--")) {
-                throw new ParameterException("Expected a value after parameter " + name + ". Looks like argument " + value);
-            }
-        }
-    }
+	public static class ValidateRequiredValue implements IParameterValidator
+	{
+		@Override
+		public void validate (String name, String value) throws ParameterException
+		{
+			if (value == null || value.isEmpty())
+			{
+				// this should never happen because jcommander bug
+				throw new ParameterException("Expected a value after parameter " + name);
+			}
+			if (value.startsWith("-") && !value.equals("--"))
+			{
+				throw new ParameterException("Expected a value after parameter " + name + ". Looks like argument " + value);
+			}
+		}
+	}
 }

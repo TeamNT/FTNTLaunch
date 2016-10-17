@@ -16,47 +16,54 @@
  */
 package net.feed_the_beast.launcher.json.versions;
 
-import com.google.common.collect.Maps;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-public class Version {
-    public String id;
-    public Date time;
-    public Date releaseTime;
-    public String type;
-    public String minecraftArguments;
-    public List<Library> libraries;
-    public String mainClass;
-    public int minimumLauncherVersion;
-    public String incompatibilityReason;
-    public List<OSRule> rules;
-    public String assets;
-    public String inheritsFrom;
-    public String jar;
-    private List<Library> _libraries;
-    public Asset assetIndex;
-    private Map<DownloadType, Downloadable> downloads = Maps.newEnumMap(DownloadType.class);
+import com.google.common.collect.Maps;
 
-    public List<Library> getLibraries () {
-        if (_libraries == null) {
-            _libraries = new ArrayList<Library>();
-            if (libraries == null) {
-                return _libraries;
-            }
-            for (Library lib : libraries) {
-                if (lib.applies()) {
-                    _libraries.add(lib);
-                }
-            }
-        }
-        return _libraries;
-    }
+public class Version
+{
+	public String id;
+	public Date time;
+	public Date releaseTime;
+	public String type;
+	public String minecraftArguments;
+	public List<Library> libraries;
+	public String mainClass;
+	public int minimumLauncherVersion;
+	public String incompatibilityReason;
+	public List<OSRule> rules;
+	public String assets;
+	public String inheritsFrom;
+	public String jar;
+	private List<Library> _libraries;
+	public Asset assetIndex;
+	private Map<DownloadType, Downloadable> downloads = Maps.newEnumMap(DownloadType.class);
 
-    public String getAssets () {
-        return assets == null ? "legacy" : assets;
-    }
+	public List<Library> getLibraries ()
+	{
+		if (_libraries == null)
+		{
+			_libraries = new ArrayList<Library>();
+			if (libraries == null)
+			{
+				return _libraries;
+			}
+			for(Library lib : libraries)
+			{
+				if (lib.applies())
+				{
+					_libraries.add(lib);
+				}
+			}
+		}
+		return _libraries;
+	}
+
+	public String getAssets ()
+	{
+		return assets == null ? "legacy" : assets;
+	}
 }

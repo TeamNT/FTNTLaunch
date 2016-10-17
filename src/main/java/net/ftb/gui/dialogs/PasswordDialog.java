@@ -16,56 +16,66 @@
  */
 package net.ftb.gui.dialogs;
 
+import java.awt.Container;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPasswordField;
+
 import net.ftb.gui.GuiConstants;
 import net.ftb.gui.LaunchFrame;
 import net.ftb.locale.I18N;
 import net.miginfocom.swing.MigLayout;
 
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.*;
-
 @SuppressWarnings("serial")
-public class PasswordDialog extends JDialog {
-    private JLabel passwordLbl;
-    private JPasswordField password;
-    private JButton login;
+public class PasswordDialog extends JDialog
+{
+	private JLabel passwordLbl;
+	private JPasswordField password;
+	private JButton login;
 
-    public PasswordDialog (LaunchFrame instance, boolean modal) {
-        super(instance, modal);
-        setupGui();
+	public PasswordDialog (LaunchFrame instance, boolean modal)
+	{
+		super(instance, modal);
+		setupGui();
 
-        getRootPane().setDefaultButton(login);
-        login.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed (ActionEvent event) {
-                if (!new String(password.getPassword()).isEmpty()) {
-                    LaunchFrame.tempPass = new String(password.getPassword());
-                    setVisible(false);
-                }
-            }
-        });
-    }
+		getRootPane().setDefaultButton(login);
+		login.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed (ActionEvent event)
+			{
+				if (!new String(password.getPassword()).isEmpty())
+				{
+					LaunchFrame.tempPass = new String(password.getPassword());
+					setVisible(false);
+				}
+			}
+		});
+	}
 
-    private void setupGui () {
-        setIconImage(Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("/image/logo_ftb.png")));
-        setTitle(I18N.getLocaleString("PASSWORD_TITLE"));
-        setResizable(true);
+	private void setupGui ()
+	{
+		setIconImage(Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("/image/logo_ftb.png")));
+		setTitle(I18N.getLocaleString("PASSWORD_TITLE"));
+		setResizable(true);
 
-        Container panel = getContentPane();
-        panel.setLayout(new MigLayout());
+		Container panel = getContentPane();
+		panel.setLayout(new MigLayout());
 
-        passwordLbl = new JLabel(I18N.getLocaleString("PASSWORD_PASSLABEL"));
-        password = new JPasswordField(16);
-        login = new JButton(I18N.getLocaleString("MAIN_SUBMIT"));
+		passwordLbl = new JLabel(I18N.getLocaleString("PASSWORD_PASSLABEL"));
+		password = new JPasswordField(16);
+		login = new JButton(I18N.getLocaleString("MAIN_SUBMIT"));
 
-        panel.add(passwordLbl);
-        panel.add(password, GuiConstants.WRAP);
-        panel.add(login, GuiConstants.CENTER_SINGLE_LINE);
+		panel.add(passwordLbl);
+		panel.add(password, GuiConstants.WRAP);
+		panel.add(login, GuiConstants.CENTER_SINGLE_LINE);
 
-        pack();
-        setLocationRelativeTo(getOwner());
-    }
+		pack();
+		setLocationRelativeTo(getOwner());
+	}
 }

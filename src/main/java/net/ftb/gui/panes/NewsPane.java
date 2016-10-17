@@ -36,76 +36,96 @@ import net.ftb.util.OSUtils;
 import net.ftb.util.OSUtils.OS;
 
 @SuppressWarnings("serial")
-public class NewsPane extends JPanel implements ILauncherPane {
-	
-    private JEditorPane news;
-    private JScrollPane newsPanel;
-    
-    private final HTMLEditorKit news_kit = new HTMLEditorKit();
+public class NewsPane extends JPanel implements ILauncherPane
+{
 
-    private final JEditorPane news_pane = new JEditorPane("text/html", "") {
-        {
-            this.setEditable(false);
-            this.setEditorKit(news_kit);
-            this.addHyperlinkListener(new HyperlinkListener() {
-                @Override
-                public void hyperlinkUpdate (HyperlinkEvent e) {
-                    if (e.getEventType() == EventType.ACTIVATED) {
-                        if (e.getDescription().substring(0, 7).equals("members")) {
-                            OSUtils.browse(Locations.forum + e.getDescription());
-                        } else {
-                            OSUtils.browse(e.getDescription());
-                        }
-                    }
-                }
-            });
-        }
-    };
-    
-    public NewsPane() {
-        super();
-        
-        if (OSUtils.getCurrentOS() == OS.WINDOWS) {
-            setBorder(new EmptyBorder(-5, -25, -5, 12));
-        } else {
-            setBorder(new EmptyBorder(-4, -25, -4, -2));
-        }
-        
-        setLayout(new BorderLayout());
+	private JEditorPane news;
+	private JScrollPane newsPanel;
 
-        news = new JEditorPane();
-        news.setEditable(false);
-        news.setEditorKit(news_kit);
-        news.setContentType("text/html");
-        news.addHyperlinkListener(new HyperlinkListener() {
-            @Override
-            public void hyperlinkUpdate(HyperlinkEvent e) {
-                if (e.getEventType() == EventType.ACTIVATED) {
-                    OSUtils.browse(e.getURL().toString());
-                }
-            }
-        });
-        
-        newsPanel = new JScrollPane(news);
-        newsPanel.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        newsPanel.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        add(newsPanel, BorderLayout.CENTER);
-    }
+	private final HTMLEditorKit news_kit = new HTMLEditorKit();
 
-    @Override
-    public void onVisible () {
-        try {
-            news.setPage("http://ftnt.fr.nf/news.php");
-            Settings.getSettings().setNewsDate();
-            Settings.getSettings().save();
-            LaunchFrame.getInstance().setNewsIcon();
-        } catch (IOException e1) {
-            Logger.logError("Erreur lors de la mise à jour des news !", e1);
-        }
-    }
-    
-    public void setContent(String s) {
-        this.news_pane.setText(s);
-    }
+	private final JEditorPane news_pane = new JEditorPane("text/html", "")
+	{
+		{
+			this.setEditable(false);
+			this.setEditorKit(news_kit);
+			this.addHyperlinkListener(new HyperlinkListener()
+			{
+				@Override
+				public void hyperlinkUpdate (HyperlinkEvent e)
+				{
+					if (e.getEventType() == EventType.ACTIVATED)
+					{
+						if (e.getDescription().substring(0, 7).equals("members"))
+						{
+							OSUtils.browse(Locations.forum + e.getDescription());
+						}
+						else
+						{
+							OSUtils.browse(e.getDescription());
+						}
+					}
+				}
+			});
+		}
+	};
+
+	public NewsPane ()
+	{
+		super();
+
+		if (OSUtils.getCurrentOS() == OS.WINDOWS)
+		{
+			setBorder(new EmptyBorder(-5, -25, -5, 12));
+		}
+		else
+		{
+			setBorder(new EmptyBorder(-4, -25, -4, -2));
+		}
+
+		setLayout(new BorderLayout());
+
+		news = new JEditorPane();
+		news.setEditable(false);
+		news.setEditorKit(news_kit);
+		news.setContentType("text/html");
+		news.addHyperlinkListener(new HyperlinkListener()
+		{
+			@Override
+			public void hyperlinkUpdate (HyperlinkEvent e)
+			{
+				if (e.getEventType() == EventType.ACTIVATED)
+				{
+					OSUtils.browse(e.getURL().toString());
+				}
+			}
+		});
+
+		newsPanel = new JScrollPane(news);
+		newsPanel.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		newsPanel.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		add(newsPanel, BorderLayout.CENTER);
+	}
+
+	@Override
+	public void onVisible ()
+	{
+		try
+		{
+			news.setPage("http://ftnt.fr.nf/news.php");
+			Settings.getSettings().setNewsDate();
+			Settings.getSettings().save();
+			LaunchFrame.getInstance().setNewsIcon();
+		}
+		catch (IOException e1)
+		{
+			Logger.logError("Erreur lors de la mise à jour des news !", e1);
+		}
+	}
+
+	public void setContent (String s)
+	{
+		this.news_pane.setText(s);
+	}
 
 }

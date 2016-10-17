@@ -16,17 +16,19 @@
  */
 package net.ftb.workers;
 
-import net.ftb.util.NewsUtils;
+import javax.swing.SwingWorker;
 
-import javax.swing.*;
+import net.ftb.util.NewsUtils;
 
 /**
  * SwingWorker to asynchronously fetch news for news pane
  * return String which can be used in news pane
  */
-public class NewsWorker extends SwingWorker<String, Void> {
-    @Override
-    protected String doInBackground () {
-        return NewsUtils.getNewsHTML();
-    }
+public class NewsWorker extends SwingWorker<String, Void>
+{
+	@Override
+	protected String doInBackground ()
+	{
+		return NewsUtils.getNewsHTML();
+	}
 }

@@ -16,60 +16,70 @@
  */
 package net.ftb.log;
 
-import lombok.Setter;
-
 import java.io.PrintStream;
 
-public class StdOutLogger implements ILogListener {
-    // save real System.out and System.err
-    // otherwise we'll got nasty loop
-    private final static PrintStream realStderr = System.err;
-    private final static PrintStream realStdout = System.out;
+import lombok.Setter;
 
-    // DEBUG, EXTENTED, MINIMAL
-    // how to write. Debug is only needed if we want to
-    // see source of the log message. Hardcoded to EXTENDED
-    private LogType logType = LogType.EXTENDED;
+public class StdOutLogger implements ILogListener
+{
+	// save real System.out and System.err
+	// otherwise we'll got nasty loop
+	private final static PrintStream realStderr = System.err;
+	private final static PrintStream realStdout = System.out;
 
-    // ALL, LAUNCHER, EXTERNAL
-    // which sources to write
-    @Setter
-    private LogSource logSource = LogSource.LAUNCHER;
+	// DEBUG, EXTENTED, MINIMAL
+	// how to write. Debug is only needed if we want to
+	// see source of the log message. Hardcoded to EXTENDED
+	private LogType logType = LogType.EXTENDED;
 
-    //INFO, WARN, ERROR, UNKNOWN
-    // which severities to write. Not used in Console or LogWriter
-    @Setter
-    private LogLevel logLevel = LogLevel.UNKNOWN;
+	// ALL, LAUNCHER, EXTERNAL
+	// which sources to write
+	@Setter
+	private LogSource logSource = LogSource.LAUNCHER;
 
-    public StdOutLogger () {
-    }
+	// INFO, WARN, ERROR, UNKNOWN
+	// which severities to write. Not used in Console or LogWriter
+	@Setter
+	private LogLevel logLevel = LogLevel.UNKNOWN;
 
-    public StdOutLogger (LogLevel logLevel) {
-        this.logLevel = logLevel;
-    }
+	public StdOutLogger ()
+	{}
 
-    public StdOutLogger (LogSource logSource) {
-        this.logSource = logSource;
-    }
+	public StdOutLogger (LogLevel logLevel)
+	{
+		this.logLevel = logLevel;
+	}
 
-    public StdOutLogger (LogLevel logLevel, LogSource logSource) {
-        this.logLevel = logLevel;
-        this.logSource = logSource;
-    }
+	public StdOutLogger (LogSource logSource)
+	{
+		this.logSource = logSource;
+	}
 
-    @Override
-    public void onLogEvent (LogEntry entry) {
-        if (logSource != LogSource.ALL && entry.source != logSource) {
-            return;
-        }
+	public StdOutLogger (LogLevel logLevel, LogSource logSource)
+	{
+		this.logLevel = logLevel;
+		this.logSource = logSource;
+	}
 
-        if (!logLevel.includes(entry.level)) {
-            return;
-        }
-        if (entry.level == LogLevel.ERROR) {
-            realStderr.println(entry.toString(logType));
-        } else {
-            realStdout.println(entry.toString(logType));
-        }
-    }
+	@Override
+	public void onLogEvent (LogEntry entry)
+	{
+		if (logSource != LogSource.ALL && entry.source != logSource)
+		{
+			return;
+		}
+
+		if (!logLevel.includes(entry.level))
+		{
+			return;
+		}
+		if (entry.level == LogLevel.ERROR)
+		{
+			realStderr.println(entry.toString(logType));
+		}
+		else
+		{
+			realStdout.println(entry.toString(logType));
+		}
+	}
 }

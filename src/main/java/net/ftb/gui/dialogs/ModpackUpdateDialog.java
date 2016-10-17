@@ -16,74 +16,85 @@
  */
 package net.ftb.gui.dialogs;
 
+import java.awt.Container;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+
 import net.ftb.gui.GuiConstants;
 import net.ftb.gui.LaunchFrame;
 import net.ftb.locale.I18N;
 import net.ftb.tools.ModManager;
 import net.miginfocom.swing.MigLayout;
 
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.*;
-
 @SuppressWarnings("serial")
-public class ModpackUpdateDialog extends JDialog {
-    private JLabel messageLbl;
-    private JLabel updateLbl;
-    private JButton update;
-    private JButton abort;
-    private JCheckBox backupCFG;
-    private JCheckBox backupSave;
+public class ModpackUpdateDialog extends JDialog
+{
+	private JLabel messageLbl;
+	private JLabel updateLbl;
+	private JButton update;
+	private JButton abort;
+	private JCheckBox backupCFG;
+	private JCheckBox backupSave;
 
-    public ModpackUpdateDialog (LaunchFrame instance, boolean modal) {
-        super(instance, modal);
+	public ModpackUpdateDialog (LaunchFrame instance, boolean modal)
+	{
+		super(instance, modal);
 
-        setupGui();
+		setupGui();
 
-        update.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed (ActionEvent arg0) {
-                ModManager.update = true;
-                ModManager.backupCFG = backupCFG.isSelected();
-                ModManager.backupSave = backupSave.isSelected();
-                setVisible(false);
-            }
-        });
+		update.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed (ActionEvent arg0)
+			{
+				ModManager.update = true;
+				ModManager.backupCFG = backupCFG.isSelected();
+				ModManager.backupSave = backupSave.isSelected();
+				setVisible(false);
+			}
+		});
 
-        abort.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed (ActionEvent arg0) {
-                ModManager.update = false;
-                setVisible(false);
-            }
-        });
-    }
+		abort.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed (ActionEvent arg0)
+			{
+				ModManager.update = false;
+				setVisible(false);
+			}
+		});
+	}
 
-    private void setupGui () {
-        setIconImage(Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("/image/logo_ftb.png")));
-        setTitle(I18N.getLocaleString("UPDATEMODPACK_TITLE"));
-        setResizable(true);
+	private void setupGui ()
+	{
+		setIconImage(Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("/image/logo_ftb.png")));
+		setTitle(I18N.getLocaleString("UPDATEMODPACK_TITLE"));
+		setResizable(true);
 
-        Container panel = getContentPane();
-        panel.setLayout(new MigLayout());
+		Container panel = getContentPane();
+		panel.setLayout(new MigLayout());
 
-        messageLbl = new JLabel(I18N.getLocaleString("UPDATEMODPACK_ISAVALIBLE"));
-        updateLbl = new JLabel(I18N.getLocaleString("UPDATE_WICHUPDATE"));
-        backupCFG = new JCheckBox(I18N.getLocaleString("UPDATEMODPACK_BACKUPCFG"));
-        backupSave = new JCheckBox(I18N.getLocaleString("UPDATEMODPACK_BACKUPSAVE"));
-        update = new JButton(I18N.getLocaleString("MAIN_YES"));
-        abort = new JButton(I18N.getLocaleString("MAIN_NO"));
+		messageLbl = new JLabel(I18N.getLocaleString("UPDATEMODPACK_ISAVALIBLE"));
+		updateLbl = new JLabel(I18N.getLocaleString("UPDATE_WICHUPDATE"));
+		backupCFG = new JCheckBox(I18N.getLocaleString("UPDATEMODPACK_BACKUPCFG"));
+		backupSave = new JCheckBox(I18N.getLocaleString("UPDATEMODPACK_BACKUPSAVE"));
+		update = new JButton(I18N.getLocaleString("MAIN_YES"));
+		abort = new JButton(I18N.getLocaleString("MAIN_NO"));
 
-        panel.add(messageLbl, GuiConstants.WRAP);
-        panel.add(updateLbl, GuiConstants.WRAP);
-        panel.add(backupCFG, GuiConstants.CENTER_SINGLE_LINE);
-        panel.add(backupSave, GuiConstants.CENTER_SINGLE_LINE);
-        panel.add(update, GuiConstants.CENTER_TWO);
-        panel.add(abort);
+		panel.add(messageLbl, GuiConstants.WRAP);
+		panel.add(updateLbl, GuiConstants.WRAP);
+		panel.add(backupCFG, GuiConstants.CENTER_SINGLE_LINE);
+		panel.add(backupSave, GuiConstants.CENTER_SINGLE_LINE);
+		panel.add(update, GuiConstants.CENTER_TWO);
+		panel.add(abort);
 
-        pack();
-        setLocationRelativeTo(getOwner());
-    }
+		pack();
+		setLocationRelativeTo(getOwner());
+	}
 }

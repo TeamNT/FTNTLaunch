@@ -16,7 +16,20 @@
  */
 package net.ftb.gui.dialogs;
 
+import java.awt.Container;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+
 import com.google.common.collect.Lists;
+
 import net.ftb.data.Map;
 import net.ftb.data.ModPack;
 import net.ftb.gui.GuiConstants;
@@ -25,122 +38,129 @@ import net.ftb.gui.panes.MapUtils;
 import net.ftb.locale.I18N;
 import net.miginfocom.swing.MigLayout;
 
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
+public class MapFilterDialog extends JDialog
+{
+	private JLabel typeLbl;
+	private JComboBox type;
+	private JLabel originLbl;
+	private JComboBox origin;
+	private JLabel compatiblePackLbl;
+	private JComboBox compatiblePack;
+	private JButton apply;
+	private JButton cancel;
+	private JButton search;
 
-import javax.swing.*;
+	private MapUtils pane;
 
-public class MapFilterDialog extends JDialog {
-    private JLabel typeLbl;
-    private JComboBox type;
-    private JLabel originLbl;
-    private JComboBox origin;
-    private JLabel compatiblePackLbl;
-    private JComboBox compatiblePack;
-    private JButton apply;
-    private JButton cancel;
-    private JButton search;
+	public MapFilterDialog (MapUtils instance)
+	{
+		super(LaunchFrame.getInstance(), true);
+		this.pane = instance;
 
-    private MapUtils pane;
+		setupGui();
 
-    public MapFilterDialog (MapUtils instance) {
-        super(LaunchFrame.getInstance(), true);
-        this.pane = instance;
+		getRootPane().setDefaultButton(apply);
 
-        setupGui();
+		this.pane = instance;
 
-        getRootPane().setDefaultButton(apply);
+		ArrayList<String> packs = Lists.newArrayList();
+		final ArrayList<String> packsNoVersion = Lists.newArrayList();
+		packs.add(I18N.getLocaleString("MAIN_ALL"));
+		packsNoVersion.add(I18N.getLocaleString("MAIN_ALL"));
 
-        this.pane = instance;
+		for(int i = 0; i < Map.getMapArray().size(); i++)
+		{
+			String[] compat = Map.getMap(i).getCompatible();
+			for(String compatable : compat)
+			{
+				ModPack pack = ModPack.getPack(compatable.trim());
+				if (!compatable.isEmpty() && pack != null && !packs.contains(pack.getNameWithVersion()))
+				{
+					packs.add(pack.getNameWithVersion());
+					packsNoVersion.add(pack.getName());
+				}
+			}
+		}
 
-        ArrayList<String> packs = Lists.newArrayList();
-        final ArrayList<String> packsNoVersion = Lists.newArrayList();
-        packs.add(I18N.getLocaleString("MAIN_ALL"));
-        packsNoVersion.add(I18N.getLocaleString("MAIN_ALL"));
+		type.setModel(new DefaultComboBoxModel(new String[]
+			{I18N.getLocaleString("MAIN_CLIENT"), I18N.getLocaleString("MAIN_SERVER")}));
+		origin.setModel(new DefaultComboBoxModel(new String[]
+			{I18N.getLocaleString("MAIN_ALL"), I18N.getLocaleString("FILTER_FTB"), I18N.getLocaleString("FILTER_3THPARTY")}));
+		compatiblePack.setModel(new DefaultComboBoxModel(packs.toArray()));
 
-        for (int i = 0; i < Map.getMapArray().size(); i++) {
-            String[] compat = Map.getMap(i).getCompatible();
-            for (String compatable : compat) {
-                ModPack pack = ModPack.getPack(compatable.trim());
-                if (!compatable.isEmpty() && pack != null && !packs.contains(pack.getNameWithVersion())) {
-                    packs.add(pack.getNameWithVersion());
-                    packsNoVersion.add(pack.getName());
-                }
-            }
-        }
+		type.setSelectedItem(MapUtils.type);
+		origin.setSelectedItem(MapUtils.origin);
+		compatiblePack.setSelectedItem(MapUtils.compatible);
+		compatiblePack.setSelectedIndex(packsNoVersion.indexOf(MapUtils.compatible));
 
-        type.setModel(new DefaultComboBoxModel(new String[] { I18N.getLocaleString("MAIN_CLIENT"), I18N.getLocaleString("MAIN_SERVER") }));
-        origin.setModel(new DefaultComboBoxModel(new String[] { I18N.getLocaleString("MAIN_ALL"), I18N.getLocaleString("FILTER_FTB"), I18N.getLocaleString("FILTER_3THPARTY") }));
-        compatiblePack.setModel(new DefaultComboBoxModel(packs.toArray()));
+		apply.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed (ActionEvent arg0)
+			{
+				MapUtils.compatible = packsNoVersion.get(compatiblePack.getSelectedIndex());
+				MapUtils.type = (String)type.getSelectedItem();
+				MapUtils.origin = (String)origin.getSelectedItem();
+				MapUtils.updateFilter();
+				setVisible(false);
+			}
+		});
 
-        type.setSelectedItem(MapUtils.type);
-        origin.setSelectedItem(MapUtils.origin);
-        compatiblePack.setSelectedItem(MapUtils.compatible);
-        compatiblePack.setSelectedIndex(packsNoVersion.indexOf(MapUtils.compatible));
+		cancel.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed (ActionEvent e)
+			{
+				setVisible(false);
+			}
+		});
 
-        apply.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed (ActionEvent arg0) {
-                MapUtils.compatible = packsNoVersion.get(compatiblePack.getSelectedIndex());
-                MapUtils.type = (String) type.getSelectedItem();
-                MapUtils.origin = (String) origin.getSelectedItem();
-                MapUtils.updateFilter();
-                setVisible(false);
-            }
-        });
+		search.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed (ActionEvent arg0)
+			{
+				SearchDialog sd = new SearchDialog(pane);
+				sd.setVisible(true);
+				setVisible(false);
+			}
+		});
+	}
 
-        cancel.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed (ActionEvent e) {
-                setVisible(false);
-            }
-        });
+	private void setupGui ()
+	{
+		setIconImage(Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("/image/logo_ftb.png")));
+		setTitle(I18N.getLocaleString("FILTER_TITLE"));
+		setResizable(true);
 
-        search.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed (ActionEvent arg0) {
-                SearchDialog sd = new SearchDialog(pane);
-                sd.setVisible(true);
-                setVisible(false);
-            }
-        });
-    }
+		Container panel = getContentPane();
+		panel.setLayout(new MigLayout());
 
-    private void setupGui () {
-        setIconImage(Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("/image/logo_ftb.png")));
-        setTitle(I18N.getLocaleString("FILTER_TITLE"));
-        setResizable(true);
+		originLbl = new JLabel(I18N.getLocaleString("FILTER_ORIGIN"));
+		typeLbl = new JLabel(I18N.getLocaleString("FILTER_PACKTYPE"));
+		compatiblePackLbl = new JLabel(I18N.getLocaleString("FILTER_COMPERTIBLEPACK"));
+		origin = new JComboBox();
+		type = new JComboBox();
+		compatiblePack = new JComboBox();
+		apply = new JButton(I18N.getLocaleString("FILTER_APPLY"));
+		cancel = new JButton(I18N.getLocaleString("MAIN_CANCEL"));
+		search = new JButton(I18N.getLocaleString("FILTER_SEARCHMAP"));
 
-        Container panel = getContentPane();
-        panel.setLayout(new MigLayout());
+		origin.setPrototypeDisplayValue("xxxxxxxxxxxxxxxxxxxxxxxxxx");
+		type.setPrototypeDisplayValue("xxxxxxxxxxxxxxxxxxxxxxxxxx");
+		compatiblePack.setPrototypeDisplayValue("xxxxxxxxxxxxxxxxxxxxxxxxxx");
 
-        originLbl = new JLabel(I18N.getLocaleString("FILTER_ORIGIN"));
-        typeLbl = new JLabel(I18N.getLocaleString("FILTER_PACKTYPE"));
-        compatiblePackLbl = new JLabel(I18N.getLocaleString("FILTER_COMPERTIBLEPACK"));
-        origin = new JComboBox();
-        type = new JComboBox();
-        compatiblePack = new JComboBox();
-        apply = new JButton(I18N.getLocaleString("FILTER_APPLY"));
-        cancel = new JButton(I18N.getLocaleString("MAIN_CANCEL"));
-        search = new JButton(I18N.getLocaleString("FILTER_SEARCHMAP"));
+		panel.add(typeLbl);
+		panel.add(type, GuiConstants.WRAP);
+		panel.add(originLbl);
+		panel.add(origin, GuiConstants.WRAP);
+		panel.add(compatiblePackLbl);
+		panel.add(compatiblePack, GuiConstants.WRAP);
+		panel.add(search, GuiConstants.FILL_TWO);
+		panel.add(cancel, "grow, " + GuiConstants.WRAP);
+		panel.add(apply, GuiConstants.FILL_SINGLE_LINE);
 
-        origin.setPrototypeDisplayValue("xxxxxxxxxxxxxxxxxxxxxxxxxx");
-        type.setPrototypeDisplayValue("xxxxxxxxxxxxxxxxxxxxxxxxxx");
-        compatiblePack.setPrototypeDisplayValue("xxxxxxxxxxxxxxxxxxxxxxxxxx");
-
-        panel.add(typeLbl);
-        panel.add(type, GuiConstants.WRAP);
-        panel.add(originLbl);
-        panel.add(origin, GuiConstants.WRAP);
-        panel.add(compatiblePackLbl);
-        panel.add(compatiblePack, GuiConstants.WRAP);
-        panel.add(search, GuiConstants.FILL_TWO);
-        panel.add(cancel, "grow, " + GuiConstants.WRAP);
-        panel.add(apply, GuiConstants.FILL_SINGLE_LINE);
-
-        pack();
-        setLocationRelativeTo(this.getOwner());
-    }
+		pack();
+		setLocationRelativeTo(this.getOwner());
+	}
 }

@@ -16,10 +16,8 @@
  */
 package net.ftb.data;
 
-import net.ftb.log.Logger;
-import net.ftb.util.OSUtils;
-
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -30,145 +28,181 @@ import java.net.URL;
 import java.util.Properties;
 
 import javax.imageio.ImageIO;
-import javax.swing.*;
+import javax.swing.ImageIcon;
 
-public class LauncherStyle extends Properties {
+import net.ftb.log.Logger;
+import net.ftb.util.OSUtils;
 
-    //TODO bump this???
-    private static final long serialVersionUID = 6370446700503387209L;
+public class LauncherStyle extends Properties
+{
 
-    private static LauncherStyle currentStyle;
+	// TODO bump this???
+	private static final long serialVersionUID = 6370446700503387209L;
 
-    private static File baseStylePath;
+	private static LauncherStyle currentStyle;
 
-    static {
-        baseStylePath = new File(OSUtils.getDynamicStorageLocation(), "launcher_styles");
+	private static File baseStylePath;
 
-        if (!baseStylePath.exists()) {
-            baseStylePath.mkdir();
-        }
+	static
+	{
+		baseStylePath = new File(OSUtils.getDynamicStorageLocation(), "launcher_styles");
 
-        currentStyle = new LauncherStyle();
-        currentStyle.load();
-    }
+		if (!baseStylePath.exists())
+		{
+			baseStylePath.mkdir();
+		}
 
-    public Color control = new Color(40, 40, 40);
-    public Color text = new Color(40, 40, 40).brighter().brighter().brighter().brighter().brighter();
-    public Color nimbusBase = new Color(0, 0, 0);
-    public Color nimbusFocus = new Color(40, 40, 40);
-    public Color nimbusBorder = new Color(40, 40, 40);
-    public Color nimbusLightBackground = new Color(40, 40, 40);
-    public Color info = new Color(40, 40, 40).brighter().brighter();
-    public Color nimbusSelectionBackground = new Color(40, 40, 40).brighter().brighter();
-    public Color footerColor = new Color(25, 25, 25);
-    public Color filterTextColor = new Color(243, 119, 31);
-    public Color filterInnerTextColor = new Color(255, 255, 255);
-    public Color tabPaneBackground = new Color(255, 255, 255, 0);
-    public Color tabPaneForeground = new Color(255, 255, 255);
-    public Color headerImageColor = new Color(255, 255, 255);
-    public Color headerColor = new Color(243, 119, 31);
-    public Color headerImageHighlightColor = new Color(236, 26, 61);
-    public Color headerHighlightColor = new Color(236, 26, 61);
+		currentStyle = new LauncherStyle();
+		currentStyle.load();
+	}
 
-    public void load () {
-        this.load(Settings.getSettings().getStyle());
-    }
+	public Color control = new Color(40, 40, 40);
+	public Color text = new Color(40, 40, 40).brighter().brighter().brighter().brighter().brighter();
+	public Color nimbusBase = new Color(0, 0, 0);
+	public Color nimbusFocus = new Color(40, 40, 40);
+	public Color nimbusBorder = new Color(40, 40, 40);
+	public Color nimbusLightBackground = new Color(40, 40, 40);
+	public Color info = new Color(40, 40, 40).brighter().brighter();
+	public Color nimbusSelectionBackground = new Color(40, 40, 40).brighter().brighter();
+	public Color footerColor = new Color(25, 25, 25);
+	public Color filterTextColor = new Color(243, 119, 31);
+	public Color filterInnerTextColor = new Color(255, 255, 255);
+	public Color tabPaneBackground = new Color(255, 255, 255, 0);
+	public Color tabPaneForeground = new Color(255, 255, 255);
+	public Color headerImageColor = new Color(255, 255, 255);
+	public Color headerColor = new Color(243, 119, 31);
+	public Color headerImageHighlightColor = new Color(236, 26, 61);
+	public Color headerHighlightColor = new Color(236, 26, 61);
 
-    public void load (String file) {
-        File filename = new File(baseStylePath, file);
-        if (new File(baseStylePath, file).exists()) {
-            try {
-                this.load(new FileReader(filename));
-            } catch (FileNotFoundException e) {
-                Logger.logWarn("Could not load style", e);
-            } catch (IOException e) {
-                Logger.logWarn("Could not load style", e);
-            }
-        }
+	public void load ()
+	{
+		this.load(Settings.getSettings().getStyle());
+	}
 
-        this.control = loadColor("control", this.control);
-        this.text = loadColor("text", this.text);
-        this.nimbusBase = loadColor("nimbusBase", this.nimbusBase);
-        this.nimbusFocus = loadColor("nimbusFocus", this.nimbusFocus);
-        this.nimbusBorder = loadColor("nimbusBorder", this.nimbusBorder);
-        this.nimbusLightBackground = loadColor("nimbusLightBackground", this.nimbusLightBackground);
-        this.info = loadColor("info", this.info);
-        this.nimbusSelectionBackground = loadColor("nimbusSelectionBackground", this.nimbusSelectionBackground);
-        this.footerColor = loadColor("footerColor", this.footerColor);
-        this.filterTextColor = loadColor("filterTextColor", this.filterTextColor);
-        this.filterInnerTextColor = loadColor("filterInnerTextColor", this.filterInnerTextColor);
-        //todo add all the new color swap stuffs in here!!!
-        try {
-            this.store(new FileOutputStream(filename), "FTB Style File");
-        } catch (FileNotFoundException e) {
-            Logger.logWarn("Could not save style", e);
-        } catch (IOException e) {
-            Logger.logWarn("Could not save style", e);
-        }
-    }
+	public void load (String file)
+	{
+		File filename = new File(baseStylePath, file);
+		if (new File(baseStylePath, file).exists())
+		{
+			try
+			{
+				this.load(new FileReader(filename));
+			}
+			catch (FileNotFoundException e)
+			{
+				Logger.logWarn("Could not load style", e);
+			}
+			catch (IOException e)
+			{
+				Logger.logWarn("Could not load style", e);
+			}
+		}
 
-    public static String getColorAsString (Color col) {
-        return col.getRed() + "," + col.getGreen() + "," + col.getBlue();
-    }
+		this.control = loadColor("control", this.control);
+		this.text = loadColor("text", this.text);
+		this.nimbusBase = loadColor("nimbusBase", this.nimbusBase);
+		this.nimbusFocus = loadColor("nimbusFocus", this.nimbusFocus);
+		this.nimbusBorder = loadColor("nimbusBorder", this.nimbusBorder);
+		this.nimbusLightBackground = loadColor("nimbusLightBackground", this.nimbusLightBackground);
+		this.info = loadColor("info", this.info);
+		this.nimbusSelectionBackground = loadColor("nimbusSelectionBackground", this.nimbusSelectionBackground);
+		this.footerColor = loadColor("footerColor", this.footerColor);
+		this.filterTextColor = loadColor("filterTextColor", this.filterTextColor);
+		this.filterInnerTextColor = loadColor("filterInnerTextColor", this.filterInnerTextColor);
+		// todo add all the new color swap stuffs in here!!!
+		try
+		{
+			this.store(new FileOutputStream(filename), "FTB Style File");
+		}
+		catch (FileNotFoundException e)
+		{
+			Logger.logWarn("Could not save style", e);
+		}
+		catch (IOException e)
+		{
+			Logger.logWarn("Could not save style", e);
+		}
+	}
 
-    public static Color getStringAsColor (String str) {
-        String[] tokens = str.split(",");
-        return new Color(Integer.parseInt(tokens[0]), Integer.parseInt(tokens[1]), Integer.parseInt(tokens[2]));
-    }
+	public static String getColorAsString (Color col)
+	{
+		return col.getRed() + "," + col.getGreen() + "," + col.getBlue();
+	}
 
-    private Color loadColor (String string, Color defaultColor) {
-        String defaultColorStr = getColorAsString(defaultColor);
-        if (!this.containsKey(string)) {
-            this.setProperty(string, defaultColorStr);
-        }
-        return getStringAsColor(this.getProperty(string, defaultColorStr));
-    }
+	public static Color getStringAsColor (String str)
+	{
+		String[] tokens = str.split(",");
+		return new Color(Integer.parseInt(tokens[0]), Integer.parseInt(tokens[1]), Integer.parseInt(tokens[2]));
+	}
 
-    public static LauncherStyle getCurrentStyle () {
-        return currentStyle;
-    }
+	private Color loadColor (String string, Color defaultColor)
+	{
+		String defaultColorStr = getColorAsString(defaultColor);
+		if (!this.containsKey(string))
+		{
+			this.setProperty(string, defaultColorStr);
+		}
+		return getStringAsColor(this.getProperty(string, defaultColorStr));
+	}
 
-    public static void setCurrentStyle (LauncherStyle currentStyle) {
-        LauncherStyle.currentStyle = currentStyle;
-    }
+	public static LauncherStyle getCurrentStyle ()
+	{
+		return currentStyle;
+	}
 
-    //convienience method for handling header icons
-    public ImageIcon filterHeaderIcon (URL u) {
-        try {
-            return changeColor(ImageIO.read(u), headerImageColor, headerColor, headerImageHighlightColor, headerHighlightColor);
-        } catch (Exception e) {
-            Logger.logWarn("error changing colors, using default instead");
-        }
-        return new ImageIcon(u);
-    }
+	public static void setCurrentStyle (LauncherStyle currentStyle)
+	{
+		LauncherStyle.currentStyle = currentStyle;
+	}
 
-    public ImageIcon changeColor (BufferedImage image, Color toReplace, Color newColor, Color toReplace2, Color newColor2) {
-        BufferedImage destImage = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);
+	// convienience method for handling header icons
+	public ImageIcon filterHeaderIcon (URL u)
+	{
+		try
+		{
+			return changeColor(ImageIO.read(u), headerImageColor, headerColor, headerImageHighlightColor, headerHighlightColor);
+		}
+		catch (Exception e)
+		{
+			Logger.logWarn("error changing colors, using default instead");
+		}
+		return new ImageIcon(u);
+	}
 
-        Graphics2D g = destImage.createGraphics();
-        g.drawImage(image, null, 0, 0);
-        g.dispose();
-        for (int i = 0; i < destImage.getWidth(); i++) {
-            for (int j = 0; j < destImage.getHeight(); j++) {
-                Color c = new Color(image.getRGB(i, j), true);
-                if (toReplace != null && compareColors(toReplace, c)) {
-                    destImage.setRGB(i, j, getRGB(newColor, c));
-                }
-                if (toReplace2 != null && compareColors(toReplace2, c)) {
-                    destImage.setRGB(i, j, getRGB(newColor2, c));
-                }
+	public ImageIcon changeColor (BufferedImage image, Color toReplace, Color newColor, Color toReplace2, Color newColor2)
+	{
+		BufferedImage destImage = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);
 
-            }
-        }
-        return new ImageIcon(destImage);
-    }
+		Graphics2D g = destImage.createGraphics();
+		g.drawImage(image, null, 0, 0);
+		g.dispose();
+		for(int i = 0; i < destImage.getWidth(); i++)
+		{
+			for(int j = 0; j < destImage.getHeight(); j++)
+			{
+				Color c = new Color(image.getRGB(i, j), true);
+				if (toReplace != null && compareColors(toReplace, c))
+				{
+					destImage.setRGB(i, j, getRGB(newColor, c));
+				}
+				if (toReplace2 != null && compareColors(toReplace2, c))
+				{
+					destImage.setRGB(i, j, getRGB(newColor2, c));
+				}
 
-    public boolean compareColors (Color b, Color c) {
-        //ignores transparency, we add this back in in the getRGB method
-        return c.getBlue() == b.getBlue() && c.getRed() == b.getRed() && c.getGreen() == b.getGreen();
-    }
+			}
+		}
+		return new ImageIcon(destImage);
+	}
 
-    public int getRGB (Color nw, Color oldColorWithTrans) {
-        return new Color(nw.getRed(), nw.getGreen(), nw.getBlue(), oldColorWithTrans.getAlpha()).getRGB();
-    }
+	public boolean compareColors (Color b, Color c)
+	{
+		// ignores transparency, we add this back in in the getRGB method
+		return c.getBlue() == b.getBlue() && c.getRed() == b.getRed() && c.getGreen() == b.getGreen();
+	}
+
+	public int getRGB (Color nw, Color oldColorWithTrans)
+	{
+		return new Color(nw.getRed(), nw.getGreen(), nw.getBlue(), oldColorWithTrans.getAlpha()).getRGB();
+	}
 }

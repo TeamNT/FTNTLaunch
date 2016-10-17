@@ -18,6 +18,20 @@ package net.ftb.tools;
 
 import static net.ftb.download.Locations.MAPS;
 
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.IOException;
+import java.util.concurrent.ExecutionException;
+
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
+import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
+
 import net.ftb.data.Map;
 import net.ftb.gui.LaunchFrame;
 import net.ftb.log.Logger;
@@ -25,97 +39,108 @@ import net.ftb.util.FTBFileUtils;
 import net.ftb.util.OSUtils;
 import net.ftb.workers.MapManagerWorker;
 
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.io.File;
-import java.io.IOException;
-import java.util.concurrent.ExecutionException;
-
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-
 @SuppressWarnings("serial")
-public class MapManager extends JDialog {
-    private JPanel contentPane;
-    private final JProgressBar progressBar;
-    private final JLabel label;
-    public static boolean overwrite = false;
-    private static String sep = File.separator;
+public class MapManager extends JDialog
+{
+	private JPanel contentPane;
+	private final JProgressBar progressBar;
+	private final JLabel label;
+	public static boolean overwrite = false;
+	private static String sep = File.separator;
 
-    public MapManager (JFrame owner, Boolean model) {
-        super(owner, model);
-        setResizable(false);
-        setTitle("Downloading...");
-        setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-        setBounds(100, 100, 313, 138);
-        contentPane = new JPanel();
-        contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-        setContentPane(contentPane);
-        contentPane.setLayout(null);
+	public MapManager (JFrame owner, Boolean model)
+	{
+		super(owner, model);
+		setResizable(false);
+		setTitle("Downloading...");
+		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+		setBounds(100, 100, 313, 138);
+		contentPane = new JPanel();
+		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		setContentPane(contentPane);
+		contentPane.setLayout(null);
 
-        progressBar = new JProgressBar();
-        progressBar.setBounds(10, 63, 278, 22);
-        contentPane.add(progressBar);
+		progressBar = new JProgressBar();
+		progressBar.setBounds(10, 63, 278, 22);
+		contentPane.add(progressBar);
 
-        JLabel lblDownloadingMap = new JLabel("<html><body><center>Downloading map...<br/>Please Wait</center></body></html>");
-        lblDownloadingMap.setHorizontalAlignment(SwingConstants.CENTER);
-        lblDownloadingMap.setBounds(0, 5, 313, 30);
-        contentPane.add(lblDownloadingMap);
+		JLabel lblDownloadingMap = new JLabel("<html><body><center>Downloading map...<br/>Please Wait</center></body></html>");
+		lblDownloadingMap.setHorizontalAlignment(SwingConstants.CENTER);
+		lblDownloadingMap.setBounds(0, 5, 313, 30);
+		contentPane.add(lblDownloadingMap);
 
-        label = new JLabel("");
-        label.setHorizontalAlignment(SwingConstants.CENTER);
-        label.setBounds(0, 42, 313, 14);
-        contentPane.add(label);
+		label = new JLabel("");
+		label.setHorizontalAlignment(SwingConstants.CENTER);
+		label.setBounds(0, 42, 313, 14);
+		contentPane.add(label);
 
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowOpened (WindowEvent arg0) {
-                MapManagerWorker worker = new MapManagerWorker(overwrite) {
-                    @Override
-                    protected void done () {
-                        try {
-                            get();
-                        } catch (InterruptedException e) {
-                            Logger.logDebug("Swingworker Exception", e);
-                        } catch (ExecutionException e) {
-                            Logger.logDebug("Swingworker Exception", e.getCause());
-                        }
-                        setVisible(false);
-                        super.done();
-                    }
+		addWindowListener(new WindowAdapter()
+		{
+			@Override
+			public void windowOpened (WindowEvent arg0)
+			{
+				MapManagerWorker worker = new MapManagerWorker(overwrite)
+				{
+					@Override
+					protected void done ()
+					{
+						try
+						{
+							get();
+						}
+						catch (InterruptedException e)
+						{
+							Logger.logDebug("Swingworker Exception", e);
+						}
+						catch (ExecutionException e)
+						{
+							Logger.logDebug("Swingworker Exception", e.getCause());
+						}
+						setVisible(false);
+						super.done();
+					}
 
-                    @Override
-                    public void setLabelText (String s) {
-                        label.setText(s);
-                    }
+					@Override
+					public void setLabelText (String s)
+					{
+						label.setText(s);
+					}
 
-                    @Override
-                    public void setProgressBarMaximum (int i) {
-                        progressBar.setMaximum(i);
-                    }
+					@Override
+					public void setProgressBarMaximum (int i)
+					{
+						progressBar.setMaximum(i);
+					}
 
-                    @Override
-                    public void setProgressBarValue (int i) {
-                        progressBar.setValue(i);
-                    }
+					@Override
+					public void setProgressBarValue (int i)
+					{
+						progressBar.setValue(i);
+					}
 
-                };
-                worker.execute();
-            }
-        });
-    }
+				};
+				worker.execute();
+			}
+		});
+	}
 
-    public static void cleanUp () {
-        Map map = Map.getMap(LaunchFrame.getSelectedMapIndex());
-        File tempFolder = new File(OSUtils.getCacheStorageLocation(), MAPS.replace("/", sep) + map.getMapName() + sep);
-        for (String file : tempFolder.list()) {
-            if (!file.equals(map.getLogoName()) && !file.equals(map.getImageName()) && !file.equalsIgnoreCase("version")) {
-                try {
-                    FTBFileUtils.delete(new File(tempFolder, file));
-                } catch (IOException e) {
-                    Logger.logError(e.getMessage(), e);
-                }
-            }
-        }
-    }
+	public static void cleanUp ()
+	{
+		Map map = Map.getMap(LaunchFrame.getSelectedMapIndex());
+		File tempFolder = new File(OSUtils.getCacheStorageLocation(), MAPS.replace("/", sep) + map.getMapName() + sep);
+		for(String file : tempFolder.list())
+		{
+			if (!file.equals(map.getLogoName()) && !file.equals(map.getImageName()) && !file.equalsIgnoreCase("version"))
+			{
+				try
+				{
+					FTBFileUtils.delete(new File(tempFolder, file));
+				}
+				catch (IOException e)
+				{
+					Logger.logError(e.getMessage(), e);
+				}
+			}
+		}
+	}
 }

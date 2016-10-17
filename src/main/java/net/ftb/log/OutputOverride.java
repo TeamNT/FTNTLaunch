@@ -20,35 +20,43 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
-public class OutputOverride extends PrintStream {
-    final LogLevel level;
+public class OutputOverride extends PrintStream
+{
+	final LogLevel level;
 
-    public OutputOverride (OutputStream str, LogLevel type) {
-        super(str);
-        this.level = type;
-    }
+	public OutputOverride (OutputStream str, LogLevel type)
+	{
+		super(str);
+		this.level = type;
+	}
 
-    @Override
-    public void write (@SuppressWarnings("NullableProblems") byte[] b) throws IOException {
-        String text = new String(b).trim();
-        if (!text.equals("") && !text.equals("\n")) {
-            Logger.log("From Console: " + text, level, null);
-        }
-    }
+	@Override
+	public void write (@SuppressWarnings("NullableProblems") byte[] b) throws IOException
+	{
+		String text = new String(b).trim();
+		if (!text.equals("") && !text.equals("\n"))
+		{
+			Logger.log("From Console: " + text, level, null);
+		}
+	}
 
-    @Override
-    public void write (@SuppressWarnings("NullableProblems") byte[] buf, int off, int len) {
-        String text = new String(buf, off, len).trim();
-        if (!text.equals("") && !text.equals("\n")) {
-            Logger.log("From Console: " + text, level, null);
-        }
-    }
+	@Override
+	public void write (@SuppressWarnings("NullableProblems") byte[] buf, int off, int len)
+	{
+		String text = new String(buf, off, len).trim();
+		if (!text.equals("") && !text.equals("\n"))
+		{
+			Logger.log("From Console: " + text, level, null);
+		}
+	}
 
-    @Override
-    public void write (int b) {
-        String text = String.valueOf(b);
-        if (!text.equals("") && !text.equals("\n")) {
-            Logger.log("From Console: " + text, level, null);
-        }
-    }
+	@Override
+	public void write (int b)
+	{
+		String text = String.valueOf(b);
+		if (!text.equals("") && !text.equals("\n"))
+		{
+			Logger.log("From Console: " + text, level, null);
+		}
+	}
 }

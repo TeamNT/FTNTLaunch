@@ -16,65 +16,75 @@
  */
 package net.ftb.gui.dialogs;
 
+import java.awt.Container;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+
 import net.ftb.gui.GuiConstants;
 import net.ftb.gui.LaunchFrame;
 import net.ftb.locale.I18N;
 import net.ftb.tools.MapManager;
 import net.miginfocom.swing.MigLayout;
 
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+public class MapOverwriteDialog extends JDialog
+{
+	private JLabel messageLbl;
+	private JLabel overwriteLbl;
+	private JButton overwrite;
+	private JButton abort;
 
-import javax.swing.*;
+	public MapOverwriteDialog ()
+	{
+		super(LaunchFrame.getInstance(), true);
 
-public class MapOverwriteDialog extends JDialog {
-    private JLabel messageLbl;
-    private JLabel overwriteLbl;
-    private JButton overwrite;
-    private JButton abort;
+		setupGui();
 
-    public MapOverwriteDialog () {
-        super(LaunchFrame.getInstance(), true);
+		overwrite.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed (ActionEvent event)
+			{
+				MapManager.overwrite = true;
+				setVisible(false);
+			}
+		});
 
-        setupGui();
+		abort.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed (ActionEvent event)
+			{
+				MapManager.overwrite = false;
+				setVisible(false);
+			}
+		});
+	}
 
-        overwrite.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed (ActionEvent event) {
-                MapManager.overwrite = true;
-                setVisible(false);
-            }
-        });
+	private void setupGui ()
+	{
+		setIconImage(Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("/image/logo_ftb.png")));
+		setTitle("WARNING!");
+		setResizable(true);
 
-        abort.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed (ActionEvent event) {
-                MapManager.overwrite = false;
-                setVisible(false);
-            }
-        });
-    }
+		Container panel = getContentPane();
+		panel.setLayout(new MigLayout());
 
-    private void setupGui () {
-        setIconImage(Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("/image/logo_ftb.png")));
-        setTitle("WARNING!");
-        setResizable(true);
+		messageLbl = new JLabel(I18N.getLocaleString("MAPOVERRIDE_FOUNDERROR"));
+		overwriteLbl = new JLabel(I18N.getLocaleString("MAPOVERRIDE_WISHOVERRIDE"));
+		overwrite = new JButton(I18N.getLocaleString("MAIN_YES"));
+		abort = new JButton(I18N.getLocaleString("MAIN_NO"));
 
-        Container panel = getContentPane();
-        panel.setLayout(new MigLayout());
+		panel.add(messageLbl, GuiConstants.WRAP);
+		panel.add(overwriteLbl, GuiConstants.WRAP);
+		panel.add(overwrite, GuiConstants.CENTER_SINGLE_LINE);
+		panel.add(abort, GuiConstants.CENTER_SINGLE_LINE);
 
-        messageLbl = new JLabel(I18N.getLocaleString("MAPOVERRIDE_FOUNDERROR"));
-        overwriteLbl = new JLabel(I18N.getLocaleString("MAPOVERRIDE_WISHOVERRIDE"));
-        overwrite = new JButton(I18N.getLocaleString("MAIN_YES"));
-        abort = new JButton(I18N.getLocaleString("MAIN_NO"));
-
-        panel.add(messageLbl, GuiConstants.WRAP);
-        panel.add(overwriteLbl, GuiConstants.WRAP);
-        panel.add(overwrite, GuiConstants.CENTER_SINGLE_LINE);
-        panel.add(abort, GuiConstants.CENTER_SINGLE_LINE);
-
-        pack();
-        setLocationRelativeTo(getOwner());
-    }
+		pack();
+		setLocationRelativeTo(getOwner());
+	}
 }

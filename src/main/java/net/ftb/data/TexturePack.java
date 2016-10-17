@@ -16,17 +16,8 @@
  */
 package net.ftb.data;
 
-import com.google.common.collect.Lists;
-import lombok.Getter;
-import net.ftb.data.events.TexturePackListener;
-import net.ftb.gui.LaunchFrame;
-import net.ftb.gui.panes.TexturepackPane;
-import net.ftb.log.Logger;
-import net.ftb.util.DownloadUtils;
-import net.ftb.util.OSUtils;
-import net.ftb.workers.TexturePackLoader;
-
-import java.awt.*;
+import java.awt.Image;
+import java.awt.Toolkit;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -39,161 +30,207 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-public class TexturePack {
-    @Getter
-    private String name, author, version, url, mcversion, logoName, imageName, info, resolution;
-    private String sep = File.separator;
-    @Getter
-    private Image logo, image;
-    @Getter
-    private List<String> compatible = Lists.newArrayList();
-    @Getter
-    private List<String> masters = Lists.newArrayList();
+import com.google.common.collect.Lists;
 
-    @Getter
-    private int index;
-    @Getter
-    private final static ArrayList<TexturePack> texturePackArray = Lists.newArrayList();
-    private static List<TexturePackListener> listeners = Lists.newArrayList();
+import lombok.Getter;
+import net.ftb.data.events.TexturePackListener;
+import net.ftb.gui.LaunchFrame;
+import net.ftb.gui.panes.TexturepackPane;
+import net.ftb.log.Logger;
+import net.ftb.util.DownloadUtils;
+import net.ftb.util.OSUtils;
+import net.ftb.workers.TexturePackLoader;
 
-    public static void addListener (TexturePackListener listener) {
-        listeners.add(listener);
-    }
+public class TexturePack
+{
+	@Getter
+	private String name, author, version, url, mcversion, logoName, imageName, info, resolution;
+	private String sep = File.separator;
+	@Getter
+	private Image logo, image;
+	@Getter
+	private List<String> compatible = Lists.newArrayList();
+	@Getter
+	private List<String> masters = Lists.newArrayList();
 
-    public static void loadAll () {
-        TexturePackLoader loader = new TexturePackLoader();
-        loader.start();
-    }
+	@Getter
+	private int index;
+	@Getter
+	private final static ArrayList<TexturePack> texturePackArray = Lists.newArrayList();
+	private static List<TexturePackListener> listeners = Lists.newArrayList();
 
-    public static void addTexturePack (TexturePack texturePack) {
-        synchronized (texturePackArray) {
-            texturePackArray.add(texturePack);
-        }
-        for (TexturePackListener listener : listeners) {
-            listener.onTexturePackAdded(texturePack);
-        }
-    }
+	public static void addListener (TexturePackListener listener)
+	{
+		listeners.add(listener);
+	}
 
-    public static TexturePack getTexturePack (int i) {
-        return texturePackArray.get(i);
-    }
+	public static void loadAll ()
+	{
+		TexturePackLoader loader = new TexturePackLoader();
+		loader.start();
+	}
 
-    /**
-     * Used to grab the currently selected TexturePack based off the selected index from TexturepackPane
-     * @return TexturePack - the currently selected TexturePack
-     */
-    public static TexturePack getSelectedTexturePack () {
-        return getTexturePack(TexturepackPane.getSelectedTexturePackIndex());
-    }
+	public static void addTexturePack (TexturePack texturePack)
+	{
+		synchronized (texturePackArray)
+		{
+			texturePackArray.add(texturePack);
+		}
+		for(TexturePackListener listener : listeners)
+		{
+			listener.onTexturePackAdded(texturePack);
+		}
+	}
 
-    public TexturePack (String name, String author, String version, String url, String logo, String image, String mcversion, String compatible, String info, String resolution, int idx)
-            throws NoSuchAlgorithmException, IOException {
-        index = idx;
-        this.name = name;
-        this.author = author;
-        this.version = version;
-        this.url = url;
-        this.version = version;
-        String installPath = OSUtils.getCacheStorageLocation();
-        logoName = logo;
-        imageName = image;
-        String[] tmp = compatible.split(",");
-        Collections.addAll(this.compatible, tmp);
-        this.info = info;
-        this.resolution = resolution;
-        for (Iterator<String> it = this.compatible.iterator(); it.hasNext(); ) {
-            String s = it.next();
-            if (s.toLowerCase().startsWith("master")) {
-                masters.add(s.replace("master_", ""));
-                it.remove();
-            }
-        }
-        for (ModPack p : ModPack.getPackArray()) {
-            if (!p.hasCustomTP() && !this.compatible.contains(p.getDir()) && masters.contains(p.getMcVersion().replace(".", "_"))) {
-                this.compatible.add(p.getDir());
-            }
-        }
-        File tempDir = new File(installPath, "TexturePacks" + sep + name);
-        File verFile = new File(tempDir, "version");
+	public static TexturePack getTexturePack (int i)
+	{
+		return texturePackArray.get(i);
+	}
 
-        if (!upToDate(verFile)) {
-            DownloadUtils.saveImage(logo, tempDir, "png");
-            DownloadUtils.saveImage(image, tempDir, "png");
+	/**
+	 * Used to grab the currently selected TexturePack based off the selected index from TexturepackPane
+	 * @return TexturePack - the currently selected TexturePack
+	 */
+	public static TexturePack getSelectedTexturePack ()
+	{
+		return getTexturePack(TexturepackPane.getSelectedTexturePackIndex());
+	}
 
-        } else {
-            if (!new File(tempDir, logo).exists()) {
-                DownloadUtils.saveImage(logo, tempDir, "png");
-            }
-            if (!new File(tempDir, image).exists()) {
-                DownloadUtils.saveImage(image, tempDir, "png");
-            }
-        }
+	public TexturePack (String name, String author, String version, String url, String logo, String image, String mcversion, String compatible, String info, String resolution, int idx) throws NoSuchAlgorithmException, IOException
+	{
+		index = idx;
+		this.name = name;
+		this.author = author;
+		this.version = version;
+		this.url = url;
+		this.version = version;
+		String installPath = OSUtils.getCacheStorageLocation();
+		logoName = logo;
+		imageName = image;
+		String[] tmp = compatible.split(",");
+		Collections.addAll(this.compatible, tmp);
+		this.info = info;
+		this.resolution = resolution;
+		for(Iterator<String> it = this.compatible.iterator(); it.hasNext();)
+		{
+			String s = it.next();
+			if (s.toLowerCase().startsWith("master"))
+			{
+				masters.add(s.replace("master_", ""));
+				it.remove();
+			}
+		}
+		for(ModPack p : ModPack.getPackArray())
+		{
+			if (!p.hasCustomTP() && !this.compatible.contains(p.getDir()) && masters.contains(p.getMcVersion().replace(".", "_")))
+			{
+				this.compatible.add(p.getDir());
+			}
+		}
+		File tempDir = new File(installPath, "TexturePacks" + sep + name);
+		File verFile = new File(tempDir, "version");
 
-        // image and logo should now exists, if not use placeholder images
-        if (!new File(tempDir, logo).exists()) {
-            this.logoName = logo = "logo_ftb.png";
-            DownloadUtils.saveImage(logo, tempDir, "png");
-        }
-        this.logo = Toolkit.getDefaultToolkit().createImage(tempDir.getPath() + sep + logo);
+		if (!upToDate(verFile))
+		{
+			DownloadUtils.saveImage(logo, tempDir, "png");
+			DownloadUtils.saveImage(image, tempDir, "png");
 
-        if (!new File(tempDir, image).exists()) {
-            this.imageName = image = "default_splash.png";
-            DownloadUtils.saveImage(image, tempDir, "png");
-        }
-        this.image = Toolkit.getDefaultToolkit().createImage(tempDir.getPath() + sep + image);
-    }
+		}
+		else
+		{
+			if (!new File(tempDir, logo).exists())
+			{
+				DownloadUtils.saveImage(logo, tempDir, "png");
+			}
+			if (!new File(tempDir, image).exists())
+			{
+				DownloadUtils.saveImage(image, tempDir, "png");
+			}
+		}
 
-    private boolean upToDate (File verFile) {
-        boolean result = true;
-        try {
-            if (!verFile.exists()) {
-                verFile.getParentFile().mkdirs();
-                verFile.createNewFile();
-                result = false;
-            }
-            BufferedReader in = new BufferedReader(new FileReader(verFile));
-            String line = in.readLine();
-            int storedVersion = -1;
-            if (line != null) {
-                try {
-                    storedVersion = Integer.parseInt(line.replace(".", ""));
-                } catch (NumberFormatException e) {
-                    Logger.logWarn("Automatically fixing malformed version file for " + name, e);
-                    line = null;
-                }
-            }
+		// image and logo should now exists, if not use placeholder images
+		if (!new File(tempDir, logo).exists())
+		{
+			this.logoName = logo = "logo_ftb.png";
+			DownloadUtils.saveImage(logo, tempDir, "png");
+		}
+		this.logo = Toolkit.getDefaultToolkit().createImage(tempDir.getPath() + sep + logo);
 
-            if (line == null || Integer.parseInt(version.replace(".", "")) != storedVersion) {
-                BufferedWriter out = new BufferedWriter(new FileWriter(verFile));
-                out.write(version);
-                out.flush();
-                out.close();
-                result = false;
-            }
-            in.close();
-        } catch (IOException e) {
-            Logger.logError("Error while checking texturepack version", e);
-        }
-        return result;
-    }
+		if (!new File(tempDir, image).exists())
+		{
+			this.imageName = image = "default_splash.png";
+			DownloadUtils.saveImage(image, tempDir, "png");
+		}
+		this.image = Toolkit.getDefaultToolkit().createImage(tempDir.getPath() + sep + image);
+	}
 
-    /**
-     * Used to get the selected mod pack
-     * @return - the compatible pack based on the selected texture pack
-     */
-    public String getSelectedCompatible () {
-        return compatible.get(LaunchFrame.getSelectedTPInstallIndex()).trim();
-    }
+	private boolean upToDate (File verFile)
+	{
+		boolean result = true;
+		try
+		{
+			if (!verFile.exists())
+			{
+				verFile.getParentFile().mkdirs();
+				verFile.createNewFile();
+				result = false;
+			}
+			BufferedReader in = new BufferedReader(new FileReader(verFile));
+			String line = in.readLine();
+			int storedVersion = -1;
+			if (line != null)
+			{
+				try
+				{
+					storedVersion = Integer.parseInt(line.replace(".", ""));
+				}
+				catch (NumberFormatException e)
+				{
+					Logger.logWarn("Automatically fixing malformed version file for " + name, e);
+					line = null;
+				}
+			}
 
-    public boolean isCompatible (String packName) {
-        for (String aCompatible : compatible) {
-            ModPack pack = ModPack.getPack(aCompatible);
-            if (pack == null) {
-                Logger.logDebug("Texturepack is compatible with " + aCompatible + " , but modpack not found");
-            } else if (pack.getName().equals(packName)) {
-                return true;
-            }
-        }
-        return false;
-    }
+			if (line == null || Integer.parseInt(version.replace(".", "")) != storedVersion)
+			{
+				BufferedWriter out = new BufferedWriter(new FileWriter(verFile));
+				out.write(version);
+				out.flush();
+				out.close();
+				result = false;
+			}
+			in.close();
+		}
+		catch (IOException e)
+		{
+			Logger.logError("Error while checking texturepack version", e);
+		}
+		return result;
+	}
+
+	/**
+	 * Used to get the selected mod pack
+	 * @return - the compatible pack based on the selected texture pack
+	 */
+	public String getSelectedCompatible ()
+	{
+		return compatible.get(LaunchFrame.getSelectedTPInstallIndex()).trim();
+	}
+
+	public boolean isCompatible (String packName)
+	{
+		for(String aCompatible : compatible)
+		{
+			ModPack pack = ModPack.getPack(aCompatible);
+			if (pack == null)
+			{
+				Logger.logDebug("Texturepack is compatible with " + aCompatible + " , but modpack not found");
+			}
+			else if (pack.getName().equals(packName))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
 }

@@ -16,76 +16,87 @@
  */
 package net.ftb.gui.dialogs;
 
+import java.awt.Container;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.SwingConstants;
+
 import net.ftb.gui.GuiConstants;
 import net.ftb.gui.LaunchFrame;
 import net.ftb.locale.I18N;
 import net.miginfocom.swing.MigLayout;
 
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+public class YNDialog extends JDialog
+{
+	private JLabel messageLbl;
+	private JLabel overwriteLbl;
+	public JButton overwrite;
+	public JButton abort;
+	private String message;
+	private String confirmMsg;
+	public boolean ready = false;
+	public boolean ret = false;
 
-import javax.swing.*;
+	public YNDialog (String unlocMessage, String unlocConfirmMessage, String unlocTitle)
+	{
+		super(LaunchFrame.getInstance(), true);
+		message = I18N.getLocaleString(unlocMessage);
+		confirmMsg = I18N.getLocaleString(unlocConfirmMessage);
+		this.setTitle(I18N.getLocaleString(unlocTitle));
+		ret = false;
+		ready = false;
+		setupGui();
+		overwrite.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed (ActionEvent event)
+			{
+				ready = true;
+				ret = true;
+				setVisible(false);
+			}
+		});
 
-public class YNDialog extends JDialog {
-    private JLabel messageLbl;
-    private JLabel overwriteLbl;
-    public JButton overwrite;
-    public JButton abort;
-    private String message;
-    private String confirmMsg;
-    public boolean ready = false;
-    public boolean ret = false;
+		abort.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed (ActionEvent event)
+			{
+				ret = false;
+				ready = true;
+				setVisible(false);
+			}
+		});
 
-    public YNDialog (String unlocMessage, String unlocConfirmMessage, String unlocTitle) {
-        super(LaunchFrame.getInstance(), true);
-        message = I18N.getLocaleString(unlocMessage);
-        confirmMsg = I18N.getLocaleString(unlocConfirmMessage);
-        this.setTitle(I18N.getLocaleString(unlocTitle));
-        ret = false;
-        ready = false;
-        setupGui();
-        overwrite.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed (ActionEvent event) {
-                ready = true;
-                ret = true;
-                setVisible(false);
-            }
-        });
+	}
 
-        abort.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed (ActionEvent event) {
-                ret = false;
-                ready = true;
-                setVisible(false);
-            }
-        });
+	private void setupGui ()
+	{
+		setIconImage(Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("/image/logo_ftb.png")));
+		setResizable(false);
 
-    }
+		Container panel = getContentPane();
+		panel.setLayout(new MigLayout());
 
-    private void setupGui () {
-        setIconImage(Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("/image/logo_ftb.png")));
-        setResizable(false);
+		messageLbl = new JLabel(message);
+		overwriteLbl = new JLabel(confirmMsg);
+		overwrite = new JButton(I18N.getLocaleString("MAIN_YES"));
+		abort = new JButton(I18N.getLocaleString("MAIN_NO"));
 
-        Container panel = getContentPane();
-        panel.setLayout(new MigLayout());
+		messageLbl.setHorizontalAlignment(SwingConstants.CENTER);
+		overwriteLbl.setHorizontalAlignment(SwingConstants.CENTER);
 
-        messageLbl = new JLabel(message);
-        overwriteLbl = new JLabel(confirmMsg);
-        overwrite = new JButton(I18N.getLocaleString("MAIN_YES"));
-        abort = new JButton(I18N.getLocaleString("MAIN_NO"));
+		panel.add(messageLbl, GuiConstants.CENTER_SINGLE_LINE);
+		panel.add(overwriteLbl, GuiConstants.CENTER_SINGLE_LINE);
+		panel.add(overwrite, GuiConstants.FILL_TWO);
+		panel.add(abort, GuiConstants.GROW);
 
-        messageLbl.setHorizontalAlignment(SwingConstants.CENTER);
-        overwriteLbl.setHorizontalAlignment(SwingConstants.CENTER);
-
-        panel.add(messageLbl, GuiConstants.CENTER_SINGLE_LINE);
-        panel.add(overwriteLbl, GuiConstants.CENTER_SINGLE_LINE);
-        panel.add(overwrite, GuiConstants.FILL_TWO);
-        panel.add(abort, GuiConstants.GROW);
-
-        pack();
-        setLocationRelativeTo(getOwner());
-    }
+		pack();
+		setLocationRelativeTo(getOwner());
+	}
 }

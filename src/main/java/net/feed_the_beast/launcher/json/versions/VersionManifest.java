@@ -16,36 +16,44 @@
  */
 package net.feed_the_beast.launcher.json.versions;
 
-import com.beust.jcommander.internal.Maps;
-import lombok.Data;
-
 import java.util.List;
 import java.util.Map;
 
-@Data
-public class VersionManifest {
-    private Latest latest;
-    private List<SlimVersion> versions;
+import com.beust.jcommander.internal.Maps;
 
-    private Map<String,SlimVersion> versionMap = null;
-    public Map<String,SlimVersion> getVersionMap() {
-        if(versionMap == null) {
-            versionMap = Maps.newHashMap();
-            for (SlimVersion version : versions)
-            {
-                versionMap.put(version.getId(), version);
-            }
-        }
-        return versionMap;
-    }
-    public SlimVersion getVersionByName(String name){
-        if(versionMap == null) {
-            versionMap = Maps.newHashMap();
-            for (SlimVersion version : versions)
-            {
-                versionMap.put(version.getId(), version);
-            }
-        }
-        return versionMap.get(name);
-    }
+import lombok.Data;
+
+@Data
+public class VersionManifest
+{
+	private Latest latest;
+	private List<SlimVersion> versions;
+
+	private Map<String, SlimVersion> versionMap = null;
+
+	public Map<String, SlimVersion> getVersionMap ()
+	{
+		if (versionMap == null)
+		{
+			versionMap = Maps.newHashMap();
+			for(SlimVersion version : versions)
+			{
+				versionMap.put(version.getId(), version);
+			}
+		}
+		return versionMap;
+	}
+
+	public SlimVersion getVersionByName (String name)
+	{
+		if (versionMap == null)
+		{
+			versionMap = Maps.newHashMap();
+			for(SlimVersion version : versions)
+			{
+				versionMap.put(version.getId(), version);
+			}
+		}
+		return versionMap.get(name);
+	}
 }

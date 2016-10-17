@@ -16,14 +16,15 @@
  */
 package net.feed_the_beast.launcher.json.versions;
 
-import lombok.Data;
-
 import java.net.URL;
 
-@Data
-public class Downloadable {
+import lombok.Data;
 
-    private URL url;
-    private String sha1;
-    private int size;
+@Data
+public class Downloadable
+{
+
+	private URL url;
+	private String sha1;
+	private int size;
 }

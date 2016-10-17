@@ -16,20 +16,12 @@
  */
 package net.ftb.gui;
 
-import net.ftb.data.Constants;
-import net.ftb.download.Locations;
-import net.ftb.locale.I18N;
-import net.ftb.log.ILogListener;
-import net.ftb.log.LogEntry;
-import net.ftb.log.LogLevel;
-import net.ftb.log.LogSource;
-import net.ftb.log.LogType;
-import net.ftb.log.Logger;
-import net.ftb.tools.PastebinPoster;
-import net.ftb.util.GameUtils;
-import net.ftb.util.OSUtils;
-
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
@@ -43,335 +35,420 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import javax.swing.*;
-import javax.swing.text.Document;
-import javax.swing.text.DefaultStyledDocument;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextPane;
+import javax.swing.SwingUtilities;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultStyledDocument;
+import javax.swing.text.Document;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 
+import net.ftb.data.Constants;
+import net.ftb.download.Locations;
+import net.ftb.locale.I18N;
+import net.ftb.log.ILogListener;
+import net.ftb.log.LogEntry;
+import net.ftb.log.LogLevel;
+import net.ftb.log.LogSource;
+import net.ftb.log.LogType;
+import net.ftb.log.Logger;
+import net.ftb.tools.PastebinPoster;
+import net.ftb.util.GameUtils;
+import net.ftb.util.OSUtils;
+
 @SuppressWarnings("serial")
-public class LauncherConsole extends JFrame implements ILogListener {
-    private static final Font FONT = new Font("Monospaced", 0, 12);
-    // Process at most LOG_CHUNK_SIZE log records at once so that console doesn't freeze for a long time
-    // when lots of logs show up simultaneously
-    private static final int LOG_CHUNK_SIZE = 25000;
-    private final JTextPane displayArea;
-    private final JComboBox logTypeComboBox;
-    private LogType logType = LogType.MINIMAL;
-    private final JComboBox logSourceComboBox;
-    private LogSource logSource = LogSource.ALL;
-    private LogLevel logLevel = LogLevel.INFO;
-    private JButton killMCButton;
-    private JButton threadDumpButton;
-    private Document displayAreaDoc;
-    private final AtomicBoolean queuedRecordsInProgress = new AtomicBoolean();
-    private final Queue<LogRecord> logRecords = new ConcurrentLinkedQueue<LogRecord>();
+public class LauncherConsole extends JFrame implements ILogListener
+{
+	private static final Font FONT = new Font("Monospaced", 0, 12);
+	// Process at most LOG_CHUNK_SIZE log records at once so that console doesn't freeze for a long time
+	// when lots of logs show up simultaneously
+	private static final int LOG_CHUNK_SIZE = 25000;
+	private final JTextPane displayArea;
+	private final JComboBox logTypeComboBox;
+	private LogType logType = LogType.MINIMAL;
+	private final JComboBox logSourceComboBox;
+	private LogSource logSource = LogSource.ALL;
+	private LogLevel logLevel = LogLevel.INFO;
+	private JButton killMCButton;
+	private JButton threadDumpButton;
+	private Document displayAreaDoc;
+	private final AtomicBoolean queuedRecordsInProgress = new AtomicBoolean();
+	private final Queue<LogRecord> logRecords = new ConcurrentLinkedQueue<LogRecord>();
 
-    private SimpleAttributeSet RED = new SimpleAttributeSet();
-    private SimpleAttributeSet YELLOW = new SimpleAttributeSet();
+	private SimpleAttributeSet RED = new SimpleAttributeSet();
+	private SimpleAttributeSet YELLOW = new SimpleAttributeSet();
 
-    public LauncherConsole () {
-        setTitle(Constants.name + " " + I18N.getLocaleString("CONSOLE_TITLE"));
-        setMinimumSize(new Dimension(800, 400));
-        setPreferredSize(new Dimension(800, 400));
-        setIconImage(Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("/image/logo_ftb.png")));
-        getContentPane().setLayout(new BorderLayout(0, 0));
+	public LauncherConsole ()
+	{
+		setTitle(Constants.name + " " + I18N.getLocaleString("CONSOLE_TITLE"));
+		setMinimumSize(new Dimension(800, 400));
+		setPreferredSize(new Dimension(800, 400));
+		setIconImage(Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("/image/logo_ftb.png")));
+		getContentPane().setLayout(new BorderLayout(0, 0));
 
-        StyleConstants.setForeground(RED, Color.RED);
-        StyleConstants.setForeground(YELLOW, Color.YELLOW);
+		StyleConstants.setForeground(RED, Color.RED);
+		StyleConstants.setForeground(YELLOW, Color.YELLOW);
 
-        // setup buttons
-        JPanel panel = new JPanel();
+		// setup buttons
+		JPanel panel = new JPanel();
 
-        getContentPane().add(panel, BorderLayout.SOUTH);
-        panel.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
+		getContentPane().add(panel, BorderLayout.SOUTH);
+		panel.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
 
-        JButton paste = new JButton(I18N.getLocaleString("CONSOLE_PASTE"));
-        paste.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed (ActionEvent arg0) {
-                JOptionPane pane = new JOptionPane("The log will be sent to the FTB paste site and opened in your browser");
-                Object[] options = new String[] { "Yes do it", "Cancel" };
-                pane.setOptions(options);
-                JDialog dialog = pane.createDialog(new JFrame(), I18N.getLocaleString("CONSOLE_PASTE"));
-                dialog.setVisible(true);
-                Object obj = pane.getValue();
-                int result = -1;
-                for (int i = 0; i < options.length; i++) {
-                    if (options[i].equals(obj)) {
-                        result = i;
-                    }
-                }
-                if (result == 0) {
-                    PastebinPoster thread = new PastebinPoster();
-                    thread.start();
-                }
-            }
-        });
-        panel.add(paste);
+		JButton paste = new JButton(I18N.getLocaleString("CONSOLE_PASTE"));
+		paste.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed (ActionEvent arg0)
+			{
+				JOptionPane pane = new JOptionPane("The log will be sent to the FTB paste site and opened in your browser");
+				Object[] options = new String[]
+					{"Yes do it", "Cancel"};
+				pane.setOptions(options);
+				JDialog dialog = pane.createDialog(new JFrame(), I18N.getLocaleString("CONSOLE_PASTE"));
+				dialog.setVisible(true);
+				Object obj = pane.getValue();
+				int result = -1;
+				for(int i = 0; i < options.length; i++)
+				{
+					if (options[i].equals(obj))
+					{
+						result = i;
+					}
+				}
+				if (result == 0)
+				{
+					PastebinPoster thread = new PastebinPoster();
+					thread.start();
+				}
+			}
+		});
+		panel.add(paste);
 
-        JButton clipboard = new JButton(I18N.getLocaleString("CONSOLE_COPYCLIP"));
-        clipboard.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed (ActionEvent arg0) {
-                JOptionPane pane = new JOptionPane(I18N.getLocaleString("CONSOLE_CLIP_CONFIRM"));
-                Object[] options = new String[] { I18N.getLocaleString("MAIN_YES"), I18N.getLocaleString("MAIN_CANCEL") };
-                pane.setOptions(options);
-                JDialog dialog = pane.createDialog(new JFrame(), I18N.getLocaleString("CONSOLE_COPYCLIP"));
-                dialog.setVisible(true);
-                Object obj = pane.getValue();
-                int result = -1;
-                for (int i = 0; i < options.length; i++) {
-                    if (options[i].equals(obj)) {
-                        result = i;
-                    }
-                }
-                if (result == 0) {
-                    StringSelection stringSelection = new StringSelection("FTB Launcher logs:\n" + Logger.getLogs()
-                            + "[" + new SimpleDateFormat("HH:mm:ss").format(new Date()) + "]" + " Logs copied to clipboard");
-                    Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-                    clipboard.setContents(stringSelection, null);
-                }
-            }
-        });
-        panel.add(clipboard);
+		JButton clipboard = new JButton(I18N.getLocaleString("CONSOLE_COPYCLIP"));
+		clipboard.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed (ActionEvent arg0)
+			{
+				JOptionPane pane = new JOptionPane(I18N.getLocaleString("CONSOLE_CLIP_CONFIRM"));
+				Object[] options = new String[]
+					{I18N.getLocaleString("MAIN_YES"), I18N.getLocaleString("MAIN_CANCEL")};
+				pane.setOptions(options);
+				JDialog dialog = pane.createDialog(new JFrame(), I18N.getLocaleString("CONSOLE_COPYCLIP"));
+				dialog.setVisible(true);
+				Object obj = pane.getValue();
+				int result = -1;
+				for(int i = 0; i < options.length; i++)
+				{
+					if (options[i].equals(obj))
+					{
+						result = i;
+					}
+				}
+				if (result == 0)
+				{
+					StringSelection stringSelection = new StringSelection("FTB Launcher logs:\n" + Logger.getLogs() + "[" + new SimpleDateFormat("HH:mm:ss").format(new Date()) + "]" + " Logs copied to clipboard");
+					Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+					clipboard.setContents(stringSelection, null);
+				}
+			}
+		});
+		panel.add(clipboard);
 
-        logTypeComboBox = new JComboBox(LogType.values());
-        logTypeComboBox.setSelectedItem(logType);
-        logTypeComboBox.addActionListener(new ActionListener() {
-            public void actionPerformed (ActionEvent arg0) {
-                logType = (LogType) logTypeComboBox.getSelectedItem();
+		logTypeComboBox = new JComboBox(LogType.values());
+		logTypeComboBox.setSelectedItem(logType);
+		logTypeComboBox.addActionListener(new ActionListener()
+		{
+			public void actionPerformed (ActionEvent arg0)
+			{
+				logType = (LogType)logTypeComboBox.getSelectedItem();
 
-                // setup loglevel. If DEBUG selected show also DEBUG messages
-                switch (logType) {
-                case MINIMAL:
-                    logLevel = LogLevel.INFO;
-                    break;
-                case EXTENDED:
-                    logLevel = LogLevel.INFO;
-                    break;
-                case DEBUG:
-                    logLevel = LogLevel.DEBUG;
-                    break;
-                }
+				// setup loglevel. If DEBUG selected show also DEBUG messages
+				switch (logType)
+				{
+					case MINIMAL:
+						logLevel = LogLevel.INFO;
+						break;
+					case EXTENDED:
+						logLevel = LogLevel.INFO;
+						break;
+					case DEBUG:
+						logLevel = LogLevel.DEBUG;
+						break;
+				}
 
-                refreshLogs();
-            }
-        });
-        panel.add(logTypeComboBox);
+				refreshLogs();
+			}
+		});
+		panel.add(logTypeComboBox);
 
-        logSourceComboBox = new JComboBox(LogSource.values());
-        logSourceComboBox.setSelectedItem(logSource);
-        logSourceComboBox.addActionListener(new ActionListener() {
-            public void actionPerformed (ActionEvent arg0) {
-                logSource = (LogSource) logSourceComboBox.getSelectedItem();
-                refreshLogs();
-            }
-        });
-        panel.add(logSourceComboBox);
+		logSourceComboBox = new JComboBox(LogSource.values());
+		logSourceComboBox.setSelectedItem(logSource);
+		logSourceComboBox.addActionListener(new ActionListener()
+		{
+			public void actionPerformed (ActionEvent arg0)
+			{
+				logSource = (LogSource)logSourceComboBox.getSelectedItem();
+				refreshLogs();
+			}
+		});
+		panel.add(logSourceComboBox);
 
-        JButton ircButton = new JButton(I18N.getLocaleString("CONSOLE_SUPPORT"));
-        ircButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed (ActionEvent arg0) {
-                OSUtils.browse(Locations.SUPPORTSITE);
-            }
-        });
-        panel.add(ircButton);
+		JButton ircButton = new JButton(I18N.getLocaleString("CONSOLE_SUPPORT"));
+		ircButton.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed (ActionEvent arg0)
+			{
+				OSUtils.browse(Locations.SUPPORTSITE);
+			}
+		});
+		panel.add(ircButton);
 
-        killMCButton = new JButton(I18N.getLocaleString("KILL_MC"));
-        killMCButton.setEnabled(false);
-        killMCButton.setVisible(true);
-        killMCButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed (ActionEvent arg0) {
-                GameUtils.killMC();
-            }
-        });
-        panel.add(killMCButton);
+		killMCButton = new JButton(I18N.getLocaleString("KILL_MC"));
+		killMCButton.setEnabled(false);
+		killMCButton.setVisible(true);
+		killMCButton.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed (ActionEvent arg0)
+			{
+				GameUtils.killMC();
+			}
+		});
+		panel.add(killMCButton);
 
-        threadDumpButton = new JButton(I18N.getLocaleString("TD_MC"));
-        threadDumpButton.setEnabled(false);
-        threadDumpButton.setVisible(true);
-        threadDumpButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed (ActionEvent arg0) {
-                GameUtils.threadDumpMC();
-            }
-        });
-        panel.add(threadDumpButton);
+		threadDumpButton = new JButton(I18N.getLocaleString("TD_MC"));
+		threadDumpButton.setEnabled(false);
+		threadDumpButton.setVisible(true);
+		threadDumpButton.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed (ActionEvent arg0)
+			{
+				GameUtils.threadDumpMC();
+			}
+		});
+		panel.add(threadDumpButton);
 
-        // setup log area
-        displayArea = new JTextPane() {
-            @Override
-            public boolean getScrollableTracksViewportWidth () {
-                return true;
-            }
-        };
+		// setup log area
+		displayArea = new JTextPane()
+		{
+			@Override
+			public boolean getScrollableTracksViewportWidth ()
+			{
+				return true;
+			}
+		};
 
-        displayArea.setFont(FONT);
-        displayArea.setEditable(false);
-        displayAreaDoc = this.displayArea.getDocument();
-        displayArea.setMargin(null);
+		displayArea.setFont(FONT);
+		displayArea.setEditable(false);
+		displayAreaDoc = this.displayArea.getDocument();
+		displayArea.setMargin(null);
 
-        JScrollPane scrollPane = new JScrollPane(displayArea);
-        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		JScrollPane scrollPane = new JScrollPane(displayArea);
+		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
-        // Use third party library to implement autoscroll
-        new SmartScroller(scrollPane);
+		// Use third party library to implement autoscroll
+		new SmartScroller(scrollPane);
 
-        getContentPane().add(scrollPane);
-        pack();
+		getContentPane().add(scrollPane);
+		pack();
 
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing (WindowEvent e) {
-                Logger.removeListener(LaunchFrame.con);
-                if (LaunchFrame.trayMenu != null) {
-                    LaunchFrame.trayMenu.updateShowConsole(false);
-                }
-                dispose();
-            }
-        });
+		addWindowListener(new WindowAdapter()
+		{
+			@Override
+			public void windowClosing (WindowEvent e)
+			{
+				Logger.removeListener(LaunchFrame.con);
+				if (LaunchFrame.trayMenu != null)
+				{
+					LaunchFrame.trayMenu.updateShowConsole(false);
+				}
+				dispose();
+			}
+		});
 
-    }
+	}
 
-    synchronized public void refreshLogs () {
-        // Write messages to new blank document which is not being displayed
-        displayAreaDoc = new DefaultStyledDocument();
+	synchronized public void refreshLogs ()
+	{
+		// Write messages to new blank document which is not being displayed
+		displayAreaDoc = new DefaultStyledDocument();
 
-        // Add all log entries to list and display them
-        Queue<LogRecord> records = new LinkedList<LogRecord>();
-        for (LogEntry entry : Logger.getLogEntries()) {
-            if (shouldProcess(entry)) {
-                records.add(getLogRecord(entry));
-            }
-        }
-        displayMessages(records, -1);
+		// Add all log entries to list and display them
+		Queue<LogRecord> records = new LinkedList<LogRecord>();
+		for(LogEntry entry : Logger.getLogEntries())
+		{
+			if (shouldProcess(entry))
+			{
+				records.add(getLogRecord(entry));
+			}
+		}
+		displayMessages(records, -1);
 
-        // Remove newline from start
-        if (displayAreaDoc.getLength() != 0) {
-            try {
-                displayAreaDoc.remove(0, 1);
-            } catch (BadLocationException ignored) {
-                // ignore
-            }
-        }
+		// Remove newline from start
+		if (displayAreaDoc.getLength() != 0)
+		{
+			try
+			{
+				displayAreaDoc.remove(0, 1);
+			}
+			catch (BadLocationException ignored)
+			{
+				// ignore
+			}
+		}
 
-        // Swap to displaying new document
-        displayArea.setDocument(displayAreaDoc);
-    }
+		// Swap to displaying new document
+		displayArea.setDocument(displayAreaDoc);
+	}
 
-    public void scrollToBottom () {
-        displayArea.setCaretPosition(displayArea.getDocument().getLength());
-    }
+	public void scrollToBottom ()
+	{
+		displayArea.setCaretPosition(displayArea.getDocument().getLength());
+	}
 
-    synchronized private void displayMessage (String message, SimpleAttributeSet attributes, Document d) {
-        try {
-            d.insertString(d.getLength(), message, attributes);
-        } catch (Exception e) {
-            Logger.logLoggingError(null, e);
-        }
-    }
+	synchronized private void displayMessage (String message, SimpleAttributeSet attributes, Document d)
+	{
+		try
+		{
+			d.insertString(d.getLength(), message, attributes);
+		}
+		catch (Exception e)
+		{
+			Logger.logLoggingError(null, e);
+		}
+	}
 
-    private synchronized void displayMessages (Queue<LogRecord> logRecords, int limit) {
-        StringBuilder b = new StringBuilder();
+	private synchronized void displayMessages (Queue<LogRecord> logRecords, int limit)
+	{
+		StringBuilder b = new StringBuilder();
 
-        SimpleAttributeSet lastAttributes = null;
-        while (true) {
-            LogRecord r = --limit == 0 ? null : logRecords.poll();
+		SimpleAttributeSet lastAttributes = null;
+		while (true)
+		{
+			LogRecord r = --limit == 0 ? null : logRecords.poll();
 
-            if (r == null || r.attributes != lastAttributes) {
-                if (b.length() != 0) {
-                    displayMessage(b.toString(), lastAttributes, displayAreaDoc);
-                    b.setLength(0);
-                }
+			if (r == null || r.attributes != lastAttributes)
+			{
+				if (b.length() != 0)
+				{
+					displayMessage(b.toString(), lastAttributes, displayAreaDoc);
+					b.setLength(0);
+				}
 
-                if (r == null) {
-                    if (limit == 0) {
-                        runLogQueue();
-                    }
-                    return;
-                }
+				if (r == null)
+				{
+					if (limit == 0)
+					{
+						runLogQueue();
+					}
+					return;
+				}
 
-                lastAttributes = r.attributes;
-            }
+				lastAttributes = r.attributes;
+			}
 
-            b.append('\n').append(r.message);
-        }
-    }
+			b.append('\n').append(r.message);
+		}
+	}
 
-    private LogRecord getLogRecord (LogEntry entry) {
-        SimpleAttributeSet color = null;
-        switch (entry.level) {
-            case ERROR:
-                color = RED;
-                break;
-            case WARN:
-                color = YELLOW;
-                break;
-            case INFO:
-            case DEBUG:
-            case UNKNOWN:
-            default:
-                break;
-        }
-        return new LogRecord(entry.toString(logType), color);
-    }
+	private LogRecord getLogRecord (LogEntry entry)
+	{
+		SimpleAttributeSet color = null;
+		switch (entry.level)
+		{
+			case ERROR:
+				color = RED;
+				break;
+			case WARN:
+				color = YELLOW;
+				break;
+			case INFO:
+			case DEBUG:
+			case UNKNOWN:
+			default:
+				break;
+		}
+		return new LogRecord(entry.toString(logType), color);
+	}
 
-    private static class LogRecord {
-        public final String message;
-        public final SimpleAttributeSet attributes;
+	private static class LogRecord
+	{
+		public final String message;
+		public final SimpleAttributeSet attributes;
 
-        private LogRecord (String message, SimpleAttributeSet attributes) {
-            this.message = message;
-            this.attributes = attributes;
-        }
-    }
+		private LogRecord (String message, SimpleAttributeSet attributes)
+		{
+			this.message = message;
+			this.attributes = attributes;
+		}
+	}
 
-    public void minecraftStarted () {
-        killMCButton.setEnabled(true);
-        threadDumpButton.setEnabled(true);
-    }
+	public void minecraftStarted ()
+	{
+		killMCButton.setEnabled(true);
+		threadDumpButton.setEnabled(true);
+	}
 
-    public void minecraftStopped () {
-        killMCButton.setEnabled(false);
-        threadDumpButton.setEnabled(false);
-    }
+	public void minecraftStopped ()
+	{
+		killMCButton.setEnabled(false);
+		threadDumpButton.setEnabled(false);
+	}
 
-    private boolean shouldProcess(LogEntry entry) {
-        return (logSource == LogSource.ALL || entry.source == logSource) && (logLevel == LogLevel.DEBUG || logLevel.includes(entry.level));
-    }
+	private boolean shouldProcess (LogEntry entry)
+	{
+		return (logSource == LogSource.ALL || entry.source == logSource) && (logLevel == LogLevel.DEBUG || logLevel.includes(entry.level));
+	}
 
-    @Override
-    public void onLogEvent (final LogEntry entry) {
-        if (!shouldProcess(entry)) {
-            return;// drop unneeded messages as soon as possible
-        }
+	@Override
+	public void onLogEvent (final LogEntry entry)
+	{
+		if (!shouldProcess(entry))
+		{
+			return;// drop unneeded messages as soon as possible
+		}
 
-        logRecords.add(getLogRecord(entry));
+		logRecords.add(getLogRecord(entry));
 
-        runLogQueue();
-    }
+		runLogQueue();
+	}
 
-    private void runLogQueue() {
-        if (!queuedRecordsInProgress.compareAndSet(false, true)) {
-            return;// Already queued message display with invokeLater, no need to do it again
-        }
+	private void runLogQueue ()
+	{
+		if (!queuedRecordsInProgress.compareAndSet(false, true))
+		{
+			return;// Already queued message display with invokeLater, no need to do it again
+		}
 
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                try {
-                    if (!queuedRecordsInProgress.compareAndSet(true, false)) {
-                        throw new IllegalStateException("Unexpected queuedRecords value: false");
-                    }
-                    displayMessages(logRecords, LOG_CHUNK_SIZE);
-                } catch (Throwable t) {
-                    Logger.logLoggingError(null, t);
-                }
-            }
-        });
-    }
+		SwingUtilities.invokeLater(new Runnable()
+		{
+			public void run ()
+			{
+				try
+				{
+					if (!queuedRecordsInProgress.compareAndSet(true, false))
+					{
+						throw new IllegalStateException("Unexpected queuedRecords value: false");
+					}
+					displayMessages(logRecords, LOG_CHUNK_SIZE);
+				}
+				catch (Throwable t)
+				{
+					Logger.logLoggingError(null, t);
+				}
+			}
+		});
+	}
 }

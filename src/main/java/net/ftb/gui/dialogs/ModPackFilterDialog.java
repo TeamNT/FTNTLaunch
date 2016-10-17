@@ -16,7 +16,20 @@
  */
 package net.ftb.gui.dialogs;
 
+import java.awt.Container;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+
 import com.google.common.collect.Lists;
+
 import net.ftb.data.ModPack;
 import net.ftb.gui.GuiConstants;
 import net.ftb.gui.LaunchFrame;
@@ -24,106 +37,111 @@ import net.ftb.gui.panes.AbstractModPackPane;
 import net.ftb.locale.I18N;
 import net.miginfocom.swing.MigLayout;
 
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
+public class ModPackFilterDialog extends JDialog
+{
+	private JLabel availabilityLbl;
+	private JComboBox availability;
+	private JLabel mcVersionLbl;
+	private JComboBox mcVersion;
+	private JButton apply;
+	private JButton cancel;
+	private JButton search;
 
-import javax.swing.*;
+	private AbstractModPackPane pane;
 
-public class ModPackFilterDialog extends JDialog {
-    private JLabel availabilityLbl;
-    private JComboBox availability;
-    private JLabel mcVersionLbl;
-    private JComboBox mcVersion;
-    private JButton apply;
-    private JButton cancel;
-    private JButton search;
+	public ModPackFilterDialog (AbstractModPackPane instance)
+	{
+		super(LaunchFrame.getInstance(), true);
+		this.pane = instance;
 
-    private AbstractModPackPane pane;
+		setupGui();
 
-    public ModPackFilterDialog (AbstractModPackPane instance) {
-        super(LaunchFrame.getInstance(), true);
-        this.pane = instance;
+		getRootPane().setDefaultButton(apply);
 
-        setupGui();
+		this.pane = instance;
 
-        getRootPane().setDefaultButton(apply);
+		ArrayList<String> mcVersions = Lists.newArrayList();
+		mcVersion.addItem(I18N.getLocaleString("MAIN_ALL"));
+		mcVersions.add(I18N.getLocaleString("MAIN_ALL"));
+		for(ModPack pack : ModPack.getPackArray())
+		{
+			if (!mcVersions.contains(pack.getMcVersion()))
+			{
+				mcVersions.add(pack.getMcVersion());
+				mcVersion.addItem(pack.getMcVersion());
+			}
+		}
 
-        this.pane = instance;
+		mcVersion.setModel(new DefaultComboBoxModel(mcVersions.toArray()));
+		availability.setModel(new DefaultComboBoxModel(new String[]
+			{I18N.getLocaleString("MAIN_ALL"), I18N.getLocaleString("FILTER_PUBLIC"), I18N.getLocaleString("FILTER_PRIVATE")}));
 
-        ArrayList<String> mcVersions = Lists.newArrayList();
-        mcVersion.addItem(I18N.getLocaleString("MAIN_ALL"));
-        mcVersions.add(I18N.getLocaleString("MAIN_ALL"));
-        for (ModPack pack : ModPack.getPackArray()) {
-            if (!mcVersions.contains(pack.getMcVersion())) {
-                mcVersions.add(pack.getMcVersion());
-                mcVersion.addItem(pack.getMcVersion());
-            }
-        }
+		mcVersion.setSelectedItem(pane.mcVersion);
+		availability.setSelectedItem(pane.avaliability);
 
-        mcVersion.setModel(new DefaultComboBoxModel(mcVersions.toArray()));
-        availability.setModel(new DefaultComboBoxModel(new String[] { I18N.getLocaleString("MAIN_ALL"), I18N.getLocaleString("FILTER_PUBLIC"), I18N.getLocaleString("FILTER_PRIVATE") }));
+		pack();
 
-        mcVersion.setSelectedItem(pane.mcVersion);
-        availability.setSelectedItem(pane.avaliability);
+		apply.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed (ActionEvent arg0)
+			{
+				pane.mcVersion = (String)mcVersion.getSelectedItem();
+				pane.avaliability = (String)availability.getSelectedItem();
+				pane.updateFilter();
+				setVisible(false);
+			}
+		});
 
-        pack();
+		cancel.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed (ActionEvent e)
+			{
+				setVisible(false);
+			}
+		});
 
-        apply.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed (ActionEvent arg0) {
-                pane.mcVersion = (String) mcVersion.getSelectedItem();
-                pane.avaliability = (String) availability.getSelectedItem();
-                pane.updateFilter();
-                setVisible(false);
-            }
-        });
+		search.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed (ActionEvent arg0)
+			{
+				SearchDialog sd = new SearchDialog(pane);
+				sd.setVisible(true);
+				setVisible(false);
+			}
+		});
+	}
 
-        cancel.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed (ActionEvent e) {
-                setVisible(false);
-            }
-        });
+	private void setupGui ()
+	{
+		setIconImage(Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("/image/logo_ftb.png")));
+		setTitle(I18N.getLocaleString("FILTER_TITLE"));
+		setResizable(true);
 
-        search.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed (ActionEvent arg0) {
-                SearchDialog sd = new SearchDialog(pane);
-                sd.setVisible(true);
-                setVisible(false);
-            }
-        });
-    }
+		Container panel = getContentPane();
+		panel.setLayout(new MigLayout());
 
-    private void setupGui () {
-        setIconImage(Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("/image/logo_ftb.png")));
-        setTitle(I18N.getLocaleString("FILTER_TITLE"));
-        setResizable(true);
+		availabilityLbl = new JLabel(I18N.getLocaleString("FILTER_MODPACKAVALIABILITY"));
+		mcVersionLbl = new JLabel(I18N.getLocaleString("FILTER_MCVERSION"));
+		mcVersion = new JComboBox();
+		availability = new JComboBox();
+		apply = new JButton(I18N.getLocaleString("FILTER_APPLY"));
+		cancel = new JButton(I18N.getLocaleString("MAIN_CANCEL"));
+		search = new JButton(I18N.getLocaleString("FILTER_SEARCHPACK"));
 
-        Container panel = getContentPane();
-        panel.setLayout(new MigLayout());
+		mcVersion.setPrototypeDisplayValue("xxxxxxxxxxxx");
+		availability.setPrototypeDisplayValue("xxxxxxxxxxxx");
 
-        availabilityLbl = new JLabel(I18N.getLocaleString("FILTER_MODPACKAVALIABILITY"));
-        mcVersionLbl = new JLabel(I18N.getLocaleString("FILTER_MCVERSION"));
-        mcVersion = new JComboBox();
-        availability = new JComboBox();
-        apply = new JButton(I18N.getLocaleString("FILTER_APPLY"));
-        cancel = new JButton(I18N.getLocaleString("MAIN_CANCEL"));
-        search = new JButton(I18N.getLocaleString("FILTER_SEARCHPACK"));
-
-        mcVersion.setPrototypeDisplayValue("xxxxxxxxxxxx");
-        availability.setPrototypeDisplayValue("xxxxxxxxxxxx");
-
-        panel.add(mcVersionLbl);
-        panel.add(mcVersion, GuiConstants.WRAP);
-        panel.add(availabilityLbl);
-        panel.add(availability, GuiConstants.WRAP);
-        panel.add(search, GuiConstants.FILL_TWO);
-        panel.add(cancel, "grow, " + GuiConstants.WRAP);
-        panel.add(apply, GuiConstants.FILL_SINGLE_LINE);
-        pack();
-        setLocationRelativeTo(this.getOwner());
-    }
+		panel.add(mcVersionLbl);
+		panel.add(mcVersion, GuiConstants.WRAP);
+		panel.add(availabilityLbl);
+		panel.add(availability, GuiConstants.WRAP);
+		panel.add(search, GuiConstants.FILL_TWO);
+		panel.add(cancel, "grow, " + GuiConstants.WRAP);
+		panel.add(apply, GuiConstants.FILL_SINGLE_LINE);
+		pack();
+		setLocationRelativeTo(this.getOwner());
+	}
 }

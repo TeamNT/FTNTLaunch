@@ -27,20 +27,26 @@ package net.ftb.tracking.google;
  * http://www.ietf.org/rfc/rfc2396.txt
  * @author Daniel Murphy
  */
-public class URIEncoder {
-    private static String mark = "-_.!~*'()\"";
+public class URIEncoder
+{
+	private static String mark = "-_.!~*'()\"";
 
-    public static String encodeURI (String argString) {
-        StringBuilder uri = new StringBuilder(); // Encoded URL
-        char[] chars = argString.toCharArray();
-        for (char c : chars) {
-            if ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || mark.indexOf(c) != -1) {
-                uri.append(c);
-            } else {
-                uri.append("%");
-                uri.append(Integer.toHexString((int) c));
-            }
-        }
-        return uri.toString();
-    }
+	public static String encodeURI (String argString)
+	{
+		StringBuilder uri = new StringBuilder(); // Encoded URL
+		char[] chars = argString.toCharArray();
+		for(char c : chars)
+		{
+			if ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || mark.indexOf(c) != -1)
+			{
+				uri.append(c);
+			}
+			else
+			{
+				uri.append("%");
+				uri.append(Integer.toHexString((int)c));
+			}
+		}
+		return uri.toString();
+	}
 }

@@ -16,47 +16,59 @@
  */
 package net.ftb.tracking.google.dispatch;
 
-import net.ftb.log.Logger;
-
 import java.net.URI;
 
-public abstract class AnalyticsDispatcher {
-    private String userAgent;
-    private String host;
-    private int port;
+import net.ftb.log.Logger;
 
-    public AnalyticsDispatcher (String userAgent, String host, int port) {
-        this.userAgent = userAgent;
-        this.host = host;
-        this.port = port;
-    }
+public abstract class AnalyticsDispatcher
+{
+	private String userAgent;
+	private String host;
+	private int port;
 
-    public void dispatch (String analyticsString) {
-        URI uri = URI.create(analyticsString);
-        String timeDispatched = getQueryParameter(uri.getQuery(), "utmht");
-        if (timeDispatched != null) {
-            try {
-                Long time = Long.parseLong(timeDispatched);
-                analyticsString = analyticsString + "&utmqt=" + (System.currentTimeMillis() - time);
-            } catch (NumberFormatException e) {
-                Logger.logError("Error parsing utmht parameter: ", e);
-            }
-        } else {
-            Logger.logWarn("Unable to find utmht parameter: " + analyticsString);
-        }
-        dispatchToNetwork(analyticsString);
-    }
+	public AnalyticsDispatcher (String userAgent, String host, int port)
+	{
+		this.userAgent = userAgent;
+		this.host = host;
+		this.port = port;
+	}
 
-    protected abstract void dispatchToNetwork (String analyticsString);
+	public void dispatch (String analyticsString)
+	{
+		URI uri = URI.create(analyticsString);
+		String timeDispatched = getQueryParameter(uri.getQuery(), "utmht");
+		if (timeDispatched != null)
+		{
+			try
+			{
+				Long time = Long.parseLong(timeDispatched);
+				analyticsString = analyticsString + "&utmqt=" + (System.currentTimeMillis() - time);
+			}
+			catch (NumberFormatException e)
+			{
+				Logger.logError("Error parsing utmht parameter: ", e);
+			}
+		}
+		else
+		{
+			Logger.logWarn("Unable to find utmht parameter: " + analyticsString);
+		}
+		dispatchToNetwork(analyticsString);
+	}
 
-    protected static String getQueryParameter (String query, String parameter) {
-        String[] params = query.split("&");
-        for (String param : params) {
-            String[] nameValue = param.split("=");
-            if (nameValue[0].equals(parameter)) {
-                return nameValue[1];
-            }
-        }
-        return null;
-    }
+	protected abstract void dispatchToNetwork (String analyticsString);
+
+	protected static String getQueryParameter (String query, String parameter)
+	{
+		String[] params = query.split("&");
+		for(String param : params)
+		{
+			String[] nameValue = param.split("=");
+			if (nameValue[0].equals(parameter))
+			{
+				return nameValue[1];
+			}
+		}
+		return null;
+	}
 }

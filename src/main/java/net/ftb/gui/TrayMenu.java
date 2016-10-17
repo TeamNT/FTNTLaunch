@@ -16,124 +16,154 @@
  */
 package net.ftb.gui;
 
+import java.awt.CheckboxMenuItem;
+import java.awt.MenuItem;
+import java.awt.PopupMenu;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+
 import net.ftb.download.Locations;
 import net.ftb.locale.I18N;
 import net.ftb.log.Logger;
 import net.ftb.util.GameUtils;
 import net.ftb.util.OSUtils;
 
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
+public class TrayMenu extends PopupMenu
+{
 
-public class TrayMenu extends PopupMenu {
+	private static final long serialVersionUID = 1L;
 
-    private static final long serialVersionUID = 1L;
+	public TrayMenu ()
+	{
+		super();
 
-    public TrayMenu () {
-        super();
+		killMCButton.setLabel(I18N.getLocaleString("KILL_MC"));
+		threadDumpMCButton.setLabel(I18N.getLocaleString("TD_MC"));
+		quitButton.setLabel(I18N.getLocaleString("TRAY_QUIT"));
+		ftbWebsite.setLabel(I18N.getLocaleString("TRAY_FTB_WEBSITE"));
+		showConsole.setLabel(I18N.getLocaleString("SHOW_CONSOLE"));
 
-        killMCButton.setLabel(I18N.getLocaleString("KILL_MC"));
-        threadDumpMCButton.setLabel(I18N.getLocaleString("TD_MC"));
-        quitButton.setLabel(I18N.getLocaleString("TRAY_QUIT"));
-        ftbWebsite.setLabel(I18N.getLocaleString("TRAY_FTB_WEBSITE"));
-        showConsole.setLabel(I18N.getLocaleString("SHOW_CONSOLE"));
+		this.add(this.killMCButton);
+		this.add(this.threadDumpMCButton);
+		this.addSeparator();
+		this.add(this.showConsole);
+		this.addSeparator();
+		this.add(this.ftbWebsite);
+		this.add(this.quitButton);
+	}
 
-        this.add(this.killMCButton);
-        this.add(this.threadDumpMCButton);
-        this.addSeparator();
-        this.add(this.showConsole);
-        this.addSeparator();
-        this.add(this.ftbWebsite);
-        this.add(this.quitButton);
-    }
+	public void updateLocale ()
+	{
+		killMCButton.setLabel(I18N.getLocaleString("KILL_MC"));
+		threadDumpMCButton.setLabel(I18N.getLocaleString("TD_MC"));
+		quitButton.setLabel(I18N.getLocaleString("TRAY_QUIT"));
+		ftbWebsite.setLabel(I18N.getLocaleString("TRAY_FTB_WEBSITE"));
+		showConsole.setLabel(I18N.getLocaleString("SHOW_CONSOLE"));
+	}
 
-    public void updateLocale () {
-        killMCButton.setLabel(I18N.getLocaleString("KILL_MC"));
-        threadDumpMCButton.setLabel(I18N.getLocaleString("TD_MC"));
-        quitButton.setLabel(I18N.getLocaleString("TRAY_QUIT"));
-        ftbWebsite.setLabel(I18N.getLocaleString("TRAY_FTB_WEBSITE"));
-        showConsole.setLabel(I18N.getLocaleString("SHOW_CONSOLE"));
-    }
+	private final MenuItem killMCButton = new MenuItem()
+	{
+		{
+			this.addActionListener(new ActionListener()
+			{
+				@Override
+				public void actionPerformed (ActionEvent arg0)
+				{
+					GameUtils.killMC();
+				}
+			});
+		}
+	};
 
-    private final MenuItem killMCButton = new MenuItem() {
-        {
-            this.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed (ActionEvent arg0) {
-                    GameUtils.killMC();
-                }
-            });
-        }
-    };
+	private final MenuItem threadDumpMCButton = new MenuItem()
+	{
+		{
+			this.addActionListener(new ActionListener()
+			{
+				@Override
+				public void actionPerformed (ActionEvent arg0)
+				{
+					GameUtils.threadDumpMC();
+				}
+			});
+		}
+	};
 
-    private final MenuItem threadDumpMCButton = new MenuItem() {
-        {
-            this.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed (ActionEvent arg0) {
-                    GameUtils.threadDumpMC();
-                }
-            });
-        }
-    };
+	private final MenuItem quitButton = new MenuItem()
+	{
+		{
+			this.addActionListener(new ActionListener()
+			{
+				@Override
+				public void actionPerformed (ActionEvent event)
+				{
+					System.exit(0);
+				}
+			});
+		}
+	};
 
-    private final MenuItem quitButton = new MenuItem() {
-        {
-            this.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed (ActionEvent event) {
-                    System.exit(0);
-                }
-            });
-        }
-    };
+	private final MenuItem ftbWebsite = new MenuItem()
+	{
+		{
+			this.addActionListener(new ActionListener()
+			{
+				@Override
+				public void actionPerformed (ActionEvent event)
+				{
+					OSUtils.browse(Locations.FTBSITE);
+				}
+			});
+		}
+	};
 
-    private final MenuItem ftbWebsite = new MenuItem() {
-        {
-            this.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed (ActionEvent event) {
-                    OSUtils.browse(Locations.FTBSITE);
-                }
-            });
-        }
-    };
+	private final CheckboxMenuItem showConsole = new CheckboxMenuItem()
+	{
+		{
+			if (LaunchFrame.con != null)
+			{
+				this.setState(LaunchFrame.con.isVisible());
+			}
+			else
+			{
+				this.setState(false);
+			}
 
-    private final CheckboxMenuItem showConsole = new CheckboxMenuItem() {
-        {
-            if (LaunchFrame.con != null) {
-                this.setState(LaunchFrame.con.isVisible());
-            } else {
-                this.setState(false);
-            }
+			this.addItemListener(new ItemListener()
+			{
+				@Override
+				public void itemStateChanged (ItemEvent e)
+				{
+					boolean newState = showConsole.getState();
+					if (LaunchFrame.con != null)
+					{
+						if (newState)
+						{
+							LaunchFrame.con.setVisible(true);
+							Logger.addListener(LaunchFrame.con);
+						}
+						else
+						{
+							Logger.removeListener(LaunchFrame.con);
+							LaunchFrame.con.dispose();
+						}
+					}
+					else
+					{
+						LaunchFrame.con = new LauncherConsole();
+						Logger.addListener(LaunchFrame.con);
+						LaunchFrame.con.refreshLogs();
+						LaunchFrame.con.setVisible(true);
+					}
+				}
+			});
+		}
+	};
 
-            this.addItemListener(new ItemListener() {
-                @Override
-                public void itemStateChanged (ItemEvent e) {
-                    boolean newState = showConsole.getState();
-                    if (LaunchFrame.con != null) {
-                        if (newState) {
-                            LaunchFrame.con.setVisible(true);
-                            Logger.addListener(LaunchFrame.con);
-                        } else {
-                            Logger.removeListener(LaunchFrame.con);
-                            LaunchFrame.con.dispose();
-                        }
-                    } else {
-                        LaunchFrame.con = new LauncherConsole();
-                        Logger.addListener(LaunchFrame.con);
-                        LaunchFrame.con.refreshLogs();
-                        LaunchFrame.con.setVisible(true);
-                    }
-                }
-            });
-        }
-    };
-
-    public void updateShowConsole (boolean b) {
-        showConsole.setState(b);
-    }
+	public void updateShowConsole (boolean b)
+	{
+		showConsole.setState(b);
+	}
 }

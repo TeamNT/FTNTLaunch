@@ -16,6 +16,16 @@
  */
 package net.ftb.gui.dialogs;
 
+import java.awt.Container;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JTextArea;
+
 import net.ftb.data.LoginResponse;
 import net.ftb.data.ModPack;
 import net.ftb.data.Settings;
@@ -25,74 +35,79 @@ import net.ftb.locale.I18N;
 import net.ftb.minecraft.MCInstaller;
 import net.miginfocom.swing.MigLayout;
 
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.*;
-
 @SuppressWarnings("serial")
-public class PlayOfflineDialog extends JDialog {
-    private JTextArea text;
-    private JButton play;
-    private JButton abort;
+public class PlayOfflineDialog extends JDialog
+{
+	private JTextArea text;
+	private JButton play;
+	private JButton abort;
 
-    public PlayOfflineDialog (String cause, final String username, final String uuid, final LoginResponse resp) {
-        super(LaunchFrame.getInstance(), true);
-        setupGui();
+	public PlayOfflineDialog (String cause, final String username, final String uuid, final LoginResponse resp)
+	{
+		super(LaunchFrame.getInstance(), true);
+		setupGui();
 
-        play.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed (ActionEvent arg0) {
-                ModPack pack = ModPack.getSelectedPack();
-                boolean legacy = false;
-                if (!pack.getMcVersion().startsWith("14w") && Integer.parseInt(pack.getMcVersion().replaceAll("[^\\d]", "")) < 162) {
-                    legacy = true;
-                }
-                if (pack.getDir().equalsIgnoreCase("mojang_vanilla")) {
-                    legacy = false;//vanilla goes direct!!
-                }
-                setVisible(false);
-                String unique;
-                if (uuid == null || uuid.isEmpty()) {
-                    unique = "1234567890";
-                } else {
-                    unique = uuid;
-                }
-                MCInstaller.launchMinecraft(Settings.getSettings().getInstallPath(), ModPack.getSelectedPack(),
-                        new LoginResponse("1", "token", username, "offlinemods", unique, resp.getAuth()), legacy);
+		play.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed (ActionEvent arg0)
+			{
+				ModPack pack = ModPack.getSelectedPack();
+				boolean legacy = false;
+				if (!pack.getMcVersion().startsWith("14w") && Integer.parseInt(pack.getMcVersion().replaceAll("[^\\d]", "")) < 162)
+				{
+					legacy = true;
+				}
+				if (pack.getDir().equalsIgnoreCase("mojang_vanilla"))
+				{
+					legacy = false;// vanilla goes direct!!
+				}
+				setVisible(false);
+				String unique;
+				if (uuid == null || uuid.isEmpty())
+				{
+					unique = "1234567890";
+				}
+				else
+				{
+					unique = uuid;
+				}
+				MCInstaller.launchMinecraft(Settings.getSettings().getInstallPath(), ModPack.getSelectedPack(), new LoginResponse("1", "token", username, "offlinemods", unique, resp.getAuth()), legacy);
 
-            }
-        });
+			}
+		});
 
-        abort.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed (ActionEvent e) {
-                setVisible(false);
-            }
-        });
-    }
+		abort.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed (ActionEvent e)
+			{
+				setVisible(false);
+			}
+		});
+	}
 
-    public void setupGui () {
-        setIconImage(Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("/image/logo_ftb.png")));
-        setTitle("Could not log in");
-        setResizable(true);
+	public void setupGui ()
+	{
+		setIconImage(Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("/image/logo_ftb.png")));
+		setTitle("Could not log in");
+		setResizable(true);
 
-        Container panel = getContentPane();
-        panel.setLayout(new MigLayout());
+		Container panel = getContentPane();
+		panel.setLayout(new MigLayout());
 
-        text = new JTextArea(I18N.getLocaleString("PLAYOFFLINE_WANNA"));
-        text.setEditable(false);
-        text.setHighlighter(null);
-        text.setBorder(BorderFactory.createEmptyBorder());
-        play = new JButton(I18N.getLocaleString("MAIN_YES"));
-        abort = new JButton(I18N.getLocaleString("MAIN_NO"));
+		text = new JTextArea(I18N.getLocaleString("PLAYOFFLINE_WANNA"));
+		text.setEditable(false);
+		text.setHighlighter(null);
+		text.setBorder(BorderFactory.createEmptyBorder());
+		play = new JButton(I18N.getLocaleString("MAIN_YES"));
+		abort = new JButton(I18N.getLocaleString("MAIN_NO"));
 
-        panel.add(text, GuiConstants.WRAP);
-        panel.add(abort, GuiConstants.FILL_TWO);
-        panel.add(play, GuiConstants.GROW);
+		panel.add(text, GuiConstants.WRAP);
+		panel.add(abort, GuiConstants.FILL_TWO);
+		panel.add(play, GuiConstants.GROW);
 
-        pack();
-        setLocationRelativeTo(getOwner());
-    }
+		pack();
+		setLocationRelativeTo(getOwner());
+	}
 }

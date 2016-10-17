@@ -16,15 +16,20 @@
  */
 package net.ftb.log;
 
-public enum LogType {
-    DEBUG, EXTENDED, MINIMAL;
-    public static final int indexCount = LogType.values().length;
+public enum LogType
+{
+	DEBUG,
+	EXTENDED,
+	MINIMAL;
+	public static final int indexCount = LogType.values().length;
 
-    public boolean includes (LogType other) {
-        return other.compareTo(this) >= 0;
-    }
+	public boolean includes (LogType other)
+	{
+		return other.compareTo(this) >= 0;
+	}
 
-    public String toString () {
-        return name().substring(0, 1) + name().substring(1).toLowerCase();
-    }
+	public String toString ()
+	{
+		return name().substring(0, 1) + name().substring(1).toLowerCase();
+	}
 }

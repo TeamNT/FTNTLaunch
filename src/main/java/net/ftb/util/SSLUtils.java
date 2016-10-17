@@ -23,9 +23,6 @@
 
 package net.ftb.util;
 
-import net.ftb.log.Logger;
-
-import javax.net.ssl.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -36,151 +33,188 @@ import java.security.MessageDigest;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
-public class SSLUtils {
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLException;
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
 
-    /**
-     *
-     * @param s host name to test
-     * @param p port to test
-     * @throws Exception
-     */
-    public static void printServerCertChain (String s, int p) {
-        boolean handshake_failed = false;
-        KeyStore ks;
-        SSLSocketFactory factory;
-        SSLSocket socket;
-        SavingTrustManager tm;
+import net.ftb.log.Logger;
 
-        // fill keychain
-        char[] passphrase = "changeit".toCharArray();
-        char SEP = File.separatorChar;
-        File dir = new File(System.getProperty("java.home") + SEP + "lib" + SEP + "security");
-        File file = new File(dir, "cacerts");
-        try {
-            InputStream in = new FileInputStream(file);
-            ks = KeyStore.getInstance(KeyStore.getDefaultType());
-            ks.load(in, passphrase);
-            in.close();
-        } catch (Exception e) {
-            Logger.logWarn("Keychain loadign failed", e);
-            return;
-        }
+public class SSLUtils
+{
 
-        // prepare SSL
-        try {
-            SSLContext context = SSLContext.getInstance("TLS");
-            TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-            tmf.init(ks);
-            X509TrustManager defaultTrustManager = (X509TrustManager) tmf.getTrustManagers()[0];
-            tm = new SavingTrustManager(defaultTrustManager);
-            context.init(null, new TrustManager[] { tm }, null);
-            factory = context.getSocketFactory();
-        } catch (Exception e) {
-            Logger.logWarn("SSL preparation failed", e);
-            return;
-        }
+	/**
+	 *
+	 * @param s host name to test
+	 * @param p port to test
+	 * @throws Exception
+	 */
+	public static void printServerCertChain (String s, int p)
+	{
+		boolean handshake_failed = false;
+		KeyStore ks;
+		SSLSocketFactory factory;
+		SSLSocket socket;
+		SavingTrustManager tm;
 
-        //open socket
-        try {
-            socket = (SSLSocket) factory.createSocket(s, p);
-            socket.setSoTimeout(10000);
-        } catch (UnknownHostException e) {
-            Logger.logWarn("Host lookup failed", e);
-            return;
-        } catch (Exception e) {
-            Logger.logWarn("Generic socket fail" ,e);
-            return;
-        }
+		// fill keychain
+		char[] passphrase = "changeit".toCharArray();
+		char SEP = File.separatorChar;
+		File dir = new File(System.getProperty("java.home") + SEP + "lib" + SEP + "security");
+		File file = new File(dir, "cacerts");
+		try
+		{
+			InputStream in = new FileInputStream(file);
+			ks = KeyStore.getInstance(KeyStore.getDefaultType());
+			ks.load(in, passphrase);
+			in.close();
+		}
+		catch (Exception e)
+		{
+			Logger.logWarn("Keychain loadign failed", e);
+			return;
+		}
 
-        // and finally initiate SSL handshake
-        try {
-            socket.startHandshake();
-            socket.close();
-            Logger.logDebug("SSL handshake was succesfull. Printing certificate chain...");
-        } catch (SSLException e) {
-            handshake_failed = true;
-        } catch (IOException e) {
-            Logger.logWarn("IOException", e);
-            return;
-        }
+		// prepare SSL
+		try
+		{
+			SSLContext context = SSLContext.getInstance("TLS");
+			TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+			tmf.init(ks);
+			X509TrustManager defaultTrustManager = (X509TrustManager)tmf.getTrustManagers()[0];
+			tm = new SavingTrustManager(defaultTrustManager);
+			context.init(null, new TrustManager[]
+				{tm}, null);
+			factory = context.getSocketFactory();
+		}
+		catch (Exception e)
+		{
+			Logger.logWarn("SSL preparation failed", e);
+			return;
+		}
 
-        X509Certificate[] chain = tm.chain;
-        if (chain == null) {
-            Logger.logDebug("Could not obtain server certificate chain");
-            return;
-        }
+		// open socket
+		try
+		{
+			socket = (SSLSocket)factory.createSocket(s, p);
+			socket.setSoTimeout(10000);
+		}
+		catch (UnknownHostException e)
+		{
+			Logger.logWarn("Host lookup failed", e);
+			return;
+		}
+		catch (Exception e)
+		{
+			Logger.logWarn("Generic socket fail", e);
+			return;
+		}
 
-        if (handshake_failed) {
-            Logger.logError("SSL handshake failed. Something might be altering SSL certificates");
-            Logger.logError("Certificates are not trusted by JVM certificate chain");
-            Logger.logError("Certificate chain will be printed in debug logging level");
-        }
+		// and finally initiate SSL handshake
+		try
+		{
+			socket.startHandshake();
+			socket.close();
+			Logger.logDebug("SSL handshake was succesfull. Printing certificate chain...");
+		}
+		catch (SSLException e)
+		{
+			handshake_failed = true;
+		}
+		catch (IOException e)
+		{
+			Logger.logWarn("IOException", e);
+			return;
+		}
 
-        Logger.logDebug("");
-        Logger.logDebug("Server sent " + chain.length + " certificate(s):");
+		X509Certificate[] chain = tm.chain;
+		if (chain == null)
+		{
+			Logger.logDebug("Could not obtain server certificate chain");
+			return;
+		}
 
-        Logger.logDebug("");
-        try {
-            MessageDigest sha1 = MessageDigest.getInstance("SHA1");
-            MessageDigest md5 = MessageDigest.getInstance("MD5");
-            for (int i = 0; i < chain.length; i++) {
-                X509Certificate cert = chain[i];
-                Logger.logDebug
-                        (" " + (i + 1) + " Subject " + cert.getSubjectDN());
-                Logger.logDebug("   Issuer  " + cert.getIssuerDN());
-                sha1.update(cert.getEncoded());
-                Logger.logDebug("   sha1    " + toHexString(sha1.digest()));
-                md5.update(cert.getEncoded());
-                Logger.logDebug("   md5     " + toHexString(md5.digest()));
-                Logger.logDebug("");
-            }
-        } catch (Exception e) {
-            Logger.logDebug("Certificate printing failed" , e);
-        }
+		if (handshake_failed)
+		{
+			Logger.logError("SSL handshake failed. Something might be altering SSL certificates");
+			Logger.logError("Certificates are not trusted by JVM certificate chain");
+			Logger.logError("Certificate chain will be printed in debug logging level");
+		}
 
-    }
+		Logger.logDebug("");
+		Logger.logDebug("Server sent " + chain.length + " certificate(s):");
 
-    private static final char[] HEXDIGITS = "0123456789abcdef".toCharArray();
+		Logger.logDebug("");
+		try
+		{
+			MessageDigest sha1 = MessageDigest.getInstance("SHA1");
+			MessageDigest md5 = MessageDigest.getInstance("MD5");
+			for(int i = 0; i < chain.length; i++)
+			{
+				X509Certificate cert = chain[i];
+				Logger.logDebug(" " + (i + 1) + " Subject " + cert.getSubjectDN());
+				Logger.logDebug("   Issuer  " + cert.getIssuerDN());
+				sha1.update(cert.getEncoded());
+				Logger.logDebug("   sha1    " + toHexString(sha1.digest()));
+				md5.update(cert.getEncoded());
+				Logger.logDebug("   md5     " + toHexString(md5.digest()));
+				Logger.logDebug("");
+			}
+		}
+		catch (Exception e)
+		{
+			Logger.logDebug("Certificate printing failed", e);
+		}
 
-    private static String toHexString(byte[] bytes) {
-        StringBuilder sb = new StringBuilder(bytes.length * 3);
-        for (int b : bytes) {
-            b &= 0xff;
-            sb.append(HEXDIGITS[b >> 4]);
-            sb.append(HEXDIGITS[b & 15]);
-            sb.append(' ');
-        }
-        return sb.toString();
-    }
+	}
 
-    private static class SavingTrustManager implements X509TrustManager {
+	private static final char[] HEXDIGITS = "0123456789abcdef".toCharArray();
 
-        private final X509TrustManager tm;
-        private X509Certificate[] chain;
+	private static String toHexString (byte[] bytes)
+	{
+		StringBuilder sb = new StringBuilder(bytes.length * 3);
+		for(int b : bytes)
+		{
+			b &= 0xff;
+			sb.append(HEXDIGITS[b >> 4]);
+			sb.append(HEXDIGITS[b & 15]);
+			sb.append(' ');
+		}
+		return sb.toString();
+	}
 
-        SavingTrustManager(final X509TrustManager tm) {
-            this.tm = tm;
-        }
+	private static class SavingTrustManager implements X509TrustManager
+	{
 
-        @Override
-        public X509Certificate[] getAcceptedIssuers() {
-            return new X509Certificate[0];
-            // throw new UnsupportedOperationException();
-        }
+		private final X509TrustManager tm;
+		private X509Certificate[] chain;
 
-        @Override
-        public void checkClientTrusted(final X509Certificate[] chain,
-                final String authType)
-                throws CertificateException {
-            throw new UnsupportedOperationException();
-        }
+		SavingTrustManager (final X509TrustManager tm)
+		{
+			this.tm = tm;
+		}
 
-        @Override
-        public void checkServerTrusted(final X509Certificate[] chain,
-                final String authType)
-                throws CertificateException {
-            this.chain = chain;
-            this.tm.checkServerTrusted(chain, authType);
-        }
-    }
+		@Override
+		public X509Certificate[] getAcceptedIssuers ()
+		{
+			return new X509Certificate[0];
+			// throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public void checkClientTrusted (final X509Certificate[] chain, final String authType) throws CertificateException
+		{
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public void checkServerTrusted (final X509Certificate[] chain, final String authType) throws CertificateException
+		{
+			this.chain = chain;
+			this.tm.checkServerTrusted(chain, authType);
+		}
+	}
 }

@@ -16,15 +16,11 @@
  */
 package net.ftb.util;
 
-import com.google.common.base.Joiner;
-import net.ftb.data.Settings;
-import net.ftb.log.Logger;
-import org.apache.commons.codec.Charsets;
-import org.apache.commons.io.IOUtils;
-import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
-
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
@@ -36,179 +32,238 @@ import java.util.Scanner;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-public class AppUtils {
-    /**
-     * Reads all of the data from the given stream and returns it as a string.
-     * @param stream the stream to read from.
-     * @return the data read from the given stream as a string.
-     */
-    public static String readString (InputStream stream) {
-        Scanner scanner = new Scanner(stream).useDelimiter("\\A");
-        return scanner.hasNext() ? scanner.next() : "";
-    }
-    
-    public static String downloadString (URL url) throws IOException {
-        return readString(url.openStream());
-    }
+import org.apache.commons.codec.Charsets;
+import org.apache.commons.io.IOUtils;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
-    /**
-     * Downloads data from the given URL and returns it as a Document
-     * @param url the URL to fetch
-     * @return The document
-     * @throws IOException, SAXException if an error occurs when reading from the stream
-     */
-    public static Document downloadXML (URL url) throws IOException, SAXException {
-        return getXML(url.openStream());
-    }
+import com.google.common.base.Joiner;
 
-    /**
-     * Reads XML from a stream
-     * @param stream the stream to read the document from
-     * @return The document
-     * @throws IOException, SAXException if an error occurs when reading from the stream
-     */
-    public static Document getXML (InputStream stream) throws IOException, SAXException {
-        DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-        try {
-            return docFactory.newDocumentBuilder().parse(stream);
-        } catch (ParserConfigurationException ignored) {
-            Logger.logError(ignored.getMessage(), ignored);
-        } catch (UnknownHostException e) {
-            Logger.logError(e.getMessage(), e);
-        }
-        return null;
-    }
+import net.ftb.data.Settings;
+import net.ftb.log.Logger;
 
-    /**
-     * Simple sleep and check locking scheme
-     * @param b boolean to check, continue  when true
-     */
-    public static void waitForLock (boolean b) {
-        waitForLock(b, null);
-    }
+public class AppUtils
+{
+	/**
+	 * Reads all of the data from the given stream and returns it as a string.
+	 * @param stream the stream to read from.
+	 * @return the data read from the given stream as a string.
+	 */
+	public static String readString (InputStream stream)
+	{
+		Scanner scanner = new Scanner(stream).useDelimiter("\\A");
+		return scanner.hasNext() ? scanner.next() : "";
+	}
 
-    /**
-     * Simple sleep and check locking scheme
-     * @param b boolean to check, continue when true
-     * @param s String to use as locking reason for log messages
-     */
-    public static void waitForLock (boolean b, String s) {
-        while (!b) {
-            try {
-                Thread.sleep(100);
-                if (s != null) {
-                    Logger.logInfo("Waiting for " + s);
-                }
-            } catch (InterruptedException e) {
-            }
-        }
-    }
+	public static String downloadString (URL url) throws IOException
+	{
+		return readString(url.openStream());
+	}
 
-    public static void voidInputStream(InputStream is) {
-        InputStreamVoider voider = new InputStreamVoider(is);
-        voider.start();
-    }
+	/**
+	 * Downloads data from the given URL and returns it as a Document
+	 * @param url the URL to fetch
+	 * @return The document
+	 * @throws IOException, SAXException if an error occurs when reading from the stream
+	 */
+	public static Document downloadXML (URL url) throws IOException, SAXException
+	{
+		return getXML(url.openStream());
+	}
 
-    private static class InputStreamVoider extends Thread {
-        private InputStream is;
+	/**
+	 * Reads XML from a stream
+	 * @param stream the stream to read the document from
+	 * @return The document
+	 * @throws IOException, SAXException if an error occurs when reading from the stream
+	 */
+	public static Document getXML (InputStream stream) throws IOException, SAXException
+	{
+		DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+		try
+		{
+			return docFactory.newDocumentBuilder().parse(stream);
+		}
+		catch (ParserConfigurationException ignored)
+		{
+			Logger.logError(ignored.getMessage(), ignored);
+		}
+		catch (UnknownHostException e)
+		{
+			Logger.logError(e.getMessage(), e);
+		}
+		return null;
+	}
 
-        public InputStreamVoider(InputStream is) {
-            this.is = is;
-        }
+	/**
+	 * Simple sleep and check locking scheme
+	 * @param b boolean to check, continue when true
+	 */
+	public static void waitForLock (boolean b)
+	{
+		waitForLock(b, null);
+	}
 
-        @Override
-        public void run() {
-            try {
-                while (is.read() != -1) {
-                    // do nothing just keep stream empty
-                }
-            } catch (IOException e) {
-            }
-        }
-    }
+	/**
+	 * Simple sleep and check locking scheme
+	 * @param b boolean to check, continue when true
+	 * @param s String to use as locking reason for log messages
+	 */
+	public static void waitForLock (boolean b, String s)
+	{
+		while (!b)
+		{
+			try
+			{
+				Thread.sleep(100);
+				if (s != null)
+				{
+					Logger.logInfo("Waiting for " + s);
+				}
+			}
+			catch (InterruptedException e)
+			{}
+		}
+	}
 
-    public static String MapListToString(Map<String, List<String>> l) {
-        Joiner.MapJoiner mapJoiner = Joiner.on('\n').withKeyValueSeparator("=").useForNull("NULL");
-        return mapJoiner.join(l);
-    }
+	public static void voidInputStream (InputStream is)
+	{
+		InputStreamVoider voider = new InputStreamVoider(is);
+		voider.start();
+	}
 
-    public static String ConnectionToString(URLConnection c) {
-        boolean failed = false;
-        HttpURLConnection conn = (HttpURLConnection) c;
-        try {
-            if (conn.getErrorStream() != null) {
-                return IOUtils.toString(conn.getErrorStream(), Charsets.UTF_8);
-            } else if (conn.getInputStream() != null) {
-                return IOUtils.toString(conn.getInputStream(), Charsets.UTF_8);
-            } else {
-                return null;
-            }
-        } catch (FileNotFoundException e) {
-            // ignore this
-        } catch (IOException e) {
-            failed = true;
-        } catch (Exception e) {
-            failed = true;
-            Logger.logDebug("failed", e);
-        }
+	private static class InputStreamVoider extends Thread
+	{
+		private InputStream is;
 
-        if (failed) {
-            try {
-                return IOUtils.toString(c.getInputStream(), Charsets.UTF_8);
-            } catch (Exception e) {
-                Logger.logDebug("failed", e);
-            }
-        }
+		public InputStreamVoider (InputStream is)
+		{
+			this.is = is;
+		}
 
-        return null;
-    }
+		@Override
+		public void run ()
+		{
+			try
+			{
+				while (is.read() != -1)
+				{
+					// do nothing just keep stream empty
+				}
+			}
+			catch (IOException e)
+			{}
+		}
+	}
 
-    public static void debugConnection(URLConnection c) {
-        debugConnection(c, false);
-    }
+	public static String MapListToString (Map<String, List<String>> l)
+	{
+		Joiner.MapJoiner mapJoiner = Joiner.on('\n').withKeyValueSeparator("=").useForNull("NULL");
+		return mapJoiner.join(l);
+	}
 
-    public static void debugConnection(URLConnection c, boolean forceDebug) {
-        if (Settings.getSettings().getDebugLauncher() || forceDebug) {
-            if (!(c instanceof HttpURLConnection)) {
-                Logger.logDebug("Something bad just happened.");
-            }
+	public static String ConnectionToString (URLConnection c)
+	{
+		boolean failed = false;
+		HttpURLConnection conn = (HttpURLConnection)c;
+		try
+		{
+			if (conn.getErrorStream() != null)
+			{
+				return IOUtils.toString(conn.getErrorStream(), Charsets.UTF_8);
+			}
+			else if (conn.getInputStream() != null)
+			{
+				return IOUtils.toString(conn.getInputStream(), Charsets.UTF_8);
+			}
+			else
+			{
+				return null;
+			}
+		}
+		catch (FileNotFoundException e)
+		{
+			// ignore this
+		}
+		catch (IOException e)
+		{
+			failed = true;
+		}
+		catch (Exception e)
+		{
+			failed = true;
+			Logger.logDebug("failed", e);
+		}
 
-            // for IP we need to use reflection or pass url here and rely on dns caching
-            // ref: https://community.oracle.com/thread/2149226
+		if (failed)
+		{
+			try
+			{
+				return IOUtils.toString(c.getInputStream(), Charsets.UTF_8);
+			}
+			catch (Exception e)
+			{
+				Logger.logDebug("failed", e);
+			}
+		}
 
+		return null;
+	}
 
-            HttpURLConnection conn = (HttpURLConnection) c;
-            int responseCode;
-            try {
-                responseCode = conn.getResponseCode();
-            } catch (Exception e) {
-                responseCode = -1;
-                Logger.logDebug("failed" ,e);
-            }
+	public static void debugConnection (URLConnection c)
+	{
+		debugConnection(c, false);
+	}
 
+	public static void debugConnection (URLConnection c, boolean forceDebug)
+	{
+		if (Settings.getSettings().getDebugLauncher() || forceDebug)
+		{
+			if (!(c instanceof HttpURLConnection))
+			{
+				Logger.logDebug("Something bad just happened.");
+			}
 
-            Logger.logDebug("Request type: " + conn.getRequestMethod());
-            Logger.logDebug("URL: " + conn.getURL());
-            Logger.logDebug("Response code: " + responseCode);
-            Logger.logDebug("Headers:\n" + AppUtils.MapListToString(conn.getHeaderFields()));
-            Logger.logDebug("Message body\n" + AppUtils.ConnectionToString(conn));
-            if (conn.getURL().toString().contains("ftb.cursecdn.com")) {
-                DownloadUtils.CloudFlareInspector("http://ftb.cursecdn.com/", true);
-            }
-        }
-    }
+			// for IP we need to use reflection or pass url here and rely on dns caching
+			// ref: https://community.oracle.com/thread/2149226
 
-    public static String getExternalIP() {
-        try {
-            URL url = new URL("http://checkip.amazonaws.com");
-            BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
-            return in.readLine();
-        } catch (Exception e) {
-            Logger.logDebug("failed", e);
-        }
-        return null;
-    }
+			HttpURLConnection conn = (HttpURLConnection)c;
+			int responseCode;
+			try
+			{
+				responseCode = conn.getResponseCode();
+			}
+			catch (Exception e)
+			{
+				responseCode = -1;
+				Logger.logDebug("failed", e);
+			}
+
+			Logger.logDebug("Request type: " + conn.getRequestMethod());
+			Logger.logDebug("URL: " + conn.getURL());
+			Logger.logDebug("Response code: " + responseCode);
+			Logger.logDebug("Headers:\n" + AppUtils.MapListToString(conn.getHeaderFields()));
+			Logger.logDebug("Message body\n" + AppUtils.ConnectionToString(conn));
+			if (conn.getURL().toString().contains("ftb.cursecdn.com"))
+			{
+				DownloadUtils.CloudFlareInspector("http://ftb.cursecdn.com/", true);
+			}
+		}
+	}
+
+	public static String getExternalIP ()
+	{
+		try
+		{
+			URL url = new URL("http://checkip.amazonaws.com");
+			BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
+			return in.readLine();
+		}
+		catch (Exception e)
+		{
+			Logger.logDebug("failed", e);
+		}
+		return null;
+	}
 
 }
-
-

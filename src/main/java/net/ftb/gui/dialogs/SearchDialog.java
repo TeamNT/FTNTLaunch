@@ -16,6 +16,16 @@
  */
 package net.ftb.gui.dialogs;
 
+import java.awt.Container;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JDialog;
+import javax.swing.JTextField;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+
 import net.ftb.gui.GuiConstants;
 import net.ftb.gui.LaunchFrame;
 import net.ftb.gui.panes.AbstractModPackPane;
@@ -23,123 +33,135 @@ import net.ftb.gui.panes.MapUtils;
 import net.ftb.gui.panes.TexturepackPane;
 import net.miginfocom.swing.MigLayout;
 
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-
 @SuppressWarnings("serial")
-public class SearchDialog extends JDialog {
-    public static String lastPackSearch = "", lastMapSearch = "", lastTextureSearch = "";
-    public JTextField query = new JTextField(20);
+public class SearchDialog extends JDialog
+{
+	public static String lastPackSearch = "", lastMapSearch = "", lastTextureSearch = "";
+	public JTextField query = new JTextField(20);
 
-    public SearchDialog (final AbstractModPackPane instance) {
-        super(LaunchFrame.getInstance(), true);
-        setupGui();
-        query.setText((instance.searchString == null) ? "" : lastPackSearch);
-        query.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void removeUpdate (DocumentEvent arg0) {
-                instance.searchString = query.getText();
-                instance.filterPacks();
-            }
+	public SearchDialog (final AbstractModPackPane instance)
+	{
+		super(LaunchFrame.getInstance(), true);
+		setupGui();
+		query.setText((instance.searchString == null) ? "" : lastPackSearch);
+		query.getDocument().addDocumentListener(new DocumentListener()
+		{
+			@Override
+			public void removeUpdate (DocumentEvent arg0)
+			{
+				instance.searchString = query.getText();
+				instance.filterPacks();
+			}
 
-            @Override
-            public void insertUpdate (DocumentEvent arg0) {
-                instance.searchString = query.getText();
-                instance.filterPacks();
-            }
+			@Override
+			public void insertUpdate (DocumentEvent arg0)
+			{
+				instance.searchString = query.getText();
+				instance.filterPacks();
+			}
 
-            @Override
-            public void changedUpdate (DocumentEvent arg0) {
-            }
-        });
-        query.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed (ActionEvent event) {
-                instance.searchString = query.getText();
-                instance.filterPacks();
-                setVisible(false);
-            }
-        });
-    }
+			@Override
+			public void changedUpdate (DocumentEvent arg0)
+			{}
+		});
+		query.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed (ActionEvent event)
+			{
+				instance.searchString = query.getText();
+				instance.filterPacks();
+				setVisible(false);
+			}
+		});
+	}
 
-    public SearchDialog (final MapUtils instance) {
-        super(LaunchFrame.getInstance(), true);
-        setupGui();
-        query.setText((lastMapSearch == null) ? "" : lastMapSearch);
-        query.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void removeUpdate (DocumentEvent arg0) {
-                lastMapSearch = query.getText();
-                MapUtils.sortMaps();
-            }
+	public SearchDialog (final MapUtils instance)
+	{
+		super(LaunchFrame.getInstance(), true);
+		setupGui();
+		query.setText((lastMapSearch == null) ? "" : lastMapSearch);
+		query.getDocument().addDocumentListener(new DocumentListener()
+		{
+			@Override
+			public void removeUpdate (DocumentEvent arg0)
+			{
+				lastMapSearch = query.getText();
+				MapUtils.sortMaps();
+			}
 
-            @Override
-            public void insertUpdate (DocumentEvent arg0) {
-                lastMapSearch = query.getText();
-                MapUtils.sortMaps();
-            }
+			@Override
+			public void insertUpdate (DocumentEvent arg0)
+			{
+				lastMapSearch = query.getText();
+				MapUtils.sortMaps();
+			}
 
-            @Override
-            public void changedUpdate (DocumentEvent arg0) {
-            }
-        });
-        query.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed (ActionEvent event) {
-                lastPackSearch = query.getText();
-                MapUtils.sortMaps();
-                setVisible(false);
-            }
-        });
-    }
+			@Override
+			public void changedUpdate (DocumentEvent arg0)
+			{}
+		});
+		query.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed (ActionEvent event)
+			{
+				lastPackSearch = query.getText();
+				MapUtils.sortMaps();
+				setVisible(false);
+			}
+		});
+	}
 
-    public SearchDialog (final TexturepackPane instance) {
-        super(LaunchFrame.getInstance(), true);
-        setupGui();
-        query.setText((lastTextureSearch == null) ? "" : lastTextureSearch);
-        query.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void removeUpdate (DocumentEvent arg0) {
-                lastTextureSearch = query.getText();
-                TexturepackPane.sortTexturePacks();
-            }
+	public SearchDialog (final TexturepackPane instance)
+	{
+		super(LaunchFrame.getInstance(), true);
+		setupGui();
+		query.setText((lastTextureSearch == null) ? "" : lastTextureSearch);
+		query.getDocument().addDocumentListener(new DocumentListener()
+		{
+			@Override
+			public void removeUpdate (DocumentEvent arg0)
+			{
+				lastTextureSearch = query.getText();
+				TexturepackPane.sortTexturePacks();
+			}
 
-            @Override
-            public void insertUpdate (DocumentEvent arg0) {
-                lastTextureSearch = query.getText();
-                TexturepackPane.sortTexturePacks();
-            }
+			@Override
+			public void insertUpdate (DocumentEvent arg0)
+			{
+				lastTextureSearch = query.getText();
+				TexturepackPane.sortTexturePacks();
+			}
 
-            @Override
-            public void changedUpdate (DocumentEvent arg0) {
-            }
-        });
-        query.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed (ActionEvent event) {
-                lastPackSearch = query.getText();
-                TexturepackPane.sortTexturePacks();
-                setVisible(false);
-            }
-        });
-    }
+			@Override
+			public void changedUpdate (DocumentEvent arg0)
+			{}
+		});
+		query.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed (ActionEvent event)
+			{
+				lastPackSearch = query.getText();
+				TexturepackPane.sortTexturePacks();
+				setVisible(false);
+			}
+		});
+	}
 
-    private void setupGui () {
-        setIconImage(Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("/image/logo_ftb.png")));
-        setTitle("Text Search Filter");
-        setResizable(true);
+	private void setupGui ()
+	{
+		setIconImage(Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("/image/logo_ftb.png")));
+		setTitle("Text Search Filter");
+		setResizable(true);
 
-        Container panel = getContentPane();
-        panel.setLayout(new MigLayout());
+		Container panel = getContentPane();
+		panel.setLayout(new MigLayout());
 
-        panel.add(query, GuiConstants.FILL_SINGLE_LINE);
+		panel.add(query, GuiConstants.FILL_SINGLE_LINE);
 
-        pack();
-        setLocationRelativeTo(getOwner());
-    }
+		pack();
+		setLocationRelativeTo(getOwner());
+	}
 }

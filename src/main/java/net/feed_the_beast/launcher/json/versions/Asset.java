@@ -16,16 +16,17 @@
  */
 package net.feed_the_beast.launcher.json.versions;
 
-import lombok.Data;
-
 import java.net.URL;
 
+import lombok.Data;
+
 @Data
-public class Asset {
-    private long totalSize;
-    private String id;
-    private URL url;
-    private String sha1;
-    private int size;
+public class Asset
+{
+	private long totalSize;
+	private String id;
+	private URL url;
+	private String sha1;
+	private int size;
 
 }

@@ -16,73 +16,90 @@
  */
 package net.ftb.util;
 
-import com.google.common.collect.Lists;
-import net.ftb.data.news.NewsArticle;
-import net.ftb.data.news.RSSReader;
-
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class NewsUtils {
+import com.google.common.collect.Lists;
 
-    private static List<NewsArticle> news = null;
-    private static DateFormat dateFormatterRss = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z");
+import net.ftb.data.news.NewsArticle;
+import net.ftb.data.news.RSSReader;
 
-    public static void initializeNews () {
-        news = RSSReader.readRSS();
-    }
+public class NewsUtils
+{
 
-    /**
-     * Gets the HTML code for the news pane.
-     *
-     * @return The HTML to display on the news pane
-     */
-    public static String getNewsHTML () {
-        // if news not fetched try to fetch. Blocks thread.
-        Benchmark.start("NewsUtils");
-        if (news == null) {
-            NewsUtils.initializeNews();
-        }
+	private static List<NewsArticle> news = null;
+	private static DateFormat dateFormatterRss = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z");
 
-        String html;
-        html = "<html>";
-        if (news != null) {
-            for (NewsArticle article : news) {
-                html += article.getHTML();
-                if (news.get(news.size() - 1) != article) {
-                    html += "<hr/>";
-                }
-            }
-        } else {
-            html += "No network connection, no news.";
-        }
-        html += "</html>";
-        Benchmark.logBench("NewsUtils");
-        return html;
+	public static void initializeNews ()
+	{
+		news = RSSReader.readRSS();
+	}
 
-    }
+	/**
+	 * Gets the HTML code for the news pane.
+	 *
+	 * @return The HTML to display on the news pane
+	 */
+	public static String getNewsHTML ()
+	{
+		// if news not fetched try to fetch. Blocks thread.
+		Benchmark.start("NewsUtils");
+		if (news == null)
+		{
+			NewsUtils.initializeNews();
+		}
 
-    public static ArrayList<String> getPubDates () {
-        ArrayList<String> s = Lists.newArrayList();
-        if (news != null) {
-            for (NewsArticle n : news) {
-                s.add(getUnixDate(n.getDate()));
-            }
-        }
-        return s;
-    }
+		String html;
+		html = "<html>";
+		if (news != null)
+		{
+			for(NewsArticle article : news)
+			{
+				html += article.getHTML();
+				if (news.get(news.size() - 1) != article)
+				{
+					html += "<hr/>";
+				}
+			}
+		}
+		else
+		{
+			html += "No network connection, no news.";
+		}
+		html += "</html>";
+		Benchmark.logBench("NewsUtils");
+		return html;
 
-    private static String getUnixDate (String s) {
-        try {
-            Date dte = dateFormatterRss.parse(s);
-            return String.valueOf(dte.getTime() / 1000);
-        } catch (Exception e) {
+	}
 
-        }
-        return "00000000";
-    }
+	public static ArrayList<String> getPubDates ()
+	{
+		ArrayList<String> s = Lists.newArrayList();
+		if (news != null)
+		{
+			for(NewsArticle n : news)
+			{
+				s.add(getUnixDate(n.getDate()));
+			}
+		}
+		return s;
+	}
+
+	private static String getUnixDate (String s)
+	{
+		try
+		{
+			Date dte = dateFormatterRss.parse(s);
+			return String.valueOf(dte.getTime() / 1000);
+		}
+		catch (Exception e)
+		{
+
+		}
+		return "00000000";
+	}
 
 }

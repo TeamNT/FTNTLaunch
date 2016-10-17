@@ -16,55 +16,67 @@
  */
 package net.ftb.util;
 
+import javax.swing.JOptionPane;
+
 import net.ftb.gui.LaunchFrame;
 import net.ftb.gui.dialogs.YNDialog;
 import net.ftb.locale.I18N;
 import net.ftb.log.Logger;
 
-import javax.swing.*;
+public class GameUtils
+{
 
-public class GameUtils {
+	public static void killMC ()
+	{
+		// if Mc is running
+		if (LaunchFrame.MCRunning)
+		{
+			// open confirm dialog for closing MC
+			YNDialog yn = new YNDialog("KILL_MC_MESSAGE", "KILL_MC_CONFIRM", "KILL_MC_TITLE");
+			yn.setVisible(true);
+			yn.toFront();
 
-    public static void killMC () {
-        //if Mc is running
-        if (LaunchFrame.MCRunning) {
-            //open confirm dialog for closing MC
-            YNDialog yn = new YNDialog("KILL_MC_MESSAGE", "KILL_MC_CONFIRM", "KILL_MC_TITLE");
-            yn.setVisible(true);
-            yn.toFront();
+			if (yn.ready && yn.ret && LaunchFrame.MCRunning && LaunchFrame.getProcMonitor() != null)
+			{
+				Logger.logWarn("MC Killed by the user!");
+				LaunchFrame.getProcMonitor().stop();
+			}
 
-            if (yn.ready && yn.ret && LaunchFrame.MCRunning && LaunchFrame.getProcMonitor() != null) {
-                Logger.logWarn("MC Killed by the user!");
-                LaunchFrame.getProcMonitor().stop();
-            }
+			yn.setVisible(false);
+		}
+		else
+		{
+			Logger.logInfo("No Minecraft Process currently running to kill");
+		}
+	}
 
-            yn.setVisible(false);
-        } else {
-            Logger.logInfo("No Minecraft Process currently running to kill");
-        }
-    }
+	public static void threadDumpMC ()
+	{
+		boolean ret = true;
+		// if Mc is running
+		if (LaunchFrame.MCRunning)
+		{
+			// open confirm dialog for closing MC
+			YNDialog yn = new YNDialog("TD_MC_MESSAGE", "TD_MC_CONFIRM", "TD_MC_TITLE");
+			yn.setVisible(true);
+			yn.toFront();
 
-    public static void threadDumpMC () {
-        boolean ret = true;
-        //if Mc is running
-        if (LaunchFrame.MCRunning) {
-            //open confirm dialog for closing MC
-            YNDialog yn = new YNDialog("TD_MC_MESSAGE", "TD_MC_CONFIRM", "TD_MC_TITLE");
-            yn.setVisible(true);
-            yn.toFront();
+			if (yn.ready && yn.ret && LaunchFrame.MCRunning && LaunchFrame.getProcMonitor() != null)
+			{
+				Logger.logWarn("Getting thread dump from MC");
+				ret = OSUtils.genThreadDump(LaunchFrame.getProcMonitor().getPid());
+			}
 
-            if (yn.ready && yn.ret && LaunchFrame.MCRunning && LaunchFrame.getProcMonitor() != null) {
-                Logger.logWarn("Getting thread dump from MC");
-                ret = OSUtils.genThreadDump(LaunchFrame.getProcMonitor().getPid());
-            }
+			yn.setVisible(false);
 
-            yn.setVisible(false);
-
-            if (ret == false) {
-                ErrorUtils.showClickableMessage(I18N.getLocaleString("TD_MC_FAIL_MESSAGE"), JOptionPane.ERROR_MESSAGE);
-            }
-        } else {
-            Logger.logInfo("No Minecraft Process currently running to thread dump");
-        }
-    }
+			if (ret == false)
+			{
+				ErrorUtils.showClickableMessage(I18N.getLocaleString("TD_MC_FAIL_MESSAGE"), JOptionPane.ERROR_MESSAGE);
+			}
+		}
+		else
+		{
+			Logger.logInfo("No Minecraft Process currently running to thread dump");
+		}
+	}
 }

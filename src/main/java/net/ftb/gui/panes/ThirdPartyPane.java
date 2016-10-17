@@ -16,46 +16,54 @@
  */
 package net.ftb.gui.panes;
 
+import java.awt.Point;
+
 import lombok.Getter;
 import net.ftb.data.ModPack;
 import net.ftb.data.Settings;
 import net.ftb.download.Locations;
 
-import java.awt.*;
-
 @SuppressWarnings("serial")
-public class ThirdPartyPane extends AbstractModPackPane implements ILauncherPane {
-    @Getter
-    private static ThirdPartyPane instance;
+public class ThirdPartyPane extends AbstractModPackPane implements ILauncherPane
+{
+	@Getter
+	private static ThirdPartyPane instance;
 
-    public ThirdPartyPane () {
-        super();
-        instance = this;
-    }
+	public ThirdPartyPane ()
+	{
+		super();
+		instance = this;
+	}
 
-    @Override
-    public void onVisible () {
-        ThirdPartyPane.getInstance().getPacksScroll().getViewport().setViewPosition(new Point(0, 0));
-        ModPack.setSelectedPack(ThirdPartyPane.getInstance().selectedPack);
-    }
+	@Override
+	public void onVisible ()
+	{
+		ThirdPartyPane.getInstance().getPacksScroll().getViewport().setViewPosition(new Point(0, 0));
+		ModPack.setSelectedPack(ThirdPartyPane.getInstance().selectedPack);
+	}
 
-    boolean filterForTab (ModPack pack) {
-        return (pack.isThirdPartyTab() && !pack.getParentXml().contains(Locations.MODPACKXML));
-    }
+	boolean filterForTab (ModPack pack)
+	{
+		return (pack.isThirdPartyTab() && !pack.getParentXml().contains(Locations.MODPACKXML));
+	}
 
-    String getLastPack () {
-        return Settings.getSettings().getLastThirdPartyPack();
-    }
+	String getLastPack ()
+	{
+		return Settings.getSettings().getLastThirdPartyPack();
+	}
 
-    String getPaneShortName () {
-        return "Third Party";
-    }
+	String getPaneShortName ()
+	{
+		return "Third Party";
+	}
 
-    boolean isFTB () {
-        return false;
-    }
+	boolean isFTB ()
+	{
+		return false;
+	}
 
-    AbstractModPackPane getThis () {
-        return this;
-    }
+	AbstractModPackPane getThis ()
+	{
+		return this;
+	}
 }

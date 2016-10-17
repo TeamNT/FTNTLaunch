@@ -16,69 +16,76 @@
  */
 package net.ftb.data.news;
 
-import com.google.common.collect.Lists;
-import net.ftb.data.Settings;
-import net.ftb.download.Locations;
-import net.ftb.log.Logger;
-import net.ftb.util.AppUtils;
-import org.apache.commons.codec.Charsets;
-import org.apache.commons.io.IOUtils;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-public class RSSReader {
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
-    public static List<NewsArticle> readRSS () {
-        try {
-            List<NewsArticle> news = Lists.newArrayList();
+import com.google.common.collect.Lists;
 
-            DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-            URL u = new URL(Locations.feedURL);
-            HttpURLConnection conn = (HttpURLConnection) u.openConnection();
-            conn.connect();
-            if (conn.getResponseCode() != 200) {
-                Logger.logWarn("News download failed");
-                AppUtils.debugConnection(conn);
-                conn.disconnect();
-                return null;
-            }
-            Document doc = builder.parse(conn.getInputStream());
-            NodeList nodes = doc.getElementsByTagName("item");
+import net.ftb.download.Locations;
+import net.ftb.log.Logger;
+import net.ftb.util.AppUtils;
 
-            for (int i = 0; i < nodes.getLength(); i++) {
-                Element element = (Element) nodes.item(i);
-                NewsArticle article = new NewsArticle();
-                article.setTitle(getTextValue(element, "title"));
-                article.setHyperlink(getTextValue(element, "link"));
-                article.setBody(getTextValue(element, "content:encoded"));
-                article.setDate(getTextValue(element, "pubDate"));
-                news.add(article);
-            }
+public class RSSReader
+{
 
-            return news;
-        } catch (Exception ex) {
-            Logger.logWarn("News download failed", ex);
-            return null;
-        }
-    }
+	public static List<NewsArticle> readRSS ()
+	{
+		try
+		{
+			List<NewsArticle> news = Lists.newArrayList();
 
-    private static String getTextValue (Element doc, String tag) {
-        String value = "";
-        NodeList nl;
-        nl = doc.getElementsByTagName(tag);
-        if (nl.getLength() > 0 && nl.item(0).hasChildNodes()) {
-            value = nl.item(0).getFirstChild().getNodeValue();
-        }
-        return value;
-    }
+			DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+			URL u = new URL(Locations.feedURL);
+			HttpURLConnection conn = (HttpURLConnection)u.openConnection();
+			conn.connect();
+			if (conn.getResponseCode() != 200)
+			{
+				Logger.logWarn("News download failed");
+				AppUtils.debugConnection(conn);
+				conn.disconnect();
+				return null;
+			}
+			Document doc = builder.parse(conn.getInputStream());
+			NodeList nodes = doc.getElementsByTagName("item");
+
+			for(int i = 0; i < nodes.getLength(); i++)
+			{
+				Element element = (Element)nodes.item(i);
+				NewsArticle article = new NewsArticle();
+				article.setTitle(getTextValue(element, "title"));
+				article.setHyperlink(getTextValue(element, "link"));
+				article.setBody(getTextValue(element, "content:encoded"));
+				article.setDate(getTextValue(element, "pubDate"));
+				news.add(article);
+			}
+
+			return news;
+		}
+		catch (Exception ex)
+		{
+			Logger.logWarn("News download failed", ex);
+			return null;
+		}
+	}
+
+	private static String getTextValue (Element doc, String tag)
+	{
+		String value = "";
+		NodeList nl;
+		nl = doc.getElementsByTagName(tag);
+		if (nl.getLength() > 0 && nl.item(0).hasChildNodes())
+		{
+			value = nl.item(0).getFirstChild().getNodeValue();
+		}
+		return value;
+	}
 
 }

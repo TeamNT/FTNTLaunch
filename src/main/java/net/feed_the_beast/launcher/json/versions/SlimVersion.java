@@ -16,17 +16,18 @@
  */
 package net.feed_the_beast.launcher.json.versions;
 
-import lombok.Data;
-
 import java.net.URL;
 import java.util.Date;
 
+import lombok.Data;
+
 @Data
-public class SlimVersion {
-    private String id;
-    private Date time;
-    private Date releaseTime;
-    private String type;
-    private URL url;
+public class SlimVersion
+{
+	private String id;
+	private Date time;
+	private Date releaseTime;
+	private String type;
+	private URL url;
 
 }

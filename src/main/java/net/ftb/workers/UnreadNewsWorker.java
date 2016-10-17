@@ -16,38 +16,45 @@
  */
 package net.ftb.workers;
 
+import java.util.ArrayList;
+
+import javax.swing.SwingWorker;
+
 import net.ftb.data.Settings;
 import net.ftb.util.Benchmark;
 import net.ftb.util.NewsUtils;
-
-import java.util.ArrayList;
-
-import javax.swing.*;
 
 /**
  * SwingWorker that checks for unread news. Returns count of unread news
  * done() updates news icon
  */
-public class UnreadNewsWorker extends SwingWorker<Integer, Void> {
-    @Override
-    protected Integer doInBackground () {
-        Benchmark.start("UnreadNews");
-        int i = 0;
-        ArrayList<String> dates = NewsUtils.getPubDates();
-        Long lastRead = Long.parseLong(Settings.getSettings().getNewsDate());
-        int read = 0;
-        for (String s : dates) {
-            long l = Long.parseLong(s);
-            if (!(read == 1)) {
-                if (l > lastRead) {
-                    i++;
-                } else {
-                    read = 1;
-                }
-            }
-        }
-        Benchmark.logBenchAs("UnreadNews", "UnreadNews Init");
-        return i;
+public class UnreadNewsWorker extends SwingWorker<Integer, Void>
+{
+	@Override
+	protected Integer doInBackground ()
+	{
+		Benchmark.start("UnreadNews");
+		int i = 0;
+		ArrayList<String> dates = NewsUtils.getPubDates();
+		Long lastRead = Long.parseLong(Settings.getSettings().getNewsDate());
+		int read = 0;
+		for(String s : dates)
+		{
+			long l = Long.parseLong(s);
+			if (!(read == 1))
+			{
+				if (l > lastRead)
+				{
+					i++;
+				}
+				else
+				{
+					read = 1;
+				}
+			}
+		}
+		Benchmark.logBenchAs("UnreadNews", "UnreadNews Init");
+		return i;
 
-    }
+	}
 }

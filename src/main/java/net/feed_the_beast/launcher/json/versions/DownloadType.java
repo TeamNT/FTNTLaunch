@@ -16,6 +16,9 @@
  */
 package net.feed_the_beast.launcher.json.versions;
 
-public enum DownloadType {
-    CLIENT, SERVER, WINDOWS_SERVER;
+public enum DownloadType
+{
+	CLIENT,
+	SERVER,
+	WINDOWS_SERVER;
 }
