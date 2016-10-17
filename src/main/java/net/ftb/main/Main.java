@@ -114,7 +114,7 @@ public class Main {
         }
 
         if (CommandLineSettings.getSettings().isHelp()) {
-            jc.setProgramName("FTB_Launcher.jar");
+            jc.setProgramName("FTNT_Launcher.jar");
             jc.usage();
             System.exit(0);
         }

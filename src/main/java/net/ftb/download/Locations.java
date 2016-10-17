@@ -32,12 +32,12 @@ public class Locations {
     //location of the FTB maven repo within the FTB2/static part of the repository
     public static final String ftb_maven = "maven/";
 
-    public static final String chRepo = "http://www.feedthenuketerrorist.fr.nf";
+    public static final String chRepo = "http://www.ftnt.fr.nf";
     public static final String curseRepo = "http://ftb.cursecdn.com";
     //this changes based on the primary automatic server in the balancing logic
     //DO NOT ACCESS UNILL 1st DL thread has finished setting up!!!!
-    public static String masterRepo = "http://feedthenuketerrorist.fr.nf";
-    public static String masterRepoNoHTTP = "feedthenuketerrorist.fr.nf";
+    public static String masterRepo = "http://ftnt.fr.nf";
+    public static String masterRepoNoHTTP = "ftnt.fr.nf";
     // used in mirroring logic
     public static boolean primaryCH = false;
     public static boolean chEnabled = true;
@@ -78,7 +78,7 @@ public class Locations {
     public static final String THIRDPARTYXML = "thirdparty.xml";
     public static final String TEXTUREPACKXML = "texturepack.xml";
     public static final String SUPPORTSITE = "http://support.feed-the-beast.com/";
-    public static final String FTBSITE = "http://feedthenuketerrorist.fr.nf";
+    public static final String FTBSITE = "http://ftnt.fr.nf";
 
     public static final String PIWIK = "http://stats.feed-the-beast.com/";
 

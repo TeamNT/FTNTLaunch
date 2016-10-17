@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>net.ftb</groupId>
-  <artifactId>FTB_Launcher</artifactId>
+  <artifactId>FTNT_Launcher</artifactId>
   <version>1.3.4</version>
   <packaging>jar</packaging>
 
