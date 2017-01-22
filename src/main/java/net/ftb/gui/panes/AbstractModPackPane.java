@@ -208,15 +208,9 @@ public abstract class AbstractModPackPane extends JPanel
 							{
 								url = DownloadUtils.getCreeperhostLink("modpacks/" + pack.getDir() + "/" + version + "/" + pack.getServerUrl());
 							}
-
-							if (DownloadUtils.fileExistsURL(url))
-							{
-								OSUtils.browse(url);
-							}
-							else
-							{
-								ErrorUtils.tossError("Server file for selected version was not found on the server");
-							}
+							
+							OSUtils.browse(url);
+							
 							TrackerUtils.sendPageView(pack.getName() + " Server Download", "Server Download / " + pack.getName() + " / " + version);
 						}
 					}
