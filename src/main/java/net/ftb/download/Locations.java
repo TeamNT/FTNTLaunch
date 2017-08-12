@@ -35,12 +35,12 @@ public class Locations
 	// location of the FTB maven repo within the FTB2/static part of the repository
 	public static final String ftb_maven = "maven/";
 
-	public static final String chRepo = "http://www.ftnt.fr.nf";
+	public static final String chRepo = "http://www.teamnt.pw";
 	public static final String curseRepo = "http://ftb.cursecdn.com";
 	// this changes based on the primary automatic server in the balancing logic
 	// DO NOT ACCESS UNILL 1st DL thread has finished setting up!!!!
-	public static String masterRepo = "http://ftnt.fr.nf";
-	public static String masterRepoNoHTTP = "ftnt.fr.nf";
+	public static String masterRepo = "http://teamnt.pw";
+	public static String masterRepoNoHTTP = "teamnt.pw";
 	// used in mirroring logic
 	public static boolean primaryCH = false;
 	public static boolean chEnabled = true;
