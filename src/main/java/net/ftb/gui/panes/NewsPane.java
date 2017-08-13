@@ -112,7 +112,7 @@ public class NewsPane extends JPanel implements ILauncherPane
 	{
 		try
 		{
-			news.setPage("http://ftnt.fr.nf/news.php");
+			news.setPage("http://www.teamnt.pw/news.php");
 			Settings.getSettings().setNewsDate();
 			Settings.getSettings().save();
 			LaunchFrame.getInstance().setNewsIcon();

@@ -81,7 +81,7 @@ public class Locations
 	public static final String THIRDPARTYXML = "thirdparty.xml";
 	public static final String TEXTUREPACKXML = "texturepack.xml";
 	public static final String SUPPORTSITE = "http://support.feed-the-beast.com/";
-	public static final String FTBSITE = "http://ftnt.fr.nf";
+	public static final String FTBSITE = "http://www.teamnt.pw";
 
 	public static final String PIWIK = "http://stats.feed-the-beast.com/";
 

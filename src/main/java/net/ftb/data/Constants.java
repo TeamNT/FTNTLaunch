@@ -20,9 +20,9 @@ public class Constants
 {
 
 	public static final String name = "TeamNT Launcher";
-	public static final String version = "2.2.4";
+	public static final String version = "2.2.5";
 
 	// limit for version component is 99.
-	public static final int buildNumber = 2 * 100 * 100 + 2 * 100 + 4 * 1;
+	public static final int buildNumber = 2 * 100 * 100 + 2 * 100 + 5 * 1;
 
 }

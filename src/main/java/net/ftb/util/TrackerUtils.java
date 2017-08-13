@@ -53,7 +53,7 @@ public class TrackerUtils
 		{
 			if (googleEnabled)
 			{
-				Main.tracker.trackPageViewFromReferrer(pageUrl, pageTitle, "Feed The Nuke Terrorist", "http://www.ftnt.fr.nf", "/");
+				Main.tracker.trackPageViewFromReferrer(pageUrl, pageTitle, "Feed The Nuke Terrorist", "http://www.teamnt.pw", "/");
 			}
 			if (piwikEnabled)
 			{

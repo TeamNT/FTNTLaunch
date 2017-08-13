@@ -160,7 +160,7 @@ public class ModManager extends JDialog
 						connection.setRequestProperty("Range", "bytes=" + amount + "-");
 					}
 					connection.connect();
-					md5 = AppUtils.downloadString(new URL("http://ftnt.fr.nf/MD5/" + ModPack.getSelectedPack().getDir() + "/" + curVersion + ".md5"));
+					md5 = AppUtils.downloadString(new URL("http://www.teamnt.pw/MD5/" + ModPack.getSelectedPack().getDir() + "/" + curVersion + ".md5"));
 					in = new BufferedInputStream(connection.getInputStream());
 					if (modPackSize == 0)
 					{
